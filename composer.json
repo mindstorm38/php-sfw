@@ -1,0 +1,7 @@
+{
+	"name": "mindstorm38/php-helper",
+	"description": "A Object-Oriented PHP helper",
+	"require": {
+		"php": "^5.5.0 || ^7.0"
+	}
+}

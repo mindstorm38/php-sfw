@@ -1,0 +1,18 @@
+{
+	"global": {
+		"name": "PHP Helper",
+		"secure": false,
+		"advised_host": "localhost"
+	},
+	"database": {
+		"host": "127.0.0.1:3306",
+		"user": "root",
+		"charset": "utf8",
+		"password": "",
+		"name": ""
+	},
+	"session": {
+		"name": "PHP_HELPER_SID",
+		"lifetime": 604800
+	}
+}
