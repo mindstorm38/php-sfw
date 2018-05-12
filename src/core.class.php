@@ -8,14 +8,22 @@ use PHPHelper\src\Config;
 
 final class Core {
 
-	// Website constants
+	// PHPHelper constants
 	const AUTHOR							= "Mindstorm38";
 	const CONTACT							= "mailto:mindstorm38pro@gmail.com";
 	const VERSION							= "2.0.0";
 
-	public static function init_application( $app_name ) {
+	private static $app_name = null;
+	private static $app_sources_path = null;
 
+	public static function init_application( $app_name, $app_sources_path ) {
 
+		if ( version_compare( PHP_VERSION, "5.5.0", "lt" ) ) {
+			throw new
+			die( "PHP 5.5+ required.<br>Currently installed version is : " . phpversion() );
+		}
+
+		
 
 	}
 

@@ -47,7 +47,7 @@ class QueryManager {
 
 	public static function get_query_instance( $name ) {
 		if ( isset( self::$queries[ $name ] ) ) return self::$queries[ $name ];
-		$new_query_class = "WOTORG\\src\\query\\{$name}";
+		$new_query_class = "PHPHelper\\src\\query\\{$name}";
 		if ( !class_exists( $new_query_class ) ) return null;
 		return self::$queries[ $name ] = new $new_query_class();
 	}
@@ -78,7 +78,7 @@ class QueryManager {
 			if ( !array_key_exists( $required_variable, $array ) ) {
 				return [
 					QueryManager::JSON_ERROR => "MISSING_PARAMETER",
-					QueryManager::JSON_MESSAGE => Lang::get("query.error.missing_parameter", [ $required_variable ]),
+					QueryManager::JSON_MESSAGE => Lang::get( "query.error.missing_parameter", [ $required_variable ] ),
 					QueryManager::JSON_DATA => [
 						QueryManager::JSON_MISSING_PARAM_NAME => $required_variable
 					]
@@ -94,7 +94,7 @@ class QueryManager {
 
 			return [
 				QueryManager::JSON_ERROR => $response->error === true ? "QUERY_ERROR" : $response->error,
-				QueryManager::JSON_MESSAGE => Lang::get($response->lang, $response->vars),
+				QueryManager::JSON_MESSAGE => Lang::get( $response->lang, $response->vars ),
 				QueryManager::JSON_DATA => $response->data
 			];
 
