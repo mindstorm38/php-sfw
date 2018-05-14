@@ -1,2 +1,3 @@
 /dist/*
 !/dist/installer.php
+!/dist/config.json
