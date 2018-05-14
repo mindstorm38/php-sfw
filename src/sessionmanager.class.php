@@ -128,7 +128,7 @@ final class SessionManager {
 	}
 
 	public static function set_logged( ...$params ) {
-		$expires_at = time() + ;
+		$expires_at = time() + self::get_config_lifetime();
 		if ( self::$handler !== null ) $expires_at = self::$handler->set_logged( $params );
 		self::setup_session_vars();
 		self::setup_session_expires( $expires_at );
