@@ -11,13 +11,21 @@ use \PDO;
 
 final class Database {
 
+	private static $registered_managers = [];
 	private static $connection = null;
 	private static $managers = [];
 
+	public static function register_manager_class( $name, $class_path ) {
+		if ( array_key_exists( $name, self::$registered_managers ) ) throw new Exception("This manager already exists '{$name}'");
+		if ( !class_exists( $class_path ) ) throw new Exception("Invalid manager class path '{$class_path}'");
+		self::$registered_managers[ $name ] = $class_path;
+	}
+
 	public static function get_manager( $name ) {
 		if ( array_key_exists( $name, self::$managers ) ) return self::$managers[ $name ];
-		$class_path = "WOTORG\\src\\sqlmanager\\{$name}Manager";
-		if ( !class_exists($class_path) ) return null;
+		if ( !array_key_exists( $name, self::$registered_managers ) ) return null;
+		$class_path = self::$registered_managers[ $name ];
+		if ( !class_exists( $class_path ) ) return null;
 		return self::$managers[ $name ] = new $class_path( self::get_connection() );
 	}
 

@@ -5,26 +5,53 @@
 namespace PHPHelper\src;
 
 use PHPHelper\src\Config;
+use PHPHelper\src\Utils;
+use PHPHelper\src\Lang;
+use PHPHelper\src\SessionManager;
 
 final class Core {
 
-	// PHPHelper constants
-	const AUTHOR							= "Mindstorm38";
-	const CONTACT							= "mailto:mindstorm38pro@gmail.com";
-	const VERSION							= "2.0.0";
+	const MINIMUM_PHP_VERSION = "5.5.0";
 
 	private static $app_name = null;
-	private static $app_sources_path = null;
 
-	public static function init_application( $app_name, $app_sources_path ) {
+	public static function start_application( $app_name, $minimum_php_version = "5.5.0" ) {
 
-		if ( version_compare( PHP_VERSION, "5.5.0", "lt" ) ) {
-			throw new
-			die( "PHP 5.5+ required.<br>Currently installed version is : " . phpversion() );
+		if ( self::$app_name !== null ) die( "Application already started" );
+
+		if ( version_compare( $minimum_php_version, Core::MINIMUM_PHP_VERSION, "lt" ) ) {
+			die( "Invalid minimum php version given, PHP 5.5 minimum required. Given version : " . $minimum_php_version );
+		} else if ( version_compare( PHP_VERSION, $minimum_php_version, "lt" ) ) {
+			die( "PHP {$minimum_php_version} required. Currently installed version is : " . phpversion() );
 		}
 
-		
+		self::$app_name = $app_name;
 
+		@ini_set( 'display_errors', 1 );
+		@error_reporting( E_ALL );
+		@ini_set( 'file_uploads', 1 );
+		@ini_set('default_charset', 'utf-8');
+		@mb_internal_encoding('utf-8');
+
+		if ( isset( $_SERVER["HTTPS"] ) != boolval( Config::get("global:secure") ) ) {
+
+			Utils::redirect( Config::get_advised_url() . $_SERVER["REQUEST_URI"] );
+			die();
+
+		}
+
+		Lang::init_languages();
+		SessionManager::session_start();
+
+	}
+
+	public static function check_app_ready() {
+		if ( self::$app_name === null ) throw new Exception( "Application not started" );
+	}
+
+	public static function get_app_name() {
+		self::check_app_ready();
+		return self::$app_name;
 	}
 
 	public static function missing_extension( $extension, $fatal = false, $extra = "" ) {

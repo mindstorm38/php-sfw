@@ -119,11 +119,6 @@ final class Utils {
 
 	public static function str_format( $format, $args ) {
 
-		/*
-		$args = func_get_args();
-		$format = array_shift( $args );
-		*/
-
 		$format = preg_replace_callback( '/(?:\{?\{(\d)\}\}?)/', function( $matches ) use( $args ) {
 			if ( count( $matches ) !== 2 ) return "";
 			$n = intval( $matches[1] );

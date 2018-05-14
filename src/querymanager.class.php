@@ -43,11 +43,19 @@ class QueryManager {
 
 	const JSON_MISSING_PARAM_NAME		= "param";
 
+	public static $registered_queries = [];
 	public static $queries = [];
+
+	public static function register_query_class( $name ) {
+		if ( array_key_exists( $name, self::$registered_queries ) ) throw new Exception("This query already exists '{$name}'");
+		if ( !class_exists( $class_path ) ) throw new Exception("Invalid query class path '{$class_path}'");
+		self::$registered_queries[ $name ] = $class_path;
+	}
 
 	public static function get_query_instance( $name ) {
 		if ( isset( self::$queries[ $name ] ) ) return self::$queries[ $name ];
-		$new_query_class = "PHPHelper\\src\\query\\{$name}";
+		if ( !array_key_exists( $name, self::$registered_queries ) ) return null;
+		$new_query_class = self::$registered_queries[ $name ];
 		if ( !class_exists( $new_query_class ) ) return null;
 		return self::$queries[ $name ] = new $new_query_class();
 	}
