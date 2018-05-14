@@ -17,6 +17,10 @@ function file_build_path( ...$segments ) {
 	return join( DIRECTORY_SEPARATOR, $segments );
 }
 
+function short_sha( $sha ) {
+	return substr( $sha, 0, 7 );
+}
+
 function rmdir_recursive( $dir ) {
 	foreach( scandir( $dir ) as $file ) {
 		if ( '.' === $file || '..' === $file ) continue;
@@ -62,7 +66,8 @@ println( "Checking current installation ..." );
 $update = file_exists( VERSION_FILE );
 $current_version_commit_sha = $update ? explode( "\n", file_get_contents( VERSION_FILE ) )[0] : "master";
 
-if ( !$update ) println( "PHPHelper isn't currently installed, installing ..." );
+if ( $update ) println( "Currently installed (" . short_sha( $current_version_commit_sha ) ."), checking for newer version ..." );
+else println( "Not currently installed, installing ..." );
 
 // println( "PHPHelper is currently installed commit version {$current_version_commit_sha}" );
 
@@ -101,7 +106,7 @@ $tmp_download_file = file_build_path ( TMP_FOLDER, "{$latest_commit_sha}.zip" );
 if ( !is_dir( TMP_FOLDER ) ) mkdir( TMP_FOLDER );
 if ( file_exists( $tmp_download_file ) ) unlink( $tmp_download_file );
 
-println( "Downloading latest version ..." );
+println( "Downloading latest version (" . short_sha( $latest_commit_sha ) . ") ..." );
 file_put_contents( $tmp_download_file, fopen( $download_link, "r" ) );
 println( "Latest version downloaded. Installing ..." );
 
