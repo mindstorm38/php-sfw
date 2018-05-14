@@ -129,6 +129,14 @@ final class Utils {
 
 	}
 
+	public static function apply_default_options( $assoc_array, $default_options ) {
+		foreach ( $default_options as $key => $value ) {
+			if ( !array_key_exists( $key, $assoc_array ) ) {
+				$assoc_array[ $key ] = $default_options[ $key ];
+			}
+		}
+	}
+
 	// Array Page functions
 
 	public static function get_page_infos( array $array, $items_per_page, $pages_offset, $current_page, $filter = null, $fillEmpty = false ) {

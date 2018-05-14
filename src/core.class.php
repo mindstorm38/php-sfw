@@ -13,35 +13,53 @@ final class Core {
 
 	const MINIMUM_PHP_VERSION = "5.5.0";
 
-	private static $app_name = null;
+	const DEFAULT_OPTIONS = [
+		"minimum_php_version" => Core::MINIMUM_PHP_VERSION,
+		"redirect_https" => true,
+		"init_languages" => true,
+		"start_session" => false
+	];
 
-	public static function start_application( $app_name, $minimum_php_version = "5.5.0" ) {
+	private static $app_name = null;
+	private static $app_options = [];
+
+	public static function start_application( $app_name, $app_options = [] ) {
 
 		if ( self::$app_name !== null ) die( "Application already started" );
 
+		// Apply default options
+		Utils::apply_default_options( $app_options, Core::DEFAULT_OPTIONS );
+
+		// Check versions
+		$minimum_php_version = $app_options["minimum_php_version"];
 		if ( version_compare( $minimum_php_version, Core::MINIMUM_PHP_VERSION, "lt" ) ) {
-			die( "Invalid minimum php version given, PHP 5.5 minimum required. Given version : " . $minimum_php_version );
+			die( "Invalid minimum php version given, PHP " . Core::MINIMUM_PHP_VERSION . "+ required. Given version : " . $minimum_php_version );
 		} else if ( version_compare( PHP_VERSION, $minimum_php_version, "lt" ) ) {
-			die( "PHP {$minimum_php_version} required. Currently installed version is : " . phpversion() );
+			die( "PHP {$minimum_php_version}+ required. Currently installed version is : " . phpversion() );
 		}
 
+		// App name
 		self::$app_name = $app_name;
 
+		// PHP Configuration
 		@ini_set( 'display_errors', 1 );
 		@error_reporting( E_ALL );
 		@ini_set( 'file_uploads', 1 );
 		@ini_set('default_charset', 'utf-8');
 		@mb_internal_encoding('utf-8');
 
-		if ( isset( $_SERVER["HTTPS"] ) != boolval( Config::get("global:secure") ) ) {
+		if ( boolval( $app_options["redirect_https"] ) && isset( $_SERVER["HTTPS"] ) != boolval( Config::get("global:secure") ) ) {
 
 			Utils::redirect( Config::get_advised_url() . $_SERVER["REQUEST_URI"] );
 			die();
 
 		}
 
-		Lang::init_languages();
-		SessionManager::session_start();
+		// Init languages if selected
+		if ( boolval( $app_options["init_languages"] ) ) Lang::init_languages();
+
+		// Start session if selected
+		if ( boolval( $app_options["start_session"] ) ) SessionManager::session_start();
 
 	}
 

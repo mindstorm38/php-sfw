@@ -1,6 +1,5 @@
 {
 	"global": {
-		"name": "PHP Helper",
 		"secure": false,
 		"advised_host": "localhost"
 	},
@@ -12,7 +11,7 @@
 		"name": ""
 	},
 	"session": {
-		"name": "PHP_HELPER_SID",
+		"name": "SESSID",
 		"lifetime": 604800
 	}
 }
