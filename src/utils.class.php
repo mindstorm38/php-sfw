@@ -129,7 +129,7 @@ final class Utils {
 
 	}
 
-	public static function apply_default_options( $assoc_array, $default_options ) {
+	public static function apply_default_options( array &$assoc_array, array $default_options ) {
 		foreach ( $default_options as $key => $value ) {
 			if ( !array_key_exists( $key, $assoc_array ) ) {
 				$assoc_array[ $key ] = $default_options[ $key ];
