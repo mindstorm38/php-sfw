@@ -1,5 +1,7 @@
 <?php
 
+namespace PHPHelper\src;
+
 class Autoloader {
 
 	private $paths;
