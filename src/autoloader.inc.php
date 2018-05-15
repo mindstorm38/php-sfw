@@ -7,7 +7,7 @@ class Autoloader {
 	private $paths;
 
 	public function __construct( array $paths ) {
-		$this->paths = $path;
+		$this->paths = $paths;
 	}
 
 	public function autoload( $path ) {
