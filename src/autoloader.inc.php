@@ -23,12 +23,12 @@ class Autoloader {
 	}
 
 	public function register() {
-		spl_autoload_register( $this->autoload );
+		spl_autoload_register( array( $this, "autoload" ) );
 	}
 
 }
 
-new Autoloader( [
+( new Autoloader( [
 
 	"PHPHelper\\src\\Utils"							=> "utils.class.php",
 	"PHPHelper\\src\\Config"						=> "config.class.php",
@@ -43,6 +43,6 @@ new Autoloader( [
 	"PHPHelper\\src\\QueryResponse"					=> "querymanager.class.php",
 	"PHPHelper\\src\\QueryManager"					=> "querymanager.class.php"
 
-] ).register();
+] ) )->register();
 
 ?>
