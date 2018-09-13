@@ -69,15 +69,12 @@ $current_version_commit_sha = $update ? explode( "\n", file_get_contents( VERSIO
 if ( $update ) println( "Currently installed (" . short_sha( $current_version_commit_sha ) ."), checking for newer version ..." );
 else println( "Not currently installed, installing ..." );
 
-// println( "PHPHelper is currently installed commit version {$current_version_commit_sha}" );
-
 $latest_commits = github_api_json( "repos/" . OWNER . "/" . REPO . "/commits", [ "sha" => $current_version_commit_sha ] );
 
 if ( count( $latest_commits ) === 0 ) {
 
 	if ( $update ) {
 
-		// println( "Can't update from current version, installing ..." );
 		$update = false;
 
 	} else {
@@ -140,8 +137,6 @@ for ( $i = 0; $i < $zip_archive->numFiles; $i++ ) {
 	if ( preg_match( "/^src\/(.*)/", $name, $matches ) === 1 ) {
 
 		copy( "zip://{$tmp_download_file}#{$raw_name}", file_build_path( SRC_FOLDER, $matches[ 1 ] ) );
-
-		// $zip_archive->extractTo( $src_folder_path, $raw_name );
 
 	}
 

@@ -77,7 +77,7 @@ abstract class SQLManager {
 			$newobj = new $cls();
 
 			foreach ( $data as $key => $value ) {
-				if ( $vars[$key] !== null ) {
+				if ( $vars[ $key ] !== null ) {
 					if ( isset( $vars[ $key ]['set'] ) ) {
 						$set = $vars[ $key ]['set'];
 						if ( method_exists( $newobj, $set ) ) {
@@ -126,7 +126,7 @@ abstract class SQLManager {
 		$newobj = new $cls();
 
 		foreach ( $data as $key => $value ) {
-			if ( $vars[$key] !== null ) {
+			if ( $vars[ $key ] !== null ) {
 				if ( isset( $vars[ $key ]['set'] ) ) {
 					$set = $vars[ $key ]['set'];
 					if ( method_exists( $newobj, $set ) ) {
@@ -273,7 +273,7 @@ abstract class SQLManager {
 		$newobj = new $cls();
 
 		foreach ( $data as $key => $value ) {
-			if ( $vars[$key] !== null ) {
+			if ( $vars[ $key ] !== null ) {
 				if ( isset( $vars[ $key ]['set'] ) ) {
 					$set = $vars[ $key ]['set'];
 					if ( method_exists( $newobj, $set ) ) {
