@@ -135,9 +135,8 @@ for ( $i = 0; $i < $zip_archive->numFiles; $i++ ) {
 	$matches = [];
 
 	if ( preg_match( "/^src\/(.*)/", $name, $matches ) === 1 ) {
-
-		copy( "zip://{$tmp_download_file}#{$raw_name}", file_build_path( SRC_FOLDER, $matches[ 1 ] ) );
-
+		$zip->extractTo( file_build_path( SRC_FOLDER, $matches[ 1 ] ), [ $raw_name ] );
+		// copy( "zip://{$tmp_download_file}#{$raw_name}", file_build_path( SRC_FOLDER, $matches[ 1 ] ) );
 	}
 
 }
