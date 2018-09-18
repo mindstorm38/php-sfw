@@ -21,11 +21,14 @@ final class Core {
 	];
 
 	private static $app_name = null;
+	private static $app_base_dir = null;
 	private static $app_options = [];
 
-	public static function start_application( $app_name, $app_options = [] ) {
+	public static function start_application( $app_name, $app_base_dir, $app_options = [] ) {
 
 		if ( self::$app_name !== null ) die( "Application already started" );
+
+		self::$app_base_dir = realpath( $app_base_dir );
 
 		// Apply default options
 		Utils::apply_default_options( $app_options, Core::DEFAULT_OPTIONS );
@@ -65,6 +68,15 @@ final class Core {
 
 	public static function check_app_ready() {
 		if ( self::$app_name === null ) throw new Exception( "Application not started" );
+	}
+
+	public static function get_app_base_dir() {
+		return self::$app_base_dir;
+	}
+
+	public static function get_app_path( ...$paths ) {
+		array_unshift( $paths, self::$app_base_dir )
+		return Utils::path_join( $paths );
 	}
 
 	public static function get_app_name() {

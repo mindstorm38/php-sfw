@@ -9,7 +9,7 @@ use SFW\Utils;
 
 final class Lang {
 
-	const LANGS_FOLDER				= "./langs/";
+	const LANGS_FOLDER				= "langs/";
 	const JSON_FILE					= "langs.json";
 
 	const LANG_FILE_COMMENT			= "/^(.*)#/";
@@ -24,9 +24,15 @@ final class Lang {
 	private static $current_lang = null;
 	private static $initied = false;
 
+	public static get_folder() {
+		Core::check_app_ready();
+		static $dir = Core::get_app_path( Lang::LANGS_FOLDER );
+		return $dir;
+	}
+
 	public static function check_folder() {
-		if ( !is_dir( Lang::LANGS_FOLDER ) ) {
-			mkdir( Lang::LANGS_FOLDER );
+		if ( !is_dir( self::get_folder() ) ) {
+			mkdir( self::get_folder() );
 		}
 	}
 
@@ -50,10 +56,10 @@ final class Lang {
 
 		self::$default_lang = null;
 		self::$langs = [];
-		$json_content = @file_get_contents( Lang::LANGS_FOLDER . Lang::JSON_FILE );
+		$json_content = @file_get_contents( self::get_folder() . Lang::JSON_FILE );
 
 		if ( $json_content == null ) {
-			Core::fatal_error( "Create '" . Lang::LANGS_FOLDER . Lang::JSON_FILE . "' before using language system" );
+			Core::fatal_error( "Create '" . self::get_folder() . Lang::JSON_FILE . "' before using language system" );
 			return;
 		}
 
@@ -96,7 +102,7 @@ final class Lang {
 
 		if ( isset( $lang["datas"] ) && $lang["datas"] != null ) return $lang["datas"];
 
-		$lang_content = @file_get_contents( Lang::LANGS_FOLDER . $identifier . ".lang" );
+		$lang_content = @file_get_contents( self::get_folder() . $identifier . ".lang" );
 
 		if ( $lang_content == null ) return null;
 

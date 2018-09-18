@@ -117,6 +117,20 @@ final class Utils {
 		if ( self::file_exists( $path ) ) include_once $path;
 	}
 
+	public static function path_join( ...$paths ) {
+
+		$paths = [];
+
+		foreach ( $paths as $path ) {
+		    $paths[] = trim( $path, DIRECTORY_SEPARATOR );
+		}
+
+		$paths = array_filter( $paths );
+
+		return join( DIRECTORY_SEPARATOR, $paths );
+
+	}
+
 	public static function str_format( $format, $args ) {
 
 		$format = preg_replace_callback( '/(?:\{?\{(\d)\}\}?)/', function( $matches ) use( $args ) {

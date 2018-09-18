@@ -4,17 +4,25 @@
 
 namespace SFW;
 
+use SFW\Core;
+
 final class Config {
 
-	const CONFIG_FILE_PATH = "./config.json";
+	const CONFIG_FILE_PATH = "config.json";
 
 	private static $loaded_config = null;
 	private static $cache = [];
 
+	public static function get_file() {
+		Core::check_app_ready();
+		static $file = Core::get_app_path( Config::CONFIG_FILE_PATH );
+		return $file;
+	}
+
 	public static function config() {
 
 		if ( self::$loaded_config === null ) {
-			self::$loaded_config = json_decode( file_get_contents( Config::CONFIG_FILE_PATH ), true );
+			self::$loaded_config = json_decode( file_get_contents( self::get_file() ), true );
 		}
 
 		return self::$loaded_config;
