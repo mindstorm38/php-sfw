@@ -6,7 +6,7 @@ Options -MultiViews
 RewriteRule ^config.json$ / [F,L]
 RewriteRule ^src\/ / [F,L]
 RewriteRule ^vendor\/ / [F,L]
-RewriteRule ^php-helper\/ / [F,L]
 
 RewriteRule ^query\/(.+)$ /query.php?query=$1 [QSA,L]
+RewriteRule ^styles\/(.+).css$ /styles/style.php?path=$1 [L]
 RewriteRule ^(|)\/?$ /page.php?page=$1 [QSA,L]
