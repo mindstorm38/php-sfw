@@ -19,8 +19,8 @@ Utils::content_type_html();
 		<base href="<?= Config::get_advised_url() ?>" />
 
 		<!--
-		<link rel="stylesheet" href="./style?style=main" />
-		<script type="text/text/javascript" src="./script?script=main"></script>
+		<link rel="stylesheet" href="./static/main.css" />
+		<script type="text/javascript" src="./static/main.js"></script>
 		-->
 
 	</head>
