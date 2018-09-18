@@ -1,16 +1,9 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/common.php';
 
-use SFW\Core;
 use SFW\Config;
 use SFW\Utils;
-
-Core::start_application( "appname", __DIR__, [
-	"redirect_https" => true,
-	"init_languages" => true,
-	"start_session" => false
-] );
 
 Utils::force_no_cache();
 Utils::content_type_html();

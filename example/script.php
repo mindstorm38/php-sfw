@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__ . '/common.php';
+
 header('Content-Type: text/javascript');
 
 if ( array_key_exists( "script", $_GET ) ) {
