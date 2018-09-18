@@ -1,0 +1,15 @@
+{
+	"name": "mindstorm38/php-helper",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/mindstorm38/php-helper"
+		}
+	],
+	"require": {},
+	"autoload": {
+		"psr-4": {
+
+		}
+	}
+}
