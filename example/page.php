@@ -34,7 +34,7 @@ Utils::content_type_html();
 
 	<body>
 
-		Content
+		<p>Content</p>
 
 	</body>
 

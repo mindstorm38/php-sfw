@@ -1,6 +1,6 @@
 <?php
 
-require_once "./src/libraries/lessphp/0.4.0/lessc.inc.php";
+require __DIR__ . '/vendor/autoload.php';
 
 header('Content-Type: text/css');
 

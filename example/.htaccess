@@ -9,6 +9,4 @@ RewriteRule ^vendor\/ / [F,L]
 RewriteRule ^php-helper\/ / [F,L]
 
 RewriteRule ^query\/(.+)$ /query.php?query=$1 [QSA,L]
-RewriteRule ^style$ /style.php [QSA,L]
-RewriteRule ^script$ /script.php [QSA,L]
 RewriteRule ^(|)\/?$ /page.php?page=$1 [QSA,L]
