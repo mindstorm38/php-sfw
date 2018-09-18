@@ -75,7 +75,7 @@ final class Core {
 	}
 
 	public static function get_app_path( ...$paths ) {
-		array_unshift( $paths, self::$app_base_dir )
+		array_unshift( $paths, self::$app_base_dir );
 		return Utils::path_join( $paths );
 	}
 
