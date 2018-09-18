@@ -1,9 +1,9 @@
 {
-	"name": "mindstorm38/php-helper",
+	"name": "mindstorm38/php-sfw",
 	"repositories": [
 		{
 			"type": "vcs",
-			"url": "https://github.com/mindstorm38/php-helper"
+			"url": "https://github.com/mindstorm38/php-sfw"
 		}
 	],
 	"require": {},
