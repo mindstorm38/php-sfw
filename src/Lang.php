@@ -20,14 +20,17 @@ final class Lang {
 	const F_HTML					= "html";
 
 	private static $default_lang = null;
+	private static $folder = null;
 	private static $langs = [];
 	private static $current_lang = null;
 	private static $initied = false;
 
 	public static get_folder() {
-		Core::check_app_ready();
-		static $dir = Core::get_app_path( Lang::LANGS_FOLDER );
-		return $dir;
+		if ( self::$folder === null ) {
+			Core::check_app_ready();
+			self::$folder = Core::get_app_path( Lang::LANGS_FOLDER );
+		}
+		return self::$folder;
 	}
 
 	public static function check_folder() {

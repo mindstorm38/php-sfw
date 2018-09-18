@@ -11,12 +11,15 @@ final class Config {
 	const CONFIG_FILE_PATH = "config.json";
 
 	private static $loaded_config = null;
+	private static $file = null;
 	private static $cache = [];
 
 	public static function get_file() {
-		Core::check_app_ready();
-		static $file = Core::get_app_path( Config::CONFIG_FILE_PATH );
-		return $file;
+		if ( self::$file === null ) {
+			Core::check_app_ready();
+			self::$file = Core::get_app_path( Config::CONFIG_FILE_PATH );
+		}
+		return self::$file;
 	}
 
 	public static function config() {
