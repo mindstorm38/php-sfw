@@ -26,7 +26,7 @@ final class Lang {
 	private static $current_lang = null;
 	private static $initied = false;
 
-	public static get_folder() {
+	public static function get_folder() {
 		if ( self::$folder === null ) {
 			Core::check_app_ready();
 			self::$folder = Core::get_app_path( Lang::LANGS_FOLDER );
