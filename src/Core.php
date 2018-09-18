@@ -2,12 +2,12 @@
 
 // Core class file
 
-namespace PHPHelper\src;
+namespace SFW\;
 
-use PHPHelper\src\Config;
-use PHPHelper\src\Utils;
-use PHPHelper\src\Lang;
-use PHPHelper\src\SessionManager;
+use SFW\Config;
+use SFW\Utils;
+use SFW\Lang;
+use SFW\SessionManager;
 
 final class Core {
 

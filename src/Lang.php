@@ -2,10 +2,10 @@
 
 // Lang file
 
-namespace PHPHelper\src;
+namespace SFW\;
 
-use PHPHelper\src\Core;
-use PHPHelper\src\Utils;
+use SFW\Core;
+use SFW\Utils;
 
 final class Lang {
 

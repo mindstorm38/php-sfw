@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPHelper\src;
+namespace SFW\;
 
 abstract class SQLSerializable {
 

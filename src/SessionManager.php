@@ -2,13 +2,14 @@
 
 // Session manager used to store logged state
 
-namespace PHPHelper\src;
+namespace SFW\;
 
-use PHPHelper\src\Core;
-use PHPHelper\src\Config;
-use PHPHelper\src\Lang;
-use PHPHelper\src\Database;
-use PHPHelper\src\Utils;
+use SFW\Core;
+use SFW\Config;
+use SFW\Lang;
+use SFW\Database;
+use SFW\Utils;
+use SFW\SessionHandler;
 
 final class SessionManager {
 
@@ -148,13 +149,6 @@ final class SessionManager {
 		}
 
 	}
-
-}
-
-abstract class SessionHandler {
-
-	public abstract function set_logged( $params );
-	public abstract function is_logged();
 
 }
 

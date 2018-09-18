@@ -2,9 +2,9 @@
 
 // Used to manage SQL table
 
-namespace PHPHelper\src;
+namespace SFW\;
 
-use PHPHelper\src\SQLSerializable;
+use SFW\SQLSerializable;
 use \PDO;
 
 abstract class SQLManager {

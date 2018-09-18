@@ -2,7 +2,7 @@
 
 // Utils file
 
-namespace PHPHelper\src;
+namespace SFW\;
 
 final class Utils {
 

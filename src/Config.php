@@ -2,7 +2,7 @@
 
 // Load config.json file and provide keys / values
 
-namespace PHPHelper\src;
+namespace SFW\;
 
 final class Config {
 

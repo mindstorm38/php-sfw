@@ -2,35 +2,11 @@
 
 // Query manager, execute queries and return json
 
-namespace PHPHelper\src;
+namespace SFW\;
 
-use PHPHelper\src\Lang;
-
-abstract class Query {
-
-     public abstract function required_variables();
-
-     public abstract function execute( $vars );
-
-}
-
-class QueryResponse {
-
-	public $error;
-	public $lang;
-	public $vars;
-	public $data;
-
-	function __construct( $error, $lang, $vars = [], $data = [] ) {
-
-		$this->error = $error;
-		$this->lang = $lang;
-		$this->vars = $vars;
-		$this->data = $data;
-
-	}
-
-}
+use SFW\Lang;
+use SFW\QueryResponse;
+use SFW\Query;
 
 class QueryManager {
 

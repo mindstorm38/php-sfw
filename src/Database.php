@@ -2,11 +2,11 @@
 
 // Database connection manager
 
-namespace PHPHelper\src;
+namespace SFW\;
 
-use PHPHelper\src\Config;
-use PHPHelper\src\Utils;
-use PHPHelper\src\Core;
+use SFW\Config;
+use SFW\Utils;
+use SFW\Core;
 use \PDO;
 
 final class Database {
