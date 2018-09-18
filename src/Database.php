@@ -8,6 +8,7 @@ use SFW\Config;
 use SFW\Utils;
 use SFW\Core;
 use \PDO;
+use \Exception;
 
 final class Database {
 

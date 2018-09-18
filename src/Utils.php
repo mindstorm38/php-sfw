@@ -119,15 +119,19 @@ final class Utils {
 
 	public static function path_join( ...$paths ) {
 
-		$paths = [];
-
-		foreach ( $paths as $path ) {
-		    $paths[] = trim( $path, DIRECTORY_SEPARATOR );
+		if ( count( $paths ) != 0 && is_array( $paths[ 0 ] ) ) {
+			$paths = $paths[ 0 ];
 		}
 
-		$paths = array_filter( $paths );
+		$trimed_paths = [];
 
-		return join( DIRECTORY_SEPARATOR, $paths );
+		foreach ( $paths as $path ) {
+		    $trimed_paths[] = trim( $path, DIRECTORY_SEPARATOR );
+		}
+
+		$trimed_paths = array_filter( $trimed_paths );
+
+		return join( DIRECTORY_SEPARATOR, $trimed_paths );
 
 	}
 

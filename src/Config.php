@@ -5,6 +5,7 @@
 namespace SFW;
 
 use SFW\Core;
+use \Exception;
 
 final class Config {
 
@@ -25,7 +26,12 @@ final class Config {
 	public static function config() {
 
 		if ( self::$loaded_config === null ) {
-			self::$loaded_config = json_decode( file_get_contents( self::get_file() ), true );
+
+			self::$loaded_config = @json_decode( file_get_contents( self::get_file() ), true );
+
+			if ( self::$loaded_config === null )
+				throw new Exception( "Can't found config file at : " . self::get_file() );
+
 		}
 
 		return self::$loaded_config;
