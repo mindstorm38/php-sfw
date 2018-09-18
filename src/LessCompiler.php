@@ -12,10 +12,11 @@ final class LessCompiler {
 		if ( self::$compiler === null ) {
 			self::$compiler = new lessc();
 		}
+		return self::$compiler;
 	}
 
 	public static function compile( $file ) {
-		return $this->get_compiler()->compileFile( $file );
+		return self::get_compiler()->compileFile( $file );
 	}
 
 }
