@@ -62,7 +62,7 @@ final class Config {
 	}
 
 	public static function get_advised_url() {
-		return ( self::get("global:secure") ? "https" : "http" ) . "://" . self::get("global:advised_host");
+		return ( self::get("global:secure") ? "https" : "http" ) . "://" . self::get("global:advised_host") . trim( self::get("global:base_path"), '/' );
 	}
 
 }
