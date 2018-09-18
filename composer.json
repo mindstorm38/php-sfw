@@ -6,7 +6,9 @@
 			"url": "https://github.com/mindstorm38/php-sfw"
 		}
 	],
-	"require": {},
+	"require": {
+		"leafo/lessphp": "0.4.0"
+	},
 	"autoload": {
 		"psr-4": {
 			"SFW\\": "src/"
