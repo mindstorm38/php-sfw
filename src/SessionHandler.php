@@ -2,7 +2,7 @@
 
 // Session handler used by Session manager
 
-namespace SFW\;
+namespace SFW;
 
 abstract class SessionHandler {
 

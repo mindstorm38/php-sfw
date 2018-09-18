@@ -2,7 +2,7 @@
 
 // Utils file
 
-namespace SFW\;
+namespace SFW;
 
 final class Utils {
 

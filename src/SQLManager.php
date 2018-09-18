@@ -2,7 +2,7 @@
 
 // Used to manage SQL table
 
-namespace SFW\;
+namespace SFW;
 
 use SFW\SQLSerializable;
 use \PDO;

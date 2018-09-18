@@ -2,7 +2,7 @@
 
 // Query manager, execute queries and return json
 
-namespace SFW\;
+namespace SFW;
 
 use SFW\Lang;
 use SFW\QueryResponse;

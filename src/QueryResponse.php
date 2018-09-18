@@ -2,7 +2,7 @@
 
 // Query response
 
-namespace SFW\;
+namespace SFW;
 
 class QueryResponse {
 

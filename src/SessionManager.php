@@ -2,7 +2,7 @@
 
 // Session manager used to store logged state
 
-namespace SFW\;
+namespace SFW;
 
 use SFW\Core;
 use SFW\Config;

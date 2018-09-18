@@ -2,7 +2,7 @@
 
 // Lang file
 
-namespace SFW\;
+namespace SFW;
 
 use SFW\Core;
 use SFW\Utils;

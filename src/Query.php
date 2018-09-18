@@ -2,7 +2,7 @@
 
 // Query
 
-namespace SFW\;
+namespace SFW;
 
 abstract class Query {
 

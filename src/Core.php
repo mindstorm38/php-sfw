@@ -2,7 +2,7 @@
 
 // Core class file
 
-namespace SFW\;
+namespace SFW;
 
 use SFW\Config;
 use SFW\Utils;
