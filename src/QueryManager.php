@@ -23,7 +23,7 @@ class QueryManager {
 	public static $registered_queries = [];
 	public static $queries = [];
 
-	public static function register_query_class( $name ) {
+	public static function register_query_class( $name, $class_path ) {
 		if ( array_key_exists( $name, self::$registered_queries ) ) throw new Exception("This query already exists '{$name}'");
 		if ( !class_exists( $class_path ) ) throw new Exception("Invalid query class path '{$class_path}'");
 		self::$registered_queries[ $name ] = $class_path;
