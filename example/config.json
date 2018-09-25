@@ -13,6 +13,7 @@
 	},
 	"session": {
 		"name": "SESSID",
-		"lifetime": 604800
+		"lifetime": 604800,
+		"path": "/"
 	}
 }
