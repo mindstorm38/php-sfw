@@ -31,7 +31,7 @@ final class SessionManager {
 			self::$session_name = Config::get( "session:name", "SESSID" );
 
 			$session_path = Config::get( "session:path", "/" );
-			if ( Utils::ends_with( $session_path, "/" ) ) $session_path .= "/";
+			if ( !Utils::ends_with( $session_path, "/" ) ) $session_path .= "/";
 
 			// Set session cookie parameters
 			session_set_cookie_params(
