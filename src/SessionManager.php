@@ -77,6 +77,9 @@ final class SessionManager {
 				self::regenerate_session();
 			}
 
+			if ( self::$handler !== null )
+				self::$handler->init( $_SESSION );
+
 		} else {
 			self::destroy();
 		}
@@ -88,11 +91,19 @@ final class SessionManager {
 	}
 
 	public static function destroy() {
+
 		if ( headers_sent() ) return false;
+
 		$_SESSION = [];
+
+		if ( self::$handler !== null )
+			self::$handler->log_out();
+
 		session_destroy();
 		session_start();
+		
 		return true;
+
 	}
 
 	private static function prevent_hijacking() {
@@ -133,7 +144,7 @@ final class SessionManager {
 
 	public static function set_logged( ...$params ) {
 		$expires_at = time() + self::get_config_lifetime();
-		if ( self::$handler !== null ) $expires_at = self::$handler->set_logged( $params );
+		if ( self::$handler !== null ) self::$handler->set_logged( $expires_at, $params, $_SESSION );
 		self::setup_session_vars();
 		self::setup_session_expires( $expires_at );
 	}
