@@ -114,6 +114,10 @@ final class Lang {
 
 	}
 
+	public static function get_current_language_content() {
+		return self::get_language_content( self::get_current_language() );
+	}
+
 	public static function get_current_language() {
 		self::check_initied();
 		if ( self::$current_lang == null ) self::$current_lang = self::$default_lang;
