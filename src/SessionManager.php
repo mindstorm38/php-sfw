@@ -65,23 +65,24 @@ final class SessionManager {
 		// Start session
 		session_start();
 
-		if ( self::validate_session() ) {
+		if ( count( $_SESSION ) > 0 ) {
 
-			if ( !self::prevent_hijacking() ) {
+			if ( self::validate_session() ) {
 
-				self::setup_session_vars();
+				if ( !self::prevent_hijacking() ) {
 
-				self::regenerate_session();
+					self::setup_session_vars();
 
-			} else if ( rand( 1, 100 ) <= 5 ) { // 5% chance to regenerate session id changing on any request
-				self::regenerate_session();
+					self::regenerate_session();
+
+				} else if ( rand( 1, 100 ) <= 5 ) { // 5% chance to regenerate session id changing on any request
+					self::regenerate_session();
+				}
+
+			} else {
+				self::destroy();
 			}
 
-			if ( self::$handler !== null )
-				self::$handler->init( $_SESSION );
-
-		} else {
-			self::destroy();
 		}
 
 	}
@@ -101,7 +102,7 @@ final class SessionManager {
 
 		session_destroy();
 		session_start();
-		
+
 		return true;
 
 	}
@@ -116,6 +117,8 @@ final class SessionManager {
 	private static function validate_session() {
 		if ( !isset( $_SESSION['EXPIRES'] ) ) return false;
 		if( $_SESSION['EXPIRES'] < time() ) return false;
+		if ( self::$handler !== null )
+			return boolval( self::$handler->init( $_SESSION ) );
 		return true;
 	}
 
