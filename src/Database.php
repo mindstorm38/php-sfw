@@ -129,7 +129,7 @@ final class Database {
 
 	}
 
-	public static function fetch( PDOStatement $stmt, string $table_def_name, $builder, array $columns, boolean $single = false ) {
+	public static function fetch( PDOStatement $stmt, string $table_def_name, $builder, array $columns, bool $single = false ) {
 
 		$def = self::get_table_definition( $table_def_name );
 		$def_columns = $def->get_columns();
