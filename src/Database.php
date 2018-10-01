@@ -81,6 +81,18 @@ final class Database {
 		}
 	}
 
+	public static function begin_transaction() {
+		self::get_connection()->beginTransaction();
+	}
+
+	public static function commit_transaction() {
+		self::get_connection()->commit();
+	}
+
+	public static function rollback_transaction() {
+		self::get_connection()->rollback();
+	}
+
 	public static function exec($query, $params = [], $fetch = false, $clazz = null) {
 
 		if ( $params == null || count($params) > 0  && !Utils::is_assoc_array( $params ) ) $params = [];
