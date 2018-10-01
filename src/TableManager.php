@@ -10,13 +10,11 @@ use \PDOStatement;
 abstract class TableManager {
 
 	private $db;
-	private $table;
 	private $columns;
 
-	public function __construct( $db, $table ) {
+	public function __construct( $db ) {
 
 		$this->db = $db;
-		$this->table = $table;
 		$this->columns = [];
 
 	}
@@ -39,7 +37,7 @@ abstract class TableManager {
 		unset( $this->columns[ $name ] );
 	}
 
-	protected function prepare( $query ) {
+	protected function prepare( $query ) : PDOStatement {
 		return $this->db->prepare( $query );
 	}
 
