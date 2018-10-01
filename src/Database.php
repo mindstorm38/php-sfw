@@ -120,7 +120,7 @@ final class Database {
 		$def = self::get_table_definition( $table_def_name );
 		$def_columns = $def->get_columns();
 
-		for ( $columns as $column_name ) {
+		foreach ( $columns as $column_name ) {
 			if ( array_key_exists( $column_name, $def_columns ) ) {
 				$def_column_data = $def_columns[ $column_name ];
 				self::bind_param( $statement, $column_name, $obj, $def_column_data["get"], $def_column_data["pdo_type"] );
