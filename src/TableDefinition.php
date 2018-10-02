@@ -34,6 +34,10 @@ abstract class TableDefinition {
 		unset( $this->columns[ $name ] );
 	}
 
+	public function get_column( $name ) : array {
+		return $this->columns[ $name ];
+	}
+
 	public function get_columns() : array {
 		return $this->columns;
 	}
