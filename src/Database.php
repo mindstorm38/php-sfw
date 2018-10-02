@@ -118,8 +118,8 @@ final class Database {
 		return self::get_connected()->prepare( $query );
 	}
 
-	public static function bind_param( PDOStatement $stmt, string $column_name, $obj, string $get, integer $pdo_type ) {
-		$stmt->bindParam( ":{$column_name}", $obj->$get(), $pdo_type );
+	public static function bind_param( PDOStatement $stmt, string $param, $value, integer $pdo_type ) {
+		$stmt->bindParam( ":{$param}", $value, $pdo_type );
 	}
 
 	public static function bind( PDOStatement $stmt, TableDefinition $table_def, $obj, array $columns ) {
@@ -129,7 +129,7 @@ final class Database {
 		foreach ( $columns as $column_name ) {
 			if ( array_key_exists( $column_name, $def_columns ) ) {
 				$def_column_data = $def_columns[ $column_name ];
-				self::bind_param( $statement, $column_name, $obj, $def_column_data["get"], $def_column_data["pdo_type"] );
+				self::bind_param( $statement, $column_name, $obj->( $def_column_data["get"] )(), $def_column_data["pdo_type"] );
 			}
 		}
 
@@ -149,8 +149,7 @@ final class Database {
 
 			foreach ( $values as $column_name => $value ) {
 				if ( array_key_exists( $column_name, $def_columns ) && array_key_exists( $column_name, $columns ) ) {
-					$set = $def_columns[ $column_name ]["set"];
-					$obj->$set( $value );
+					$obj->( $def_columns[ $column_name ]["set"] )( $value );
 				}
 			}
 
