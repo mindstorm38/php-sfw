@@ -120,14 +120,6 @@ final class Database {
 		$stmt->bindValue( ":{$param}", $value, $pdo_type === null ? self::get_pdo_type( $value ) : $pdo_type );
 	}
 
-	public static function bind_column_param( PDOStatement $stmt, array $column_definition, &$var, int $pdo_type ) {
-		$stmt->bindParam( ":{$column_definition["name"]}", $var, $pdo_type );
-	}
-
-	public static function bind_column_value( PDOStatement $stmt, array $column_definition, $value ) {
-		$stmt->bindValue( ":{$column_definition["name"]}", $value, self::get_pdo_type( $value ) );
-	}
-
 	public static function bind( PDOStatement $stmt, TableDefinition $table_def, $obj, array $columns ) {
 
 		$def_columns = $table_def->get_columns();
