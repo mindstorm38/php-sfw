@@ -47,7 +47,7 @@ abstract class TableDefinition {
 	}
 
 	public function get_column_names() : array {
-		return array_keys( $this->column );
+		return array_keys( $this->columns );
 	}
 
 }
