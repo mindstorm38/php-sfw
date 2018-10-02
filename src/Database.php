@@ -153,7 +153,7 @@ final class Database {
 
 		while ( $values = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
 
-			$obj = $builder();
+			$obj = $builder( $values );
 
 			foreach ( $values as $column_name => $value ) {
 				if ( array_key_exists( $column_name, $def_columns ) && in_array( $column_name, $columns ) ) {
@@ -171,6 +171,26 @@ final class Database {
 
 		if ( $single ) return null;
 		return $objs;
+
+	}
+
+	public static function fetch_raw( PDOStatement $stmt, $builder, bool $single = false ) {
+
+		$stmt->execute();
+
+		$values = [];
+
+		while ( $values = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
+
+			if ( $single )
+				return $builder( $values );
+
+			$values = $builder( $values )
+
+		}
+
+		if ( $single ) return null;
+		return $values;
 
 	}
 
