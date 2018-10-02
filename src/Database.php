@@ -68,10 +68,11 @@ final class Database {
 
 			try {
 
-				self::$connection = new PDO("mysql:host={$host};dbname={$name};charset={$charset}", $user, $password, array( PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ) );
+				self::$connection = new PDO("mysql:host={$host};dbname={$name};charset={$charset}", $user, $password );
 
 				self::$connection->setAttribute( PDO::ATTR_EMULATE_PREPARES, false );
 				self::$connection->setAttribute( PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC ); // Associative array by default
+				self::$connection->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 
 			} catch ( Exception $e ) {
 				Core::fatal_error( "PDO instantiation exception : " . $e->getMessage() );
@@ -83,23 +84,12 @@ final class Database {
 
 	}
 
-	public static function get_pdo_type( $obj, $err = false ) {
-		switch ( gettype( $obj ) ) {
-			case "boolean": return PDO::PARAM_BOOL;
-			case "integer": return PDO::PARAM_INT;
-			case "double": return PDO::PARAM_INT;
-			case "string": return PDO::PARAM_STR;
-			case "array":
-				if ( !$err ) return PDO::PARAM_NULL;
-				throw new Exception("Array can not be specified as parameter value (for {$param_name})");
-			case "object":
-				if ( !$err ) return PDO::PARAM_NULL;
-				throw new Exception("Object can not be specified as parameter value (for {$param_name})");
-			case "resource":
-				if ( !$err ) return PDO::PARAM_NULL;
-				throw new Exception("Resource can not be specified as parameter value (for {$param_name})");
-			default: return PDO::PARAM_NULL;
-		}
+	public static function get_pdo_type( $obj ) {
+		if ( is_bool( $obj ) ) return PDO::PARAM_INT;
+		if ( is_int( $obj ) ) return PDO::PARAM_INT;
+		if ( is_double( $obj ) ) return PDO::PARAM_STR;
+		if ( is_string( $obj ) ) return PDO::PARAM_STR;
+		return PDO::PARAM_NULL;
 	}
 
 	public static function begin_transaction() {
@@ -122,12 +112,20 @@ final class Database {
 		return self::get_connection()->prepare( $query );
 	}
 
-	public static function bind_param( PDOStatement $stmt, string $param, $value, int $pdo_type ) {
-		$stmt->bindParam( ":{$param}", $value, $pdo_type );
+	public static function bind_param( PDOStatement $stmt, string $param, &$var, int $pdo_type ) {
+		$stmt->bindParam( ":{$param}", $var, $pdo_type );
+	}
+
+	public static function bind_value( PDOStatement $stmt, string $param, $value, int $pdo_type = null ) {
+		$stmt->bindValue( ":{$param}", $value, $pdo_type === null ? self::get_pdo_type( $value ) : $pdo_type );
+	}
+
+	public static function bind_column_param( PDOStatement $stmt, array $column_definition, &$var, int $pdo_type ) {
+		$stmt->bindParam( ":{$column_definition["name"]}", $var, $pdo_type );
 	}
 
 	public static function bind_column_value( PDOStatement $stmt, array $column_definition, $value ) {
-		$stmt->bindParam( ":{$column_definition["name"]}", $value, $column_definition["pdo_type"] );
+		$stmt->bindValue( ":{$column_definition["name"]}", $value, self::get_pdo_type( $value ) );
 	}
 
 	public static function bind( PDOStatement $stmt, TableDefinition $table_def, $obj, array $columns ) {
@@ -136,9 +134,13 @@ final class Database {
 
 		foreach ( $columns as $column_name ) {
 			if ( array_key_exists( $column_name, $def_columns ) ) {
+
 				$def_column_data = $def_columns[ $column_name ];
 				$get = $def_column_data["get"];
-				self::bind_param( $stmt, $column_name, $obj->$get(), $def_column_data["pdo_type"] );
+				$value = $obj->$get();
+
+				$stmt->bindValue( ":{$column_name}", $value, self::get_pdo_type( $value ) );
+
 			}
 		}
 
@@ -163,7 +165,13 @@ final class Database {
 				}
 			}
 
-			if ( $single ) return $obj;
+			if ( $single ) {
+
+				$stmt->closeCursor();
+				return $obj;
+
+			}
+
 			$objs[] = $obj;
 
 		}
@@ -183,12 +191,18 @@ final class Database {
 
 		while ( $values = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
 
-			if ( $single )
+			if ( $single ) {
+
+				$stmt->closeCursor();
 				return $builder( $values );
+
+			}
 
 			$values = $builder( $values );
 
 		}
+
+		$stmt->closeCursor();
 
 		if ( $single ) return null;
 		return $values;
