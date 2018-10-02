@@ -37,7 +37,7 @@ abstract class TableDefinition {
 		return $this->columns;
 	}
 
-	public function get_column_names__except( array $except_columns ) : array {
+	public function get_column_names_except( array $except_columns ) : array {
 		return array_diff( array_keys( $this->columns ), $except_columns );
 	}
 
