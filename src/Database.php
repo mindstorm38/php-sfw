@@ -122,6 +122,10 @@ final class Database {
 		$stmt->bindParam( ":{$param}", $value, $pdo_type );
 	}
 
+	public static function bind_column_value( PDOStatement $stmt, string $column_definition, $value ) {
+		$stmt->bindParam( ":{$column_definition["name"]}", $value, $column_definition["pdo_type"] );
+	}
+
 	public static function bind( PDOStatement $stmt, TableDefinition $table_def, $obj, array $columns ) {
 
 		$table_def = $def->get_columns();

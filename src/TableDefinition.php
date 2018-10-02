@@ -22,6 +22,7 @@ abstract class TableDefinition {
 	protected function add_column( string $name, string $get, string $set, integer $pdo_type ) {
 
 		$this->columns[ $name ] = [
+				"name" => $name,
 				"get" => $get,
 				"set" => $set,
 				"pdo_type" => $pdo_type
