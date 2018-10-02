@@ -152,8 +152,9 @@ final class Database {
 			$obj = $builder();
 
 			foreach ( $values as $column_name => $value ) {
-				if ( array_key_exists( $column_name, $def_columns ) && array_key_exists( $column_name, $columns ) ) {
-					$obj->$def_columns[ $column_name ]["set"]( $value );
+				if ( array_key_exists( $column_name, $def_columns ) && in_array( $column_name, $columns ) ) {
+					$set = $def_columns[ $column_name ]["set"];
+					$obj->$set( $value );
 				}
 			}
 
