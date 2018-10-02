@@ -118,7 +118,7 @@ final class Database {
 		return self::get_connection()->prepare( $query );
 	}
 
-	public static function bind_param( PDOStatement $stmt, string $param, $value, integer $pdo_type ) {
+	public static function bind_param( PDOStatement $stmt, string $param, $value, int $pdo_type ) {
 		$stmt->bindParam( ":{$param}", $value, $pdo_type );
 	}
 
