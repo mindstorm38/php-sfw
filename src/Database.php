@@ -114,6 +114,10 @@ final class Database {
 		self::get_connection()->rollback();
 	}
 
+	public static function last_insert_id() {
+		return self::get_connection()->lastInsertId();
+	}
+
 	public static function prepare( $query ) : PDOStatement {
 		return self::get_connection()->prepare( $query );
 	}
