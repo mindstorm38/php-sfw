@@ -132,12 +132,13 @@ final class Database {
 
 	public static function bind( PDOStatement $stmt, TableDefinition $table_def, $obj, array $columns ) {
 
-		$table_def = $def->get_columns();
+		$def_columns = $table_def->get_columns();
 
 		foreach ( $columns as $column_name ) {
 			if ( array_key_exists( $column_name, $def_columns ) ) {
 				$def_column_data = $def_columns[ $column_name ];
-				self::bind_param( $statement, $column_name, $obj->$def_column_data["get"](), $def_column_data["pdo_type"] );
+				$get = $def_column_data["get"];
+				self::bind_param( $stmt, $column_name, $obj->$get(), $def_column_data["pdo_type"] );
 			}
 		}
 
