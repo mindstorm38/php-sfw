@@ -115,7 +115,7 @@ final class Database {
 	}
 
 	public static function prepare( $query ) : PDOStatement {
-		return self::get_connected()->prepare( $query );
+		return self::get_connection()->prepare( $query );
 	}
 
 	public static function bind_param( PDOStatement $stmt, string $param, $value, integer $pdo_type ) {
