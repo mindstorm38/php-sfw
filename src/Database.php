@@ -34,14 +34,21 @@ final class Database {
 		return self::$managers[ $name ] = new $class_path( self::get_connection() );
 	}
 
-	public static function register_table_definition( string $name, TableDefinition $table_definition ) {
+	public static function register_table_definition( string $name, string $table_definition_class ) {
 		if ( array_key_exists( $name, self::$table_definitions ) ) throw new Exception("This table definition already exists '{$name}'");
-		self::$table_definitions[ $name ] = $table_definition;
+		if ( !class_exists( $table_definition_class ) ) throw new Exception("Invalid table definition class '{$table_definition_class}'");
+		self::$table_definitions[ $name ] = [
+			"class" => $table_definition,
+			"instance" => null
+		];
 	}
 
 	public static function get_table_definition( string $name ) : TableDefinition {
 		if ( !array_key_exists( $name, self::$table_definitions ) ) throw new Exception("Invalid table definition name '{$name}'");
-		return self::$table_definitions[ $name ];
+		$definition = self::$table_definitions[ $name ];
+		if ( $definition["instance"] !== null ) return $definition["instance"];
+		$class = $definition["class"];
+		return $definition["instance"] = new $class();
 	}
 
 	public static function get_connection() {
