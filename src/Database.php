@@ -129,7 +129,7 @@ final class Database {
 		foreach ( $columns as $column_name ) {
 			if ( array_key_exists( $column_name, $def_columns ) ) {
 				$def_column_data = $def_columns[ $column_name ];
-				self::bind_param( $statement, $column_name, $obj->( $def_column_data["get"] )(), $def_column_data["pdo_type"] );
+				self::bind_param( $statement, $column_name, $obj->$def_column_data["get"](), $def_column_data["pdo_type"] );
 			}
 		}
 
@@ -149,7 +149,7 @@ final class Database {
 
 			foreach ( $values as $column_name => $value ) {
 				if ( array_key_exists( $column_name, $def_columns ) && array_key_exists( $column_name, $columns ) ) {
-					$obj->( $def_columns[ $column_name ]["set"] )( $value );
+					$obj->$def_columns[ $column_name ]["set"]( $value );
 				}
 			}
 
