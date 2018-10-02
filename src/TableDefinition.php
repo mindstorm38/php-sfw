@@ -19,7 +19,7 @@ abstract class TableDefinition {
 		$this->add_column( "uid", "get_uid", "set_uid", PDO::PARAM_INT );
 	}
 
-	protected function add_column( string $name, string $get, string $set, integer $pdo_type ) {
+	protected function add_column( string $name, string $get, string $set, int $pdo_type ) {
 
 		$this->columns[ $name ] = [
 				"name" => $name,
