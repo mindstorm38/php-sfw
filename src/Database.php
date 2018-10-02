@@ -38,7 +38,7 @@ final class Database {
 		if ( array_key_exists( $name, self::$table_definitions ) ) throw new Exception("This table definition already exists '{$name}'");
 		if ( !class_exists( $table_definition_class ) ) throw new Exception("Invalid table definition class '{$table_definition_class}'");
 		self::$table_definitions[ $name ] = [
-			"class" => $table_definition,
+			"class" => $table_definition_class,
 			"instance" => null
 		];
 	}
