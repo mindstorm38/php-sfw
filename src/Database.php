@@ -122,10 +122,9 @@ final class Database {
 		$stmt->bindParam( ":{$column_name}", $obj->$get(), $pdo_type );
 	}
 
-	public static function bind( PDOStatement $stmt, string $table_def_name, $obj, array $columns ) {
+	public static function bind( PDOStatement $stmt, TableDefinition $table_def, $obj, array $columns ) {
 
-		$def = self::get_table_definition( $table_def_name );
-		$def_columns = $def->get_columns();
+		$table_def = $def->get_columns();
 
 		foreach ( $columns as $column_name ) {
 			if ( array_key_exists( $column_name, $def_columns ) ) {
@@ -136,10 +135,9 @@ final class Database {
 
 	}
 
-	public static function fetch( PDOStatement $stmt, string $table_def_name, $builder, array $columns, bool $single = false ) {
+	public static function fetch( PDOStatement $stmt, TableDefinition $table_def, $builder, array $columns, bool $single = false ) {
 
-		$def = self::get_table_definition( $table_def_name );
-		$def_columns = $def->get_columns();
+		$def_columns = $table_def->get_columns();
 
 		$stmt->execute();
 
