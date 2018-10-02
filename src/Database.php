@@ -185,7 +185,7 @@ final class Database {
 			if ( $single )
 				return $builder( $values );
 
-			$values = $builder( $values )
+			$values = $builder( $values );
 
 		}
 
