@@ -161,6 +161,8 @@ final class Database {
 
 		}
 
+		$stmt->closeCursor();
+
 		if ( $single ) return null;
 		return $objs;
 
