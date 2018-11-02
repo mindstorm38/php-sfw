@@ -3,6 +3,6 @@
           "language": "English",
           "country": "United States",
           "identifier": "en_US",
-          "default": false
+          "default": true
      }
 ]
