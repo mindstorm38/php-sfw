@@ -5,7 +5,6 @@
 namespace SFW;
 
 use \PDO;
-use \PDOStatement;
 
 abstract class TableDefinition {
 

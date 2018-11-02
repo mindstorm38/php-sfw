@@ -4,11 +4,6 @@
 
 namespace SFW;
 
-use SFW\Config;
-use SFW\Utils;
-use SFW\Core;
-use SFW\TableManager;
-use SFW\TableDefinition;
 use \PDO;
 use \PDOStatement;
 use \Exception;

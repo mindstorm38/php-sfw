@@ -4,7 +4,6 @@
 
 namespace SFW;
 
-use SFW\SQLSerializable;
 use \PDO;
 
 abstract class SQLManager {

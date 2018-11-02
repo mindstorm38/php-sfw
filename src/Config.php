@@ -4,7 +4,6 @@
 
 namespace SFW;
 
-use SFW\Core;
 use \Exception;
 
 final class Config {

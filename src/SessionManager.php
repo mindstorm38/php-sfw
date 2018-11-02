@@ -4,13 +4,6 @@
 
 namespace SFW;
 
-use SFW\Core;
-use SFW\Config;
-use SFW\Lang;
-use SFW\Database;
-use SFW\Utils;
-use SFW\SessionHandler;
-
 final class SessionManager {
 
 	private static $handler = null;

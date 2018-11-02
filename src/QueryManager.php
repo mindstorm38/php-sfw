@@ -4,9 +4,6 @@
 
 namespace SFW;
 
-use SFW\Lang;
-use SFW\QueryResponse;
-use SFW\Query;
 use \Exception;
 
 class QueryManager {

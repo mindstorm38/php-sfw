@@ -4,10 +4,6 @@
 
 namespace SFW;
 
-use SFW\Config;
-use SFW\Utils;
-use SFW\Lang;
-use SFW\SessionManager;
 use \Exception;
 
 final class Core {

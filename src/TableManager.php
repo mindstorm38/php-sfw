@@ -23,7 +23,7 @@ abstract class TableManager {
 		$this->add_column( "uid", "get_uid", "set_uid", PDO::PARAM_INT );
 	}
 
-	protected function add_column( string $name, string $get, string $set, integer $pdo_type ) {
+	protected function add_column( string $name, string $get, string $set, int $pdo_type ) {
 
 		$this->columns[ $name ] = [
 				"get" => $get,
@@ -59,7 +59,7 @@ abstract class TableManager {
 
 	}
 
-	protected function fetch_columns( PDOStatement $statement, callable $builder, array $columns = null, boolean $single = false ) {
+	protected function fetch_columns( PDOStatement $statement, callable $builder, array $columns = null, bool $single = false ) {
 
 		$datas = [];
 		$columns = [];
@@ -98,7 +98,7 @@ abstract class TableManager {
 
 	}
 
-	public static function bind_param( PDOStatement $statement, string $column_name, $obj, string $get, integer $pdo_type ) {
+	public static function bind_param( PDOStatement $statement, string $column_name, $obj, string $get, int $pdo_type ) {
 		$statement->bindParam( ":{$column_name}", $obj->$get(), $pdo_type );
 	}
 

@@ -4,8 +4,6 @@
 
 namespace SFW;
 
-use SFW\Core;
-use SFW\Utils;
 use \Exception;
 
 final class Lang {
