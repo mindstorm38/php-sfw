@@ -27,7 +27,7 @@ final class Page {
     }
     
     public function page_part_path( string $part_id ) {
-        return Utils::path_join( $this->identifier, $part_id . ".php" );
+        return Utils::path_join( $this->directory, $part_id . ".php" );
     }
     
     public function template_part_path( string $part_id ) {
