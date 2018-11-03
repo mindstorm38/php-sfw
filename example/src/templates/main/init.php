@@ -1,0 +1,5 @@
+<?php 
+
+// SOME INIT CODE
+
+?>

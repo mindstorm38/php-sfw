@@ -9,4 +9,4 @@ RewriteRule ^vendor\/ / [F,L]
 
 RewriteRule ^query\/(.+)$ /query.php?query=$1 [QSA,L]
 RewriteRule ^static\/(.+).css$ /static/less.php?path=$1 [L]
-RewriteRule ^(|)\/?$ /page.php?page=$1 [QSA,L]
+RewriteRule ^(|home)\/?$ /page.php?page=$1 [QSA,L]
