@@ -117,8 +117,9 @@ final class Utils {
 		if ( self::file_exists( $path ) ) include_once $path;
 	}
 
-	public static function path_join( ...$paths ) {
+	public static function path_join( ...$paths_raw ) {
 
+	    /*
 		if ( count( $paths ) != 0 && is_array( $paths[ 0 ] ) ) {
 			$paths = $paths[ 0 ];
 		}
@@ -132,6 +133,15 @@ final class Utils {
 		$trimed_paths = array_filter( $trimed_paths );
 
 		return join( DIRECTORY_SEPARATOR, $trimed_paths );
+		*/
+	    
+	    $paths = array();
+	    
+	    foreach ( $paths_raw as $path_raw)
+	        if ( $path_raw !== '' )
+	            $paths[] = $path_raw;
+	    
+	    return preg_replace( '#/+#', '/', join('/', $paths) );
 
 	}
 
