@@ -81,7 +81,7 @@ final class SessionManager {
     }
     
     public static function get_config_lifetime() {
-        return Config::get( "session:lifetime", 86400 );
+        return intval( Config::get( "session:lifetime", 86400 ) );
     }
     
     public static function destroy() {
@@ -101,17 +101,23 @@ final class SessionManager {
     }
     
     private static function prevent_hijacking() {
+        
         if ( !isset( $_SESSION["IP_ADDR"] ) || !isset( $_SESSION["USER_AGENT"] ) ) return false;
         if ( $_SESSION["IP_ADDR"] != $_SERVER["REMOTE_ADDR"] ) return false;
         if ( $_SESSION["USER_AGENT"] != $_SERVER["HTTP_USER_AGENT"] ) return false;
+        
         return true;
+        
     }
     
     private static function validate_session() {
+        
         if ( !isset( $_SESSION['EXPIRES'] ) ) return false;
         if( $_SESSION['EXPIRES'] < time() ) return false;
+        
         if ( self::$handler !== null )
             return boolval( self::$handler->init() );
+            
             return true;
     }
     
@@ -120,12 +126,10 @@ final class SessionManager {
     }
     
     public static function setup_session_expires( $expires_at ) {
-        if ( !self::is_logged() ) return;
         $_SESSION["EXPIRES"] = $expires_at;
     }
     
     public static function setup_session_vars() {
-        if ( !self::is_logged() ) return;
         $_SESSION['IP_ADDR'] = $_SERVER['REMOTE_ADDR'];
         $_SESSION['USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'];
     }
