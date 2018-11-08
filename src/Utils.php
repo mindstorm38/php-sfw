@@ -117,6 +117,33 @@ final class Utils {
         if ( self::file_exists( $path ) ) include_once $path;
     }
     
+    public static function parse_range( string $str, array $minmax = [], array $defaults = null ) {
+    	
+    	$parts = explode( '-', $str );
+    	$length = count( $parts );
+    	
+    	if ( $length !== 2 )
+    		return $defaults;
+    	
+    	$min = $parts[0];
+    	$max = $parts[1];
+    	
+    	if ( $min === '' ) {
+    		$min = $minmax[0] ?? null;
+    	} else if ( is_numeric( $min ) ) {
+    		$min = floatval( $min );
+    	} else return null;
+    	
+    	if ( $max === '' ) {
+    		$max = $minmax[1] ?? null;
+    	} else if ( is_numeric( $max ) ) {
+    		$max = floatval( $max );
+    	} else return null;
+    	
+    	return [ $min, $max ];
+    	
+    }
+    
     public static function path_join( ...$raw_paths ) {
         
         $paths = array();

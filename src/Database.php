@@ -187,21 +187,22 @@ final class Database {
         
     }
     
-    public static function build_search_where( array $search_string, array $option_processors ) {
+    public static function build_search_where( string $search_string, array $option_processors ) {
     	
     	$splited = explode( ' ', $search_string );
     	if ( $splited === false ) return "";
     	
+    	$i = 0;
     	$where = "";
     	$values = [];
     	
-    	foreach ( $splited as $index => $option_raw ) {
+    	foreach ( $splited as $option_raw ) {
     		
-    		if ( $index !== null ) $where .= ' AND ';
+    		if ( strlen( $option_raw ) === 0 ) continue;
     		
     		$option_splited = explode( ':', $option_raw );
     		if ( $option_splited === false ) continue;
-    		$full = count( $option_raw ) === false;
+    		$full = count( $option_splited ) === 2;
     		
     		$option = $full ? $option_splited[0] : "";
     		$value = $full ? $option_splited[1] : $option_splited[0];
@@ -211,6 +212,8 @@ final class Database {
     		
     		$ret = $processor( $value );
     		if ( $ret === null ) continue;
+    		
+    		if ( $i !== 0 ) $where .= ' AND ';
     		
     		if ( is_string( $ret ) ) {
     			$where .= $ret;
@@ -224,44 +227,47 @@ final class Database {
     			
     		}
     		
+    		$i++;
+    		
     	}
     	
     	return [
+    		"count" => $i,
     		"where" => $where,
     		"values" => $values
     	];
     	
     }
     
-    public static function build_range_where( string $column, string $val, string $min_name, string $max_name, int $default_min, int $default_max, string $def_op = ">=" ) {
+    public static function build_range_where( string $column, array $range, string $base_name ) {
     	
-    	$parts = explode( '-', $val );
-    	if ( $parts === false ) return null;
+    	if ( Utils::is_assoc_array( $range ) || count( $range ) != 2 )
+    		throw new Exception("Invalid 'range' type");
     	
-    	$length = count( $parts );
+    	if ( $range[0] === null && $range[1] === null )
+    		throw new Exception("Invalid 'range' type");
     	
-    	if ( $length === 1 ) {
-    		
-    		if ( !is_numeric( $parts[0] ) )
-    			return null;
+    	if ( $range[0] === null ) {
     		
     		return [
-    			"where" => "`{$column}` {$def_op} :gr",
-    			"values" => [
-    				"gr" => intval( $parts[0] )
-    			]
+    			"where" => "{$column} <= :{$base_name}",
+    			"values" => [ $base_name => $range[1] ]
+    		];
+    		
+    	} else if ( $range[1] === null ) {
+    		
+    		return [
+    			"where" => "{$column} >= :{$base_name}",
+    			"values" => [ $base_name => $range[0] ]
     		];
     		
     	} else {
     		
-    		if ( !is_numeric( $args[0] ) || !is_numeric( $args[1] ) )
-    			return null;
-    		
     		return [
-    			"where" => "`{$column}` BETWEEN :gr_min AND :gr_max",
+    			"where" => "{$column} BETWEEN :{$base_name}_min AND :{$base_name}_max",
     			"values" => [
-    				"gr_min" => ( $args[0] === '' ? $default_min : intval( $parts[0] ) ),
-    				"gr_max" => ( $args[1] === '' ? $default_max : intval( $parts[1] ) )
+    				"{$base_name}_min" => $range[0],
+    				"{$base_name}_max" => $range[1]
     			]
     		];
     		
