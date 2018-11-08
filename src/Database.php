@@ -99,6 +99,12 @@ final class Database {
         $stmt->bindValue( ":{$param}", $value, $pdo_type === null ? self::get_pdo_type( $value ) : $pdo_type );
     }
     
+    public static function bind_values_array( PDOStatement $stmt, array $values_array ) {
+    	if ( !Utils::is_assoc_array( $values_array ) ) return;
+    	foreach ( $values_array as $param => $value )
+    		self::bind_value( $stmt, $param, $value );
+    }
+    
     public static function bind( PDOStatement $stmt, TableDefinition $table_def, $obj, array $columns ) {
         
         $def_columns = $table_def->get_columns();
@@ -179,6 +185,88 @@ final class Database {
         if ( $single ) return null;
         return $values;
         
+    }
+    
+    public static function build_search_where( array $search_string, array $option_processors ) {
+    	
+    	$splited = explode( ' ', $search_string );
+    	if ( $splited === false ) return "";
+    	
+    	$where = "";
+    	$values = [];
+    	
+    	foreach ( $splited as $index => $option_raw ) {
+    		
+    		if ( $index !== null ) $where .= ' AND ';
+    		
+    		$option_splited = explode( ':', $option_raw );
+    		if ( $option_splited === false ) continue;
+    		$full = count( $option_raw ) === false;
+    		
+    		$option = $full ? $option_splited[0] : "";
+    		$value = $full ? $option_splited[1] : $option_splited[0];
+    		
+    		$processor = $option_processors[ $option ] ?? null;
+    		if ( $processor === null ) continue;
+    		
+    		$ret = $processor( $value );
+    		if ( $ret === null ) continue;
+    		
+    		if ( is_string( $ret ) ) {
+    			$where .= $ret;
+    		} else {
+    			
+    			if ( isset( $ret["where"] ) )
+    				$where .= $ret["where"];
+    			
+    			if ( isset( $ret["values"] ) )
+    				$values += $ret["values"];
+    			
+    		}
+    		
+    	}
+    	
+    	return [
+    		"where" => $where,
+    		"values" => $values
+    	];
+    	
+    }
+    
+    public static function build_range_where( string $column, string $val, string $min_name, string $max_name, int $default_min, int $default_max, string $def_op = ">=" ) {
+    	
+    	$parts = explode( '-', $val );
+    	if ( $parts === false ) return null;
+    	
+    	$length = count( $parts );
+    	
+    	if ( $length === 1 ) {
+    		
+    		if ( !is_numeric( $parts[0] ) )
+    			return null;
+    		
+    		return [
+    			"where" => "`{$column}` {$def_op} :gr",
+    			"values" => [
+    				"gr" => intval( $parts[0] )
+    			]
+    		];
+    		
+    	} else {
+    		
+    		if ( !is_numeric( $args[0] ) || !is_numeric( $args[1] ) )
+    			return null;
+    		
+    		return [
+    			"where" => "`{$column}` BETWEEN :gr_min AND :gr_max",
+    			"values" => [
+    				"gr_min" => ( $args[0] === '' ? $default_min : intval( $parts[0] ) ),
+    				"gr_max" => ( $args[1] === '' ? $default_max : intval( $parts[1] ) )
+    			]
+    		];
+    		
+    	}
+    	
     }
     
     public static function exec($query, $params = [], $fetch = false, $clazz = null) {
