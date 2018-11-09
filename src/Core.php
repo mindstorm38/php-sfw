@@ -62,36 +62,36 @@ final class Core {
         if ( self::$init_languages )
             Lang::init_languages();
             
-            // Start session if selected
-            if ( self::$start_session )
-                SessionManager::session_start();
+		// Start session if selected
+		if ( self::$start_session )
+			SessionManager::session_start();
                 
     }
     
     // Options
     
     public static function set_minimum_php_version( $minimum_php_version ) {
-        self::$minimum_php_version = $minimum_php_version;
+		self::$minimum_php_version = $minimum_php_version;
     }
     
     public static function set_pages_dir( $pages_dir ) {
-        self::$pages_dir = $pages_dir;
+		self::$pages_dir = $pages_dir;
     }
     
     public static function set_templates_dir( $templates_dir ) {
-        self::$templates_dir = $templates_dir;
+		self::$templates_dir = $templates_dir;
     }
     
     public static function set_redirect_https( $redirect_https ) {
-        self::$redirect_https = $redirect_https;
+		self::$redirect_https = $redirect_https;
     }
     
     public static function set_init_languages( $init_languages ) {
-        self::$init_languages = $init_languages;
+		self::$init_languages = $init_languages;
     }
     
     public static function set_start_session( $start_session ) {
-        self::$start_session = $start_session;
+		self::$start_session = $start_session;
     }
     
     // App
@@ -135,13 +135,13 @@ final class Core {
     
     public static function load_page( string $raw_id ) {
         
-        $page = new Page( $raw_id, self::get_page_alias( $raw_id ) );
+		$page = new Page( $raw_id, self::get_page_alias( $raw_id ) );
         
-        $page->directory = self::get_app_path( self::$pages_dir, $page->identifier );
-        $page->template_identifier = self::get_page_template( $page->identifier );
-        $page->template_directory = self::get_app_path( self::$templates_dir, $page->template_identifier );
+		$page->directory = self::get_app_path( self::$pages_dir, $page->identifier );
+		$page->template_identifier = self::get_page_template( $page->identifier );
+		$page->template_directory = self::get_app_path( self::$templates_dir, $page->template_identifier );
         
-        return $page;
+		return $page;
         
     }
     
