@@ -95,7 +95,12 @@ class QueryManager {
 			return [
 				QueryManager::JSON_ERROR => "QUERY_EXECUTION",
 				QueryManager::JSON_MESSAGE => Lang::get("query.error.query_execution", [ $e->getMessage() ]),
-				QueryManager::JSON_DATA => []
+				QueryManager::JSON_DATA => [
+					"code" => $e->getCode(),
+					"file" => $e->getFile(),
+					"trace_string" => $e->getTraceAsString(),
+					"trace" => explode( '\n', $e->getTraceAsString() )
+				]
 			];
 			
 		}
