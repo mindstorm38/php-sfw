@@ -232,6 +232,10 @@ final class Utils {
         return $content;
     }
     
+    public static function get_request_uri() {
+    	return explode( '?', $_SERVER['REQUEST_URI'], 2 )[0];
+    }
+    
 }
 
 ?>
