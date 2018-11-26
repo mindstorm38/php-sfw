@@ -2,7 +2,7 @@
 	"global": {
 		"secure": false,
 		"advised_host": "localhost",
-		"base_path": "/"
+		"base_path": ""
 	},
 	"database": {
 		"host": "127.0.0.1:3306",
