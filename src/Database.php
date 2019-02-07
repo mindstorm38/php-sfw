@@ -105,6 +105,18 @@ final class Database {
 			self::bind_value( $stmt, $param, $value );
 	}
 	
+	public static function bind_class( PDOStatement $stmt, object $object, string $prefix = "" ) {
+		
+		$values_array = [];
+		
+		foreach ( get_object_vars( $object ) as $k => $v ) {
+			$values_array["{$prefix}{$k}"] = $v;
+		}
+		
+		self::bind_values_array( $stmt, $values_array );
+		
+	}
+	
 	public static function bind( PDOStatement $stmt, TableDefinition $table_def, $obj, array $columns ) {
 		
 		$def_columns = $table_def->get_columns();
@@ -160,23 +172,26 @@ final class Database {
 		
 	}
 	
-	
-	public static function fetch_raw( PDOStatement $stmt, $builder, bool $single = false ) {
+	public static function fetch_raw( PDOStatement $stmt, callable $builder = null, bool $single = false ) {
+		
+		if ( $builder === null ) {
+			$builder = function( $values ) { return $values; };
+		}
 		
 		$stmt->execute();
 		
 		$values = [];
 		
-		while ( $values = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
+		while ( $values_raw = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
 			
 			if ( $single ) {
 				
 				$stmt->closeCursor();
-				return $builder( $values );
+				return $builder( $values_raw );
 				
 			}
 			
-			$values = $builder( $values );
+			$values[] = $builder( $values_raw );
 			
 		}
 		
@@ -185,6 +200,26 @@ final class Database {
 		if ( $single ) return null;
 		return $values;
 		
+	}
+	
+	public static function fetch_class( PDOStatement $stmt, string $class_name, callable $modifier = null, bool $single = false ) {
+		
+		return self::fetch_raw( $stmt, function( $values ) use ( $class_name, $modifier ) {
+			
+			$obj = new $class_name();
+			
+			foreach ( $values as $k => $v ) {
+				
+				$obj->$k = $v;
+				
+			}
+			
+			if ( $modifier !== null ) $modifier( $obj, $values );
+			
+			return $obj;
+			
+		}, $single );
+			
 	}
 	
 	public static function build_search_where( string $search_string, array $option_processors ) {
@@ -219,11 +254,8 @@ final class Database {
 				$where .= $ret;
 			} else {
 				
-				if ( isset( $ret["where"] ) )
-					$where .= $ret["where"];
-					
-					if ( isset( $ret["values"] ) )
-						$values += $ret["values"];
+				if ( isset( $ret["where"] ) ) $where .= $ret["where"];
+				if ( isset( $ret["values"] ) ) $values += $ret["values"];
 						
 			}
 			
@@ -269,7 +301,7 @@ final class Database {
 							"{$base_name}_min" => $range[0],
 							"{$base_name}_max" => $range[1]
 							]
-							];
+						];
 					
 				}
 				
