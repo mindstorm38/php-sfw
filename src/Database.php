@@ -105,12 +105,14 @@ final class Database {
 			self::bind_value( $stmt, $param, $value );
 	}
 	
-	public static function bind_class( PDOStatement $stmt, object $object, string $prefix = "" ) {
+	public static function bind_class( PDOStatement $stmt, $object, array $fields = null, string $prefix = "" ) {
 		
 		$values_array = [];
 		
 		foreach ( get_object_vars( $object ) as $k => $v ) {
-			$values_array["{$prefix}{$k}"] = $v;
+			if ( $fields == null || in_array( $k, $fields ) ) {
+				$values_array["{$prefix}{$k}"] = $v;
+			}
 		}
 		
 		self::bind_values_array( $stmt, $values_array );
@@ -256,7 +258,7 @@ final class Database {
 				
 				if ( isset( $ret["where"] ) ) $where .= $ret["where"];
 				if ( isset( $ret["values"] ) ) $values += $ret["values"];
-						
+				
 			}
 			
 			$i++;
@@ -301,7 +303,7 @@ final class Database {
 							"{$base_name}_min" => $range[0],
 							"{$base_name}_max" => $range[1]
 							]
-						];
+							];
 					
 				}
 				
