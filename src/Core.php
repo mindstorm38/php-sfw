@@ -8,7 +8,7 @@ use \Exception;
 
 final class Core {
 	
-	const MINIMUM_PHP_VERSION = "5.5.0";
+	const MINIMUM_PHP_VERSION = "7.0.0";
 	
 	const DEFAULT_PAGES_DIR = "src/pages/";
 	const DEFAULT_TEMPLATES_DIR = "src/templates/";
@@ -19,6 +19,7 @@ final class Core {
 	private static $minimum_php_version = Core::MINIMUM_PHP_VERSION;
 	private static $pages_dir = Core::DEFAULT_PAGES_DIR;
 	private static $templates_dir = Core::DEFAULT_TEMPLATES_DIR;
+	private static $redirect_wrong_host = true;
 	private static $redirect_https = true;
 	private static $init_languages = true;
 	private static $start_session = false;
@@ -53,7 +54,14 @@ final class Core {
 		
 		if ( self::$redirect_https && isset( $_SERVER["HTTPS"] ) != boolval( Config::get("global:secure") ) ) {
 			
-			Utils::redirect( Config::get_advised_url() . $_SERVER["REQUEST_URI"] );
+			self::redirect_base( $_SERVER["REQUEST_URI"] );
+			die();
+			
+		}
+		
+		if ( self::$redirect_wrong_host && $_SERVER["SERVER_NAME"] != Config::get("global:advised_host") ) {
+			
+			self::redirect_base( $_SERVER["REQUEST_URI"] );
 			die();
 			
 		}
@@ -61,11 +69,11 @@ final class Core {
 		// Init languages if selected
 		if ( self::$init_languages )
 			Lang::init_languages();
+		
+		// Start session if selected
+		if ( self::$start_session )
+			SessionManager::session_start();
 			
-			// Start session if selected
-			if ( self::$start_session )
-				SessionManager::session_start();
-				
 	}
 	
 	// Options
@@ -80,6 +88,10 @@ final class Core {
 	
 	public static function set_templates_dir( $templates_dir ) {
 		self::$templates_dir = $templates_dir;
+	}
+	
+	public static function set_redirect_wrong_host( $redirect_wrong_host ) {
+		self::$redirect_wrong_host = $redirect_wrong_host;
 	}
 	
 	public static function set_redirect_https( $redirect_https ) {
