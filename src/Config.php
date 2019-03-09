@@ -60,12 +60,20 @@ final class Config {
 		
 	}
 	
+	// EXPERIMENTAL
+	public static function get_advised_hosts() {
+		
+		$v = self::get( "global:advised_host", $_SERVER["SERVER_NAME"] );
+		return is_array( $v ) ? $v : [ $v ];
+		
+	}
+	
 	public static function get_advised_url( string $path = "" ) {
 		
 		$base_path = '/' . trim( self::get("global:base_path"), '/' );
 		if ( strlen( $base_path ) !== 1 ) $base_path .= '/';
 		
-		return ( self::get("global:secure") ? "https" : "http" ) . "://" . self::get("global:advised_host") . $base_path . $path;
+		return ( self::get("global:secure") ? "https" : "http" ) . "://" . self::get("global:advised_host") . $base_path . ltrim( $path, '/' );
 		
 	}
 	
