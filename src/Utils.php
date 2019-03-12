@@ -6,12 +6,13 @@ namespace SFW;
 
 final class Utils {
 	
+	const TOKEN_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	
 	public static function generate_random( $length = 32 ) {
-		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		$charactersLength = strlen( $characters );
+		$charactersLength = strlen( self::TOKEN_CHARS );
 		$randomString = '';
 		for ( $i = 0; $i < $length; $i++ ) {
-			$randomString .= $characters[ rand( 0, $charactersLength - 1 ) ];
+			$randomString .= self::TOKEN_CHARS[ rand( 0, $charactersLength - 1 ) ];
 		}
 		return $randomString;
 	}
@@ -33,14 +34,25 @@ final class Utils {
 		return date( "d/m/Y H:i:s", $timestamp );
 	}
 	
-	public static function content_type_json() {
+	public static function content_type( string $type ) {
 		if ( headers_sent() ) return;
-		header("Content-Type: application/json");
+		header("Content-Type: {$type}");
+	}
+	
+	public static function content_type_json() {
+		self::content_type("application/json");
 	}
 	
 	public static function content_type_html() {
-		if ( headers_sent() ) return;
-		header("Content-Type: text/html");
+		self::content_type("text/html");
+	}
+	
+	public static function content_type_xml() {
+		self::content_type("application/xml");
+	}
+	
+	public static function print_xml_header() {
+		echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
 	}
 	
 	public static function force_no_cache() {
@@ -122,25 +134,24 @@ final class Utils {
 		$parts = explode( '-', $str );
 		$length = count( $parts );
 		
-		if ( $length !== 2 )
-			return $defaults;
+		if ( $length !== 2 ) return $defaults;
 			
-			$min = $parts[0];
-			$max = $parts[1];
-			
-			if ( $min === '' ) {
-				$min = $minmax[0] ?? null;
-			} else if ( is_numeric( $min ) ) {
-				$min = floatval( $min );
-			} else return null;
-			
-			if ( $max === '' ) {
-				$max = $minmax[1] ?? null;
-			} else if ( is_numeric( $max ) ) {
-				$max = floatval( $max );
-			} else return null;
-			
-			return [ $min, $max ];
+		$min = $parts[0];
+		$max = $parts[1];
+		
+		if ( $min === '' ) {
+			$min = $minmax[0] ?? null;
+		} else if ( is_numeric( $min ) ) {
+			$min = floatval( $min );
+		} else return null;
+		
+		if ( $max === '' ) {
+			$max = $minmax[1] ?? null;
+		} else if ( is_numeric( $max ) ) {
+			$max = floatval( $max );
+		} else return null;
+		
+		return [ $min, $max ];
 			
 	}
 	
@@ -169,8 +180,8 @@ final class Utils {
 			$n = intval( $matches[1] );
 			return $args[ $n ];
 		}, $format );
-			
-			return $format;
+		
+		return $format;
 			
 	}
 	
@@ -216,6 +227,7 @@ final class Utils {
 		$pagination[] = $pages_count;
 		
 		$array = array_slice( $array, $minimum, $items_per_page );
+		
 		if ( $fillEmpty ) {
 			while ( count( $array ) < $items_per_page ) {
 				$array[] = null;
