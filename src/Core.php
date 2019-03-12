@@ -8,7 +8,7 @@ use \Exception;
 
 final class Core {
 	
-	const VERSION = "0.1.17";
+	const VERSION = "1.0.0";
 	const MINIMUM_PHP_VERSION = "7.0.0";
 	
 	const DEFAULT_PAGES_DIR = "src/pages/";

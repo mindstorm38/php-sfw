@@ -8,13 +8,24 @@ header('Content-Type: text/css');
 
 if ( array_key_exists( "path", $_GET ) ) {
 
-	try {
-		echo LessCompiler::compile( __DIR__ . "/{$_GET["path"]}.less" );
-		die();
-	} catch ( Exception $e ) {
-		die( "Fatal error while compiling less file " . $e );
+	$path = __DIR__ . "/{$_GET["path"]}.less";
+	
+	if ( file_exists( $path ) ) {
+		
+		try {
+			
+			echo LessCompiler::compile( $path );
+			die();
+			
+		} catch ( Exception $e ) {
+			
+			http_response_code( 500 );
+			die( "Fatal error while compiling less file " . $e );
+			
+		}
+		
 	}
-
+	
 }
 
 http_response_code( 404 );

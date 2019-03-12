@@ -3,10 +3,11 @@ Options -Indexes
 RewriteEngine on
 Options -MultiViews
 
+# Don't touch these three lines !
 RewriteRule ^config.json$ / [F,L]
 RewriteRule ^src\/ / [F,L]
 RewriteRule ^vendor\/ / [F,L]
 
 RewriteRule ^query\/(.+)$ /query.php?query=$1 [QSA,L]
-RewriteRule ^static\/(.+).css$ /static/less.php?path=$1 [L]
+RewriteRule ^static\/(.+)\.less\.css$ /static/less.php?path=$1 [L]
 RewriteRule ^(|home)\/?$ /page.php?page=$1 [QSA,L]
