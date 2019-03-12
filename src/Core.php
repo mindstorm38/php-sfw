@@ -8,6 +8,7 @@ use \Exception;
 
 final class Core {
 	
+	const VERSION = "0.1.17";
 	const MINIMUM_PHP_VERSION = "7.0.0";
 	
 	const DEFAULT_PAGES_DIR = "src/pages/";
@@ -30,6 +31,8 @@ final class Core {
 	public static function start_application( $app_name, $app_base_dir ) {
 		
 		if ( self::$app_name !== null ) die( "Application already started" );
+		
+		header( "X-Powered-By: PHP-SFW/" . self::VERSION );
 		
 		self::$app_base_dir = realpath( $app_base_dir );
 		
@@ -67,13 +70,11 @@ final class Core {
 		}
 		
 		// Init languages if selected
-		if ( self::$init_languages )
-			Lang::init_languages();
+		if ( self::$init_languages ) Lang::init_languages();
 		
 		// Start session if selected
-		if ( self::$start_session )
-			SessionManager::session_start();
-			
+		if ( self::$start_session ) SessionManager::session_start();
+		
 	}
 	
 	// Options
@@ -143,6 +144,10 @@ final class Core {
 	
 	public static function get_page_template( string $id ) {
 		return array_key_exists( $id, self::$pages_templates ) ? self::$pages_templates[ $id ] : null;
+	}
+	
+	public static function get_page_last_mod( string $id ) {
+		return filemtime( self::get_app_path( self::$pages_dir, $id ) );
 	}
 	
 	public static function load_page( string $raw_id ) {
