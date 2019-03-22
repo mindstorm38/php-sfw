@@ -1,7 +1,7 @@
 {
 	"name" : "mindstorm38/php-sfw",
 	"repositories" : [
-		{
+	{
 			"type" : "vcs",
 			"url" : "https://github.com/mindstorm38/php-sfw"
 		}
