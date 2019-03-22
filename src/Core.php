@@ -6,6 +6,15 @@ namespace SFW;
 
 use \Exception;
 
+/**
+ * 
+ * Core managing class for PHP-SFW
+ * 
+ * The core is used to manage your "application".
+ * 
+ * @author Theo Rozier
+ *
+ */
 final class Core {
 	
 	const VERSION = "1.0.0";
@@ -28,7 +37,12 @@ final class Core {
 	private static $pages_aliases = [];
 	private static $pages_templates = [];
 	
-	public static function start_application( $app_name, $app_base_dir ) {
+	/**
+	 * Start the application, only one application can be launched in the same runtime.
+	 * @param string $app_name Application name, for now this is not used anywhere.
+	 * @param string $app_base_dir Application base directory, used for locating languages, config and other relative paths.
+	 */
+	public static function start_application( string $app_name, string $app_base_dir ) {
 		
 		if ( self::$app_name !== null ) die( "Application already started" );
 		
@@ -40,7 +54,7 @@ final class Core {
 		$minimum_php_version = self::$minimum_php_version;
 		
 		if ( version_compare( $minimum_php_version, Core::MINIMUM_PHP_VERSION, "lt" ) ) {
-			die( "Invalid minimum php version given, PHP " . Core::MINIMUM_PHP_VERSION . "+ required. Given version : " . $minimum_php_version );
+			die( "Invalid minimum php version given, PHP " . Core::MINIMUM_PHP_VERSION . "+ required by PHP-SFW. Given version : " . $minimum_php_version );
 		} else if ( version_compare( PHP_VERSION, $minimum_php_version, "lt" ) ) {
 			die( "PHP {$minimum_php_version}+ required. Currently installed version is : " . phpversion() );
 		}
@@ -79,50 +93,98 @@ final class Core {
 	
 	// Options
 	
-	public static function set_minimum_php_version( $minimum_php_version ) {
+	/**
+	 * Define the minimum version of PHP your application needs to work, used when starting application (If given version is less than {@link Core::MINIMUM_PHP_VERSION}, starts will die and return error message).
+	 * @param string $minimum_php_version PHP minimum version required to start.
+	 * @see Core::MINIMUM_PHP_VERSION
+	 * @see Core::start_application
+	 */
+	public static function set_minimum_php_version( string $minimum_php_version ) {
 		self::$minimum_php_version = $minimum_php_version;
 	}
 	
-	public static function set_pages_dir( $pages_dir ) {
+	/**
+	 * Define pages directory, used by pages manager (relative to application base directory).
+	 * @param string $pages_dir Pages directory.
+	 */
+	public static function set_pages_dir( string $pages_dir ) {
 		self::$pages_dir = $pages_dir;
 	}
 	
-	public static function set_templates_dir( $templates_dir ) {
+	/**
+	 * Define templates directory, used by pages manager (relative to application base directory).
+	 * @param string $templates_dir Templates directory.
+	 */
+	public static function set_templates_dir( string $templates_dir ) {
 		self::$templates_dir = $templates_dir;
 	}
 	
-	public static function set_redirect_wrong_host( $redirect_wrong_host ) {
+	/**
+	 * If true, tell SFW to redirect to the advised host (config option "global:advised_host") if not already using it.
+	 * @param bool $redirect_wrong_host Redirect wrong host.
+	 */
+	public static function set_redirect_wrong_host( bool $redirect_wrong_host ) {
 		self::$redirect_wrong_host = $redirect_wrong_host;
 	}
 	
-	public static function set_redirect_https( $redirect_https ) {
+	/**
+	 * If true, tell SFW to redirect to the same URL, but using the right protocol depending on HTTPS config option "global:secure" (redirect to http:// if false, or https:// if true).
+	 * @param bool $redirect_https Redirect HTTPS.
+	 */
+	public static function set_redirect_https( bool $redirect_https ) {
 		self::$redirect_https = $redirect_https;
 	}
 	
-	public static function set_init_languages( $init_languages ) {
+	/**
+	 * If true, {@link Lang::init_languages} is called on application start.
+	 * @param bool $init_languages Init languages.
+	 * @see Lang::init_languages
+	 */
+	public static function set_init_languages( bool $init_languages ) {
 		self::$init_languages = $init_languages;
 	}
 	
-	public static function set_start_session( $start_session ) {
+	/**
+	 * If true, {@link SessionManager::session_start) is called on application start.
+	 * @param bool $start_session Start session.
+	 * @see SessionManager::session_start
+	 */
+	public static function set_start_session( bool $start_session ) {
 		self::$start_session = $start_session;
 	}
 	
 	// App
 	
+	/**
+	 * Throw an exception if the application is not already starting.
+	 * @throws Exception "Application not started".
+	 */
 	public static function check_app_ready() {
 		if ( self::$app_name === null ) throw new Exception( "Application not started" );
 	}
 	
-	public static function get_app_base_dir() {
+	/**
+	 * @return string Base directory of the application (absolute path) defined at start.
+	 * @see Core::start_application
+	 * @see Core::check_app_ready
+	 */
+	public static function get_app_base_dir() : string {
+		self::check_app_ready();
 		return self::$app_base_dir;
 	}
 	
-	public static function get_app_path( ...$paths ) {
+	/**
+	 * Simplify and join given path to the base application directory (get it using {@link Core::get_app_base_dir}). It use the utiliy method {@link Utils::path_join}.
+	 * @param string ...$paths Paths to append.
+	 * @return string Full absolute path.
+	 * @see Utils::path_join
+	 */
+	public static function get_app_path( ...$paths ) : string {
 		array_unshift( $paths, self::$app_base_dir );
 		return Utils::path_join( $paths );
 	}
 	
-	public static function get_app_name() {
+	public static function get_app_name() : string {
 		self::check_app_ready();
 		return self::$app_name;
 	}
@@ -164,6 +226,10 @@ final class Core {
 	
 	// Utils
 	
+	/**
+	 * Redirect (using {@link Utils::redirect}) to advised url path (retreived using {@link Config::get_advised_url}).
+	 * @param string $path Path to append to advised URL.
+	 */
 	public static function redirect_base( string $path = "" ) {
 		Utils::redirect( Config::get_advised_url( $path ) );
 	}
