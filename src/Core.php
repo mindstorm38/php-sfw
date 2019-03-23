@@ -156,7 +156,7 @@ final class Core {
 	// App
 	
 	/**
-	 * Throw an exception if the application is not already starting.
+	 * Throw an exception if the application is not started.
 	 * @throws Exception "Application not started".
 	 */
 	public static function check_app_ready() {
@@ -184,6 +184,11 @@ final class Core {
 		return Utils::path_join( $paths );
 	}
 	
+	/**
+	 * Get application name.
+	 * @return string Application name.
+	 * @see Core::check_app_ready
+	 */
 	public static function get_app_name() : string {
 		self::check_app_ready();
 		return self::$app_name;
@@ -191,27 +196,60 @@ final class Core {
 	
 	// Page Loading
 	
-	public static function add_page_aliases( string $id, ...$aliases ) {
+	/**
+	 * Add identifier aliases for a page.
+	 * @param string $id The original page id.
+	 * @param string ...$aliases A parameters list of aliases to add to this page id.
+	 */
+	public static function add_page_aliases( string $id, string ...$aliases ) {
 		foreach ( $aliases as $alias )
 			self::$pages_aliases[ $alias ] = $id;
 	}
 	
-	public static function set_page_template( string $id, $template ) {
+	/**
+	 * Set template of a page (optional).
+	 * @param string $id Identifier of the page.
+	 * @param string $template Template identifier.
+	 */
+	public static function set_page_template( string $id, string $template ) {
 		self::$pages_templates[ $id ] = $template;
 	}
 	
+	/**
+	 * Get a page identifier from its alias (added with {@link Core::add_page_aliases}).
+	 * @param string $id Raw alias identifier.
+	 * @return string Original page identifier. Or the alias itself if no aliase exists for this id.
+	 * @see Core::add_page_aliases
+	 */
 	public static function get_page_alias( string $id ) {
 		return array_key_exists( $id, self::$pages_aliases ) ? self::$pages_aliases[ $id ] : $id;
 	}
 	
+	/**
+	 * Get page template, associated using {@link Core::set_page_template}.
+	 * @param string $id Page identifier.
+	 * @return null|string Associated page template, or null if no template is associated.
+	 * @see Core::set_page_template
+	 */
 	public static function get_page_template( string $id ) {
 		return array_key_exists( $id, self::$pages_templates ) ? self::$pages_templates[ $id ] : null;
 	}
 	
+	/**
+	 * Get last modification of the page directory (identifier is not checked, you can ask for any page identifier).
+	 * @param string $id Page identifier.
+	 * @return number|bool Last modification time in UNIX timestamp format, or FALSE if invalid path.
+	 */
 	public static function get_page_last_mod( string $id ) {
 		return filemtime( self::get_app_path( self::$pages_dir, $id ) );
 	}
 	
+	/**
+	 * Load page from its identifier or its alias.
+	 * @param string $raw_id Identifier (can be an alias).
+	 * @return \SFW\Page The loaded page object.
+	 * @see \SFW\Page
+	 */
 	public static function load_page( string $raw_id ) {
 		
 		$page = new Page( $raw_id, self::get_page_alias( $raw_id ) );
