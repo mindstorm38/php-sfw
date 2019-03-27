@@ -8,7 +8,7 @@ use \Exception;
 
 /**
  * 
- * Core managing class for PHP-SFW
+ * Core managing class for PHP-SFW.
  * 
  * The core is used to manage your "application".
  * 
@@ -177,9 +177,11 @@ final class Core {
 	 * Simplify and join given path to the base application directory (get it using {@link Core::get_app_base_dir}). It use the utiliy method {@link Utils::path_join}.
 	 * @param string ...$paths Paths to append.
 	 * @return string Full absolute path.
+	 * @see Core::check_app_ready
 	 * @see Utils::path_join
 	 */
 	public static function get_app_path( ...$paths ) : string {
+		self::check_app_ready();
 		array_unshift( $paths, self::$app_base_dir );
 		return Utils::path_join( $paths );
 	}

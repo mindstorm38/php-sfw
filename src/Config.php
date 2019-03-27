@@ -6,17 +6,32 @@ namespace SFW;
 
 use \Exception;
 
+/**
+ * 
+ * Used to load "config.json" (in application root directory) and provide methods to get values from keys paths.
+ * 
+ * @author Theo Rozier
+ *
+ */
 final class Config {
 	
+	/**
+	 * Config file name in application root directory.
+	 * @var string
+	 */
 	const CONFIG_FILE_PATH = "config.json";
 	
 	private static $loaded_config = null;
 	private static $file = null;
 	private static $cache = [];
 	
+	/**
+	 * Get the absolute file path (using {@link Core::get_app_path}).
+	 * @return string The config file path.
+	 * @see Core::get_app_path
+	 */
 	public static function get_file() {
 		if ( self::$file === null ) {
-			Core::check_app_ready();
 			self::$file = Core::get_app_path( Config::CONFIG_FILE_PATH );
 		}
 		return self::$file;
