@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05c74e52e7f43af205fad58064b7ff86",
+    "content-hash": "8ba66c70b4e5168d793afff015bd80ca",
     "packages": [
         {
             "name": "leafo/lessphp",
