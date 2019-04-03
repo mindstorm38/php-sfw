@@ -4,11 +4,27 @@
 
 namespace SFW;
 
+/**
+ * 
+ * Contains lot of useful utilities.
+ * 
+ * @author Theo Rozier
+ *
+ */
 final class Utils {
 	
+	/**
+	 * @var string All possibles characters for token generation.
+	 * @see Utils::generate_random
+	 */
 	const TOKEN_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
-	public static function generate_random( $length = 32 ) {
+	/**
+	 * Generate random token of a specified length and using characters of {@link Utils::TOKEN_CHARS}.
+	 * @param number $length Token length (default to 32).
+	 * @return string Generated token.
+	 */
+	public static function generate_random( $length = 32 ) : string {
 		$charactersLength = strlen( self::TOKEN_CHARS );
 		$randomString = '';
 		for ( $i = 0; $i < $length; $i++ ) {
@@ -17,118 +33,264 @@ final class Utils {
 		return $randomString;
 	}
 	
-	public static function ucfirst( $string ) {
+	/**
+	 * Put input string in lower case, and after put the first character to upper case. Use {@link ucfirst()} to just put 
+	 * @param string $string Input string.
+	 * @return string Output string were all characters are in lower case except first that is in upper case.
+	 */
+	public static function ucfirst( string $string ) : string {
 		return ucfirst( strtolower( $string ) );
 	}
 	
-	public static function secure_path( $path ) {
+	/**
+	 * Secure a file path by replacing two or more following dot with only one.
+	 * @param mixed $path Input path.
+	 * @return mixed Output securized path.
+	 */
+	public static function secure_path( $path ) : string {
 		return preg_replace( '@\.\.*@', '.', $path );
 	}
 	
+	/**
+	 * Get timestamp in millis, it is just a shortcut for "{@link time()} * 1000".
+	 * @return number Timestamp millis.
+	 * @see time()
+	 */
 	public static function get_timestamp_ms() {
 		return time() * 1000;
 	}
 	
-	public static function date_format( $timestamp = null ) {
-		if ( $timestamp == null ) $timestamp = time();
+	/**
+	 * Format date using "d/m/Y H:i:s".
+	 * @param int $timestamp Date UNIX timestamp.
+	 * @return string Formatted date.
+	 * @see date()
+	 */
+	public static function date_format( int $timestamp = null ) : string {
 		return date( "d/m/Y H:i:s", $timestamp );
 	}
 	
-	public static function content_type( string $type ) {
+	/**
+	 * Defining content type header of the current page.
+	 * @param string $type MIME Type.
+	 * @see header()
+	 */
+	public static function content_type( string $type ) : void {
 		if ( headers_sent() ) return;
 		header("Content-Type: {$type}");
 	}
 	
-	public static function content_type_json() {
+	/**
+	 * Define page content type to JSON (application/json).
+	 */
+	public static function content_type_json() : void {
 		self::content_type("application/json");
 	}
 	
-	public static function content_type_html() {
+	/**
+	 * Define page content type to HTML (text/html).
+	 */
+	public static function content_type_html() : void {
 		self::content_type("text/html");
 	}
 	
-	public static function content_type_xml() {
+	/**
+	 * Define page content type to XML (application/xml).
+	 */
+	public static function content_type_xml() : void {
 		self::content_type("application/xml");
 	}
 	
-	public static function print_xml_header() {
+	/**
+	 * Echoing the XML version 1.0 header.
+	 */
+	public static function print_xml_header() : void {
 		echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
 	}
 	
-	public static function force_no_cache() {
+	/**
+	 * Send 3 headers (cache-control, pragam: no-chache, expires) to force user agent to download page.
+	 * @see header()
+	 */
+	public static function force_no_cache() : void {
 		if ( headers_sent() ) return;
 		header('Cache-Control: max-age=0, no-cache, no-store, must-revalidate');
 		header('Pragma: no-cache');
 		header("Expires: Wed, 11 Jan 1984 05:00:00 GMT");
 	}
 	
+	/**
+	 * Send redirect header to specified path.
+	 * @param mixed $path Redirect path.
+	 * @see header() 
+	 */
 	public static function redirect( $path ) {
 		if ( headers_sent() ) return;
 		header("Location: {$path}");
 	}
 	
+	/**
+	 * Check if given variable is null, is true, return else value otherwise return variable itself.
+	 * @param mixed $var Specified variable (except function).
+	 * @param mixed $else The default value or a callable object (like function), in that case, it return the return value of its.
+	 * @return mixed Checked value.
+	 */
 	public static function check_not_null( $var, $else ) {
 		return $var == null ? ( is_callable( $else ) ? $else() : $else ) : $var;
 	}
 	
-	public static function starts_with( $haystack, $needle ) {
-		return $needle === "" || strrpos($haystack, $needle, -strlen( $haystack ) ) !== false;
+	/**
+	 * Check if haystack string is starting with needle string.
+	 * @param string $haystack The haystack string.
+	 * @param string $needle The needle string.
+	 * @return boolean True if haystack starting with needle.
+	 */
+	public static function starts_with( string $haystack, string $needle ) : bool {
+		return $needle === "" || substr($haystack, 0, strlen($needle)) === $needle;
 	}
 	
-	public static function ends_with( $haystack, $needle ) {
-		return $needle === "" || ( ( $temp = strlen( $haystack ) - strlen( $needle ) ) >= 0 && strpos( $haystack, $needle, $temp ) !== false );
+	/**
+	 * Check if haystack string is ending with needle string.
+	 * @param string $haystack The haystack string.
+	 * @param string $needle The needle string.
+	 * @return boolean True if haystack ending with needle.
+	 */
+	public static function ends_with( $haystack, $needle ) : bool {
+		return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
 	}
 	
-	public static function contains( $string, $search ) {
-		if ( empty( $search ) ) return true;
+	/**
+	 * Check if given string is containing search string.
+	 * @param string $string Input string.
+	 * @param string $search Search string.
+	 * @return bool True if input string contains 
+	 */
+	public static function contains( string $string, string $search ) : bool {
+		if ( $search === "" ) return true;
 		return strpos( $string, $search ) !== false;
 	}
 	
-	public static function is_assoc_array( $arr ) {
+	/**
+	 * Check if input var is an associative array or not.
+	 * @param mixed $arr Input variable.
+	 * @return boolean True if var is an associative array.
+	 */
+	public static function is_assoc_array( $arr ) : bool {
 		if ( !is_array( $arr ) ) return false;
 		return ( array_values( $arr ) !== $arr );
 	}
 	
-	public static function encrypt_password( $raw ) {
+	/**
+	 * Hash password using PHP's {@link PASSWORD_DEFAULT}.
+	 * @param string $raw Raw unhashed password.
+	 * @return string Password hash.
+	 * @see password_hash()
+	 */
+	public static function encrypt_password( string $raw ) : string {
 		return password_hash( $raw, PASSWORD_DEFAULT );
 	}
 	
-	public static function verify_password( $raw, $hash ) {
+	/**
+	 * Verify a password hash generated using {@link Utils::encrypt_password} or {@link verify_password()}. 
+	 * @param string $raw Raw unhashed password.
+	 * @param string $hash Password hash.
+	 * @return boolean True if unhashed password if corresponding to password hash.
+	 * @see password_verify()
+	 */
+	public static function verify_password( string $raw, string $hash ) : bool {
 		return password_verify( $raw, $hash );
 	}
 	
-	public static function html_entities( $str ) {
+	/**
+	 * Quote HTML entities using {@link htmlentities()} with ENT_QUOTES and ENT_HTML401
+	 * @param string $str Input string.
+	 * @return string HTML Quoted.
+	 */
+	public static function html_entities( string $str ) : string {
 		return htmlentities( $str, ENT_QUOTES | ENT_HTML401 );
 	}
 	
-	public static function str_filter( $str ) {
+	/**
+	 * Just act like {@link trim()}, use it instead (TODO: Check if this function core can be replaced with trim).
+	 * @param string $str Input string.
+	 * @return string Filtered string.
+	 * @see trim()
+	 */
+	public static function str_filter( string $str ) : string {
 		return preg_replace( "/^(?: +)/", "", preg_replace( "/(?: +)$/", "", $str ) );
 	}
 	
-	public static function str_length( $str ) {
+	/**
+	 * Get string length after filtering (see {@link Utils::str_filter}).
+	 * @param string $str Input string.
+	 * @return int Filtered string length.
+	 * @see Utils::str_filter
+	 */
+	public static function str_length( string $str ) : int {
 		return strlen( self::str_filter( $str ) );
 	}
 	
-	public static function str_empty( $str ) {
+	/**
+	 * Check if the string is empty after filtering (see {@link Utils::str_filter}).
+	 * @param string $str
+	 * @return boolean True if the filtered string is empty.
+	 * @see Utils::str_filter
+	 * @see empty()
+	 */
+	public static function str_empty( string $str ) : bool {
 		return empty( self::str_filter( $str ) );
 	}
 	
-	public static function get_file_extension( $file_path ) {
+	/**
+	 * Get a file path extension or empty string of no extension.
+	 * @param string $file_path Input file path.
+	 * @return mixed Extension without starting point.
+	 * @see pathinfo()
+	 */
+	public static function get_file_extension( $file_path ) : string {
 		return pathinfo( $file_path, PATHINFO_EXTENSION );
 	}
 	
-	public static function file_exists( $path ) {
-		return file_exists( $path ) && is_readable( $path );
+	/**
+	 * Check whether a file exists and readable at a path.
+	 * @param string $path Input file path.
+	 * @return boolean True if the file exists and readable.
+	 * @see file_exists()
+	 * @see is_readable()
+	 */
+	public static function file_exists( string $path ) : bool {
+		return file_exists( $path ) && is_readable( $path ); // TODO: Remove file_exists function because "is_readable" do the same ("Tells whether a file exists and is readable").
 	}
 	
-	public static function require_if_exists( $path ) {
+	/**
+	 * Using "require_once" if the path exists (using {@link Utils::file_exists}).
+	 * Warning : This can break your include because of path file is included in the private method scope.
+	 * @param string $path
+	 * @see Utils::file_exists
+	 * @see require_once()
+	 */
+	public static function require_if_exists( string $path ) : void {
 		if ( self::file_exists( $path ) ) require_once $path;
 	}
 	
-	public static function include_if_exists( $path ) {
+	/**
+	 * Using "include_once" if the path exists (using {@link Utils::file_exists}).
+	 * Warning : This can break your include because of path file is included in the private method scope.
+	 * @param string $path
+	 * @see Utils::file_exists
+	 * @see include_once()
+	 */
+	public static function include_if_exists( string $path ) : void {
 		if ( self::file_exists( $path ) ) include_once $path;
 	}
 	
+	/**
+	 * Parse string range of the following pattern : "min-max", "min-", "-max".
+	 * @param string $str Input string to parse.
+	 * @param array $minmax Minimum and maximum values to use if one or both ranges sides is/are not specified.
+	 * @param array $defaults Defaults values to return if the format is incorrect, but not if one of two range parts are not valid number.
+	 * @return int[]|null The result range, index 0 is the min value, index 1 is the max value. Or null if min or max are not valid number. 
+	 */
 	public static function parse_range( string $str, array $minmax = [], array $defaults = null ) {
 		
 		$parts = explode( '-', $str );
@@ -155,7 +317,12 @@ final class Utils {
 			
 	}
 	
-	public static function path_join( ...$raw_paths ) {
+	/**
+	 * Join multiples paths.
+	 * @param mixed ...$raw_paths All paths to join.
+	 * @return string Joined paths. 
+	 */
+	public static function path_join( ...$raw_paths ) : string {
 		
 		$paths = array();
 		
@@ -256,6 +423,11 @@ final class Utils {
 		}
 	}
 	
+	/**
+	 * Useless method, why it's empty ??
+	 * @param mixed $content
+	 * @return mixed
+	 */
 	public static function filter_content( $content ) {
 		return $content;
 	}
