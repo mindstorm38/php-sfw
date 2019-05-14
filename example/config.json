@@ -4,6 +4,12 @@
 		"advised_host": "localhost",
 		"base_path": ""
 	},
+	"prototype": {
+		"enabled": false,
+		"users": {
+			"guest": ""
+		}
+	},
 	"database": {
 		"host": "127.0.0.1:3306",
 		"user": "root",
@@ -12,8 +18,14 @@
 		"name": ""
 	},
 	"session": {
-		"name": "SESSID",
+		"name": "SFWSESSID",
 		"lifetime": 604800,
-		"path": "/"
+		"path": "/",
+		"regenerate_interval": 900,
+		"configs": {
+			"default": {
+				"lifetime": 604800
+			}
+		}
 	}
 }

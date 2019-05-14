@@ -69,14 +69,14 @@ final class Core {
 		@ini_set('default_charset', 'utf-8');
 		@mb_internal_encoding('utf-8');
 		
-		if ( self::$redirect_https && isset( $_SERVER["HTTPS"] ) != boolval( Config::get("global:secure") ) ) {
+		if ( self::$redirect_https && isset( $_SERVER["HTTPS"] ) != Config::is_secure() ) {
 			
 			self::redirect_base( $_SERVER["REQUEST_URI"] );
 			die();
 			
 		}
 		
-		if ( self::$redirect_wrong_host && $_SERVER["SERVER_NAME"] != Config::get("global:advised_host") ) {
+		if ( self::$redirect_wrong_host && $_SERVER["SERVER_NAME"] != Config::get_advised_host() ) {
 			
 			self::redirect_base( $_SERVER["REQUEST_URI"] );
 			die();
@@ -313,7 +313,7 @@ final class Core {
 	
 	public static function set_cookie( $name, $value, $expire = 0 ) {
 		if ( headers_sent() ) return false;
-		return setcookie( $name, $value, $expire, "/", "." . Config::get("global:advised_host", ""), Config::get("global:secure", false), true );
+		return setcookie( $name, $value, $expire, "/", "." . Config::get_advised_host(), Config::is_secure(), true );
 	}
 	
 }

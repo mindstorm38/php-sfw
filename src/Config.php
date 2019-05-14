@@ -73,8 +73,18 @@ final class Config {
 		$base_path = '/' . trim( self::get("global:base_path"), '/' );
 		if ( strlen( $base_path ) !== 1 ) $base_path .= '/';
 		
-		return ( self::get("global:secure") ? "https" : "http" ) . "://" . self::get("global:advised_host") . $base_path . ltrim( $path, '/' );
+		return ( self::is_secure() ? "https" : "http" ) . "://" . self::get_advised_host() . $base_path . ltrim( $path, '/' );
 		
+	}
+	
+	// Global configuration
+	
+	public static function is_secure() : bool {
+		return boolval( Config::get("global:secure", false) );
+	}
+	
+	public static function get_advised_host() : string {
+		return Config::get( "global:advised_host", $_SERVER["SERVER_NAME"] );
 	}
 	
 }
