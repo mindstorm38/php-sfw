@@ -6,6 +6,8 @@ namespace SFW;
 
 use \PDO;
 
+trigger_error("SQLManager class is now deprecated", E_USER_DEPRECATED);
+
 abstract class SQLManager {
 
 	const UID = "uid";

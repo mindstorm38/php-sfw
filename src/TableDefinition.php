@@ -6,6 +6,8 @@ namespace SFW;
 
 use \PDO;
 
+trigger_error("TableDefinition class is now deprecated", E_USER_DEPRECATED);
+
 class TableDefinition {
     
     private $columns;

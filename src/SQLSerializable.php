@@ -2,6 +2,8 @@
 
 namespace SFW;
 
+trigger_error("SQLSerializable class is now deprecated", E_USER_DEPRECATED);
+
 abstract class SQLSerializable {
 
 	protected $_uid;

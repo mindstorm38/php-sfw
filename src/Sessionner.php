@@ -22,9 +22,10 @@ final class Sessionner {
 	
 	const DEFAULT_SESS_CLASS = "SFW\\Session";
 	
+	const DEFAULT_SESS_ID = "default";
+	
 	private static $started = false;
 	private static $sessions = null;
-	// private static $sessions_classes = [];
 	
 	private static $max_lifetime = 0;
 	
@@ -138,6 +139,14 @@ final class Sessionner {
 		return ( time() - $_SESSION["LAST_REGEN"] ) > self::get_regenerate_interval();
 	}
 	
+	public static function setup_default_session() {
+		self::set_session( self::DEFAULT_SESS_ID, new Session() );
+	}
+	
+	public static function get_default_session() {
+		return self::get_session( self::DEFAULT_SESS_ID );
+	}
+	
 	public static function set_session( string $session_id, Session $session ) {
 		
 		if ( self::$started ) {
@@ -146,6 +155,10 @@ final class Sessionner {
 		
 		if ( !( $session instanceof Session ) ) {
 			throw new BadMethodCallException("Invalid 'session' argument, must extend '" . self::DEFAULT_SESS_CLASS . "' class.");
+		}
+		
+		if ( isset( self::$sessions ) ) {
+			throw new BadMethodCallException("A session '{$session_id}' is already started.");
 		}
 		
 		self::$sessions[$session_id] = $session;
@@ -188,22 +201,6 @@ final class Sessionner {
 		}
 		
 	}
-	
-	/*
-	public static function set_session_class( string $session_id, $clazz ) {
-		
-		if ( !class_exists($clazz) ) {
-			throw new InvalidArgumentException("The given class '{$clazz}' can't be resolved.");
-		}
-		
-		if ( !is_subclass_of( $clazz, self::DEFAULT_SESS_CLASS ) ) {
-			throw new InvalidArgumentException("Given class '{$clazz}' is not extending the base session class '" + self::DEFAULT_SESS_CLASS + "'.");
-		}
-		
-		self::$sessions_classes[$session_id] = $clazz;
-		
-	}
-	*/
 	
 	public static function get_cookie() {
 		return Config::get( "session:cookie", self::DEFAULT_SESS_COOKIE );
