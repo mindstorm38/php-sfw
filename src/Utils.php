@@ -8,6 +8,14 @@ final class Utils {
 	
 	const TOKEN_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
+	public static function is_manual_running() : bool {
+		return !isset( $_SERVER["REQUEST_METHOD"] );
+	}
+	
+	public static function get_running_args() : array {
+		return $_SERVER["argv"];
+	}
+	
 	public static function generate_random( $length = 32 ) {
 		$charactersLength = strlen( self::TOKEN_CHARS );
 		$randomString = '';

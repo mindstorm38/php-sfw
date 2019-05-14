@@ -1,17 +1,20 @@
 {
 	"name" : "mindstorm38/php-sfw",
-	"repositories" : [
-		{
+	"repositories" : [{
 			"type" : "vcs",
 			"url" : "https://github.com/mindstorm38/php-sfw"
 		}
 	],
 	"require" : {
-		"leafo/lessphp" : "0.4.0"
+		"leafo/lessphp" : "0.4.0",
+		"composer/composer" : "^1.8"
 	},
 	"autoload" : {
 		"psr-4" : {
 			"SFW\\" : "src/"
 		}
+	},
+	"scripts" : {
+		"sfw-website-init" : "SFW\\Composer::composer_init_wd"
 	}
 }

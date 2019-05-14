@@ -34,6 +34,8 @@ final class Core {
 	private static $init_languages = true;
 	private static $start_session = false;
 	
+	private static $resources = [];
+	
 	private static $pages_aliases = [];
 	private static $pages_templates = [];
 	
@@ -59,8 +61,17 @@ final class Core {
 			die( "PHP {$minimum_php_version}+ required. Currently installed version is : " . phpversion() );
 		}
 		
+		// Registerin resources
+		$main_ressources_handlers = new ResourcesHandler( self::$app_base_dir );
+		$main_ressources_handlers->set_pages_dir( self::DEFAULT_PAGES_DIR );
+		$main_ressources_handlers->set_templates_dir( self::DEFAULT_TEMPLATES_DIR );
+		
+		self::$resources = $main_ressources_handlers;
+		
 		// App name
 		self::$app_name = $app_name;
+		
+		if ( Utils::is_manual_running() ) die();
 		
 		// PHP Configuration
 		@ini_set( 'display_errors', 1 );
@@ -104,18 +115,22 @@ final class Core {
 	}
 	
 	/**
+	 * <p><b>[[ DEPRECATED ]]</b></p>
 	 * Define pages directory, used by pages manager (relative to application base directory).
 	 * @param string $pages_dir Pages directory.
 	 */
 	public static function set_pages_dir( string $pages_dir ) {
+		trigger_error("Pages directory is no longer used, now use the application resources handler.", E_USER_DEPRECATED);
 		self::$pages_dir = $pages_dir;
 	}
 	
 	/**
+	 * <p><b>[[ DEPRECATED ]]</b></p>
 	 * Define templates directory, used by pages manager (relative to application base directory).
 	 * @param string $templates_dir Templates directory.
 	 */
 	public static function set_templates_dir( string $templates_dir ) {
+		trigger_error("Templates directory is no longer used, now use the application resources handler.", E_USER_DEPRECATED);
 		self::$templates_dir = $templates_dir;
 	}
 	
@@ -196,6 +211,12 @@ final class Core {
 		return self::$app_name;
 	}
 	
+	// Resources
+	
+	public static function get_resources_handlers() : array {
+		return self::$resources;
+	}
+	
 	// Page Loading
 	
 	/**
@@ -255,10 +276,31 @@ final class Core {
 	public static function load_page( string $raw_id ) {
 		
 		$page = new Page( $raw_id, self::get_page_alias( $raw_id ) );
-		
-		$page->directory = self::get_app_path( self::$pages_dir, $page->identifier );
 		$page->template_identifier = self::get_page_template( $page->identifier );
-		$page->template_directory = self::get_app_path( self::$templates_dir, $page->template_identifier );
+		
+		foreach ( self::$resources as $resource ) {
+			
+			if ( $page->directory === null ) {
+				
+				$page_dir = $resource->get_page_dir($page->identifier);
+				
+				if ( $page_dir !== null ) {
+					$page->directory = $page_dir;
+				}
+				
+			}
+			
+			if ( $page->template_identifier !== null && $page->template_directory === null ) {
+				
+				$template_dir = $resource->get_template_dir($page->template_identifier);
+				
+				if ( $template_dir !== null ) {
+					$page->template_directory = $template_dir;
+				}
+				
+			}
+			
+		}
 		
 		return $page;
 		
