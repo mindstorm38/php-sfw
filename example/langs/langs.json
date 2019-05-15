@@ -1,13 +1,8 @@
 [
 	{
-		"language": "English",
-		"country": "United States",
-		"identifier": "en_US",
-		"default": true
+		"identifier": "en_US"
 	},
 	{
-		"language": "French",
-		"country": "France",
 		"identifier": "fr_FR"
 	}
 ]
