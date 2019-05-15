@@ -14,13 +14,14 @@ class UIDLazyInstance {
 	
 	public function __construct( &$value_ref, $inst_class, $create_func ) {
 		
-		if ( !is_subclass_of( $inst_class, "SFW\\UIDBaseClass" ) )
+		if ( !is_subclass_of( $inst_class, "SFW\\UIDBaseClass" ) ) {
 			throw new Exception("Invalid instance class given for lazy UID instance, must extend SFW\\UIDBaseClass");
-			
-			$this->vr = &$value_ref;
-			$this->ic = $inst_class;
-			$this->cf = $create_func;
-			
+		}
+		
+		$this->vr = &$value_ref;
+		$this->ic = $inst_class;
+		$this->cf = $create_func;
+		
 	}
 	
 	public function get() {
@@ -50,8 +51,9 @@ class UIDLazyInstance {
 	
 	private function check_inst( $i, string $msg ) {
 		
-		if ( $i !== null && get_class( $i ) !== $this->ic )
+		if ( $i !== null && get_class( $i ) !== $this->ic ) {
 			throw new Exception( $msg );
+		}
 			
 	}
 	
