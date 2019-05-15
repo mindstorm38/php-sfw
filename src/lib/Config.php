@@ -15,22 +15,28 @@ final class Config {
 	private static $cache = [];
 	
 	public static function get_file() {
+		
 		if ( self::$file === null ) {
+			
 			Core::check_app_ready();
 			self::$file = Core::get_app_path( Config::CONFIG_FILE_PATH );
+			
 		}
+		
 		return self::$file;
+		
 	}
 	
 	public static function config() {
 		
 		if ( self::$loaded_config === null ) {
 			
-			self::$loaded_config = @json_decode( file_get_contents( self::get_file() ), true );
+			self::$loaded_config = @json_decode( file_get_contents(self::get_file()), true );
 			
-			if ( self::$loaded_config === null )
+			if ( !is_string(self::$loaded_config) ) {
 				throw new Exception( "Can't found config file at : " . self::get_file() );
-				
+			}
+			
 		}
 		
 		return self::$loaded_config;

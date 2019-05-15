@@ -20,11 +20,13 @@ final class Core {
 	const VERSION = "1.0.0";
 	const MINIMUM_PHP_VERSION = "7.1.0";
 	
-	const DEFAULT_PAGES_DIR = "src/pages/";
-	const DEFAULT_TEMPLATES_DIR = "src/templates/";
+	const PAGES_DIR = "src/pages/";
+	const TEMPLATES_DIR = "src/templates/";
+	const STATIC_DIR = "static/";
 	
-	const PAGES_DIR = "src/pages";
-	const TEMPLATES_DIR = "src/templates";
+	// DEPRECATED
+	const DEFAULT_PAGES_DIR = PAGES_DIR;
+	const DEFAULT_TEMPLATES_DIR = TEMPLATES_DIR;
 	
 	private static $app_name = null;
 	private static $app_base_dir = null;
@@ -40,6 +42,7 @@ final class Core {
 	private static $start_session = false;
 	
 	private static $resources_handlers = [];
+	private static $resources_handlers_r = [];
 	
 	private static $pages_aliases = [];
 	private static $pages_templates = [];
@@ -217,7 +220,7 @@ final class Core {
 	// Resources
 	
 	/**
-	 * Get all resources handlers of the application.
+	 * Get all resources handlers of the application from recent to older.
 	 * @return array The resources handlers.
 	 * @see ResourcesHandler
 	 */
@@ -226,12 +229,24 @@ final class Core {
 	}
 	
 	/**
+	 * Get all resources handlers of the application from older to recent.
+	 * @return array Resources handlers.
+	 * @see ResourcesHandler
+	 */
+	public static function get_resources_handlers_reverse() : array {
+		return self::$resources_handlers_r;
+	}
+	
+	/**
 	 * Add a {@link ResourcesHandler} to the application.
 	 * @param ResourcesHandler $handler The handler to add.
 	 * @see ResourcesHandler
 	 */
 	private static function add_resources_handler( ResourcesHandler $handler ) {
+		
 		array_unshift( self::$resources_handlers, $handler );
+		self::$resources_handlers_r[] = $handler;
+		
 	}
 	
 	// Page Loading
@@ -295,7 +310,7 @@ final class Core {
 		$page = new Page( $raw_id, self::get_page_alias( $raw_id ) );
 		$page->template_identifier = self::get_page_template( $page->identifier );
 		
-		foreach ( self::$resources_handlers as $resource ) {
+		foreach ( self::$resources_handlers_r as $resource ) {
 			
 			if ( $page->directory === null ) {
 				
@@ -320,6 +335,44 @@ final class Core {
 		}
 		
 		return $page;
+		
+	}
+	
+	// Static resources
+	
+	/**
+	 * Use a static resource using a callback.
+	 * @param string $static_path The relative static path.
+	 * @param callable $callback The callback to use when resource is opened, must have a single resource argument.
+	 * @return bool True if the file has been found and writen.
+	 */
+	public static function use_static_resource( string $static_path, callable $callback ) : bool {
+		
+		$path = Utils::path_join( self::STATIC_DIR, $static_path );
+		
+		foreach ( self::$resources_handlers_r as $resource ) {
+			
+			$res_path = $resource->get_file_safe( $path );
+			
+			if ( $res_path == null ) {
+				continue;
+			}
+			
+			$res = @fopen($res_path, "r");
+			
+			if ( !is_resource($res) ) {
+				continue;
+			}
+			
+			$success = $callback($res);
+			
+			fclose($res);
+			
+			return $success;
+			
+		}
+		
+		return false;
 		
 	}
 	

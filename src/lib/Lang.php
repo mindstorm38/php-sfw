@@ -108,7 +108,7 @@ final class Lang {
 			
 			$json_content = @file_get_contents($json_path);
 			
-			if ( $json_content === null ) {
+			if ( !is_string($json_content) ) {
 				
 				Logger::warning("Failed to read json language file at '{$json_path}'.");
 				continue;
@@ -268,7 +268,7 @@ final class Lang {
 			
 			$lang_content = @file_get_contents( $file );
 			
-			if ( $lang_content == null ) {
+			if ( !is_string($lang_content) ) {
 				
 				Logger::warning("Failed to find a cached language file '{$file}'.");
 				continue;
