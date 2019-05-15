@@ -1,0 +1,10 @@
+# US English
+
+# Queries errors
+query.error.invalid_query_name=Invalid query name
+query.error.missing_parameter=Missing parameter '{0}'
+query.error.query_execution=Query execution exception : {0}
+query.error.invalid_query_response=Invalid query response type
+
+# Queries successes
+query.success.default=Success

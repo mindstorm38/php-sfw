@@ -18,13 +18,18 @@ use \Exception;
 final class Core {
 	
 	const VERSION = "1.0.0";
-	const MINIMUM_PHP_VERSION = "7.0.0";
+	const MINIMUM_PHP_VERSION = "7.1.0";
 	
 	const DEFAULT_PAGES_DIR = "src/pages/";
 	const DEFAULT_TEMPLATES_DIR = "src/templates/";
 	
+	const PAGES_DIR = "src/pages";
+	const TEMPLATES_DIR = "src/templates";
+	
 	private static $app_name = null;
 	private static $app_base_dir = null;
+	
+	private static $frameworkd_base_dir = null;
 	
 	private static $minimum_php_version = Core::MINIMUM_PHP_VERSION;
 	private static $pages_dir = Core::DEFAULT_PAGES_DIR;
@@ -34,7 +39,7 @@ final class Core {
 	private static $init_languages = true;
 	private static $start_session = false;
 	
-	private static $resources = [];
+	private static $resources_handlers = [];
 	
 	private static $pages_aliases = [];
 	private static $pages_templates = [];
@@ -51,6 +56,7 @@ final class Core {
 		header( "X-Powered-By: PHP-SFW/" . self::VERSION );
 		
 		self::$app_base_dir = realpath( $app_base_dir );
+		self::$frameworkd_base_dir = dirname(dirname(__DIR__));
 		
 		// Check versions
 		$minimum_php_version = self::$minimum_php_version;
@@ -62,11 +68,8 @@ final class Core {
 		}
 		
 		// Registerin resources
-		$main_ressources_handlers = new ResourcesHandler( self::$app_base_dir );
-		$main_ressources_handlers->set_pages_dir( self::DEFAULT_PAGES_DIR );
-		$main_ressources_handlers->set_templates_dir( self::DEFAULT_TEMPLATES_DIR );
-		
-		self::$resources = $main_ressources_handlers;
+		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
+		self::add_resources_handler( new ResourcesHandler( self::$frameworkd_base_dir ) );
 		
 		// App name
 		self::$app_name = $app_name;
@@ -213,8 +216,22 @@ final class Core {
 	
 	// Resources
 	
+	/**
+	 * Get all resources handlers of the application.
+	 * @return array The resources handlers.
+	 * @see ResourcesHandler
+	 */
 	public static function get_resources_handlers() : array {
-		return self::$resources;
+		return self::$resources_handlers;
+	}
+	
+	/**
+	 * Add a {@link ResourcesHandler} to the application.
+	 * @param ResourcesHandler $handler The handler to add.
+	 * @see ResourcesHandler
+	 */
+	private static function add_resources_handler( ResourcesHandler $handler ) {
+		array_unshift( self::$resources_handlers, $handler );
 	}
 	
 	// Page Loading
@@ -252,7 +269,7 @@ final class Core {
 	 * Get page template, associated using {@link Core::set_page_template}.
 	 * @param string $id Page identifier.
 	 * @return null|string Associated page template, or null if no template is associated.
-	 * @see Core::set_page_template
+	 * @see \SFW\Core::set_page_template
 	 */
 	public static function get_page_template( string $id ) {
 		return array_key_exists( $id, self::$pages_templates ) ? self::$pages_templates[ $id ] : null;
@@ -278,11 +295,11 @@ final class Core {
 		$page = new Page( $raw_id, self::get_page_alias( $raw_id ) );
 		$page->template_identifier = self::get_page_template( $page->identifier );
 		
-		foreach ( self::$resources as $resource ) {
+		foreach ( self::$resources_handlers as $resource ) {
 			
 			if ( $page->directory === null ) {
 				
-				$page_dir = $resource->get_page_dir($page->identifier);
+				$page_dir = $resource->get_dir_safe( self::PAGES_DIR . $page->identifier );
 				
 				if ( $page_dir !== null ) {
 					$page->directory = $page_dir;
@@ -292,7 +309,7 @@ final class Core {
 			
 			if ( $page->template_identifier !== null && $page->template_directory === null ) {
 				
-				$template_dir = $resource->get_template_dir($page->template_identifier);
+				$template_dir = $resource->get_dir_safe( self::TEMPLATES_DIR . $page->template_identifier );
 				
 				if ( $template_dir !== null ) {
 					$page->template_directory = $template_dir;
