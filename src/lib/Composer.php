@@ -82,7 +82,7 @@ final class Composer {
 						$txt = str_replace("%{" . $name . "}%", strval($val), $txt);
 					}
 					
-					file_put_contents(substr($dst, 0, count($dst) - 4), $txt);
+					file_put_contents(substr($dst, 0, strlen($dst) - 4), $txt);
 					
 				} else {
 					copy($src, $dst);
