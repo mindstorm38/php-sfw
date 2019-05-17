@@ -13,7 +13,7 @@ final class Composer {
 	 */
 	public static function composer_init_wd( Event $event ) {
 		
-		$dir = realpath( $event->getIO()->ask("Application path : ") );
+		$dir = realpath( $event->getIO()->ask("Application path (empty for current) : ") );
 		
 		$event->getIO()->write("Using directory : '$dir'.");
 		
@@ -29,9 +29,13 @@ final class Composer {
 			$name = $event->getIO()->ask("Application name (only alphanumeric) : ");
 		} while ( empty($name) || !ctype_alnum($name) );
 		
+		$event->getIO()->write("Copying ...");
+		
 		self::extract_default_workspace( $dir, [
 			"APP_NAME" => $name
 		] );
+		
+		$event->getIO()->write("Default Working Space copied !");
 		
 	}
 	
@@ -65,15 +69,13 @@ final class Composer {
 					$txt = @file_get_contents($src);
 					
 					foreach ( $template_vars as $name => $val ) {
-						$txt = str_replace("%\{{$name}\}%", strval($val), $txt);
+						$txt = str_replace("%{" . $name . "}%", strval($val), $txt);
 					}
 					
-					@file_put_contents(substr($dst, -4), $txt);
+					@file_put_contents(substr($dst, 0, count($dst) - 4), $txt);
 					
 				} else {
-					
 					copy($src, $dst);
-					
 				}
 				
 			}
