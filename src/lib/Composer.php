@@ -13,9 +13,21 @@ final class Composer {
 	 */
 	public static function composer_init_wd( Event $event ) {
 		
-		$dir = realpath( $event->getIO()->ask("Application path (empty for current) : ") );
+		$dir_raw = $event->getIO()->ask("Application path (relative to root composer directory) : ");
+		$dir_root = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
 		
-		$event->getIO()->write("Using directory : '$dir'.");
+		$dir = realpath( Utils::path_join($dir_root, $dir_raw) );
+		
+		if ( !is_dir($dir) ) {
+			
+			$event->getIO()->ask("Please create the target directory before !");
+			return;
+			
+		}
+		
+		$dir_raw = substr( $dir, strlen($dir_root) );
+		
+		$event->getIO()->write("Using directory : '$dir_raw' ($dir).");
 		
 		if ( is_dir($dir) && count(scandir($dir)) != 0 ) {
 			
@@ -32,8 +44,13 @@ final class Composer {
 		$event->getIO()->write("Copying ...");
 		
 		$vars = [
+			"REL_PATH_TO_AUTOLOADER" => "",
 			"APP_NAME" => $name
 		];
+		
+		for ( $i = 0; $i < substr_count($dir_raw, DIRECTORY_SEPARATOR); $i++ ) {
+			$vars["REL_PATH_TO_AUTOLOADER"] .= "/..";
+		}
 		
 		$event->getIO()->write("Variables for templates : " . var_export($vars, true) . ".");
 		
@@ -66,6 +83,9 @@ final class Composer {
 		}
 		
 		foreach ( $children as $child ) {
+			
+			if ( $child === ".ignore" )
+				continue;
 			
 			$src = "{$src_dir}/{$child}";
 			$dst = "{$dst_dir}/{$child}";

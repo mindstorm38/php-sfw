@@ -3,4 +3,4 @@ Options -Indexes
 RewriteEngine on
 Options -MultiViews
 
-RewriteRule .* /common.php
+RewriteRule .* common.php [QSA,L]
