@@ -54,7 +54,7 @@ final class Config {
 			
 			self::$loaded_config = @json_decode( file_get_contents(self::get_file()), true );
 			
-			if ( !is_string(self::$loaded_config) ) {
+			if ( !is_array(self::$loaded_config) ) {
 				throw new Exception( "Can't found config file at : " . self::get_file() );
 			}
 			

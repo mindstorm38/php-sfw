@@ -28,8 +28,8 @@ final class Core {
 	const STATIC_DIR = "static/";
 	
 	// DEPRECATED
-	const DEFAULT_PAGES_DIR = PAGES_DIR;
-	const DEFAULT_TEMPLATES_DIR = TEMPLATES_DIR;
+	const DEFAULT_PAGES_DIR = Core::PAGES_DIR;
+	const DEFAULT_TEMPLATES_DIR = Core::TEMPLATES_DIR;
 	
 	private static $app_name = null;
 	private static $app_base_dir = null;
