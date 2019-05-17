@@ -26,8 +26,8 @@ final class Composer {
 		}
 		
 		do {
-			$name = $event->getIO()->ask("Application name (only alphanumeric) : ");
-		} while ( empty($name) || !ctype_alnum($name) );
+			$name = $event->getIO()->ask("Application name (only alphanumeric, '-' & '_') : ");
+		} while ( !self::valid_identifier($name) );
 		
 		$event->getIO()->write("Copying ...");
 		
@@ -39,17 +39,23 @@ final class Composer {
 		
 	}
 	
+	private static function valid_identifier( string $id ) : bool {
+		return preg_match("^[a-zA-Z0-9\-_]+$", $id) === 1;
+	}
+	
 	private static function extract_default_workspace( string $dst_dir, array $template_vars = [] ) {
 		self::extract_default_ws_dir( realpath( __DIR__ . "/../../defaultws" ), $dst_dir, $template_vars );
 	}
 	
 	private static function extract_default_ws_dir( string $src_dir, string $dst_dir, array $template_vars = [] ) : void {
 		
-		$children = array_diff( @scandir($src_dir), array('..', '.') );
+		$children = @scandir($src_dir);
 		
 		if ( $children === false ) {
 			return;
 		}
+		
+		$children = array_diff( $children, array('..', '.') );
 		
 		if ( !is_dir($dst_dir) ) {
 			mkdir( $dst_dir, 0777, true );
