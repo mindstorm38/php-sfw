@@ -31,9 +31,13 @@ final class Composer {
 		
 		$event->getIO()->write("Copying ...");
 		
-		self::extract_default_workspace( $dir, [
+		$vars = [
 			"APP_NAME" => $name
-		] );
+		];
+		
+		$event->getIO()->write("Variables for templates : " . var_export($template_vars, true) . ".");
+		
+		self::extract_default_workspace($dir, $vars);
 		
 		$event->getIO()->write("Default Working Space copied !");
 		
