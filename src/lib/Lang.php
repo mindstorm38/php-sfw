@@ -16,7 +16,7 @@ use \Exception;
 final class Lang {
 	
 	const LANGS_DIR            = "langs/";
-	const LANGS_FOLDER         = LANGS_DIR;
+	const LANGS_FOLDER         = Lang::LANGS_DIR;
 	const JSON_FILE            = "langs.json";
 	const LANG_EXT             = ".lang";
 	
@@ -153,7 +153,7 @@ final class Lang {
 					
 				}
 				
-				$lang_path = $resource->get_file_safe( LANGS_DIR . $identifier . LANG_EXT );
+				$lang_path = $resource->get_file_safe( self::LANGS_DIR . $identifier . self::LANG_EXT );
 				
 				if ( $lang_path !== null ) {
 					self::$langs[$identifier]["files"][] = $lang_path;
