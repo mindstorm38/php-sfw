@@ -40,7 +40,7 @@ final class Composer {
 	}
 	
 	private static function valid_identifier( string $id ) : bool {
-		return preg_match("^[a-zA-Z0-9\-_]+$", $id) === 1;
+		return preg_match("/^[a-zA-Z0-9\-_]+$/", $id) === 1;
 	}
 	
 	private static function extract_default_workspace( string $dst_dir, array $template_vars = [] ) {
