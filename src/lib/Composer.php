@@ -19,7 +19,7 @@ final class Composer {
 		
 		if ( is_dir($dir) && count(scandir($dir)) != 0 ) {
 			
-			if ( !$event->getIO()->askConfirmation("Specified website directory isn't empty, keep initialize it ?", false) ) {
+			if ( !$event->getIO()->askConfirmation("Specified website directory isn't empty, keep initialize it ? (yes/no) ", false) ) {
 				return;
 			}
 			
@@ -43,7 +43,7 @@ final class Composer {
 		
 		$children = array_diff( @scandir($src_dir), array('..', '.') );
 		
-		if ( $children === false || count($children) === 0 ) {
+		if ( $children === false ) {
 			return;
 		}
 		
@@ -68,7 +68,7 @@ final class Composer {
 						$txt = str_replace("%\{{$name}\}%", strval($val), $txt);
 					}
 					
-					@file_put_contents($src, $txt);
+					@file_put_contents(substr($dst, -4), $txt);
 					
 				} else {
 					
