@@ -76,13 +76,13 @@ final class Composer {
 				
 				if ( Utils::ends_with($src, ".tpl") ) {
 					
-					$txt = @file_get_contents($src);
+					$txt = file_get_contents($src);
 					
 					foreach ( $template_vars as $name => $val ) {
 						$txt = str_replace("%{" . $name . "}%", strval($val), $txt);
 					}
 					
-					@file_put_contents(substr($dst, 0, count($dst) - 4), $txt);
+					file_put_contents(substr($dst, 0, count($dst) - 4), $txt);
 					
 				} else {
 					copy($src, $dst);
