@@ -26,6 +26,8 @@ class StaticRoute extends Route {
 			return [ substr( $bpath, count($this->base_path) ) ];
 		}
 		
+		return null;
+		
 	}
 
 }
