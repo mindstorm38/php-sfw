@@ -2,7 +2,6 @@
 
 namespace SFW\Route;
 
-use SFW\Route;
 use SFW\Utils;
 
 class ExactRoute extends Route {
