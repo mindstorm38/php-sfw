@@ -8,12 +8,39 @@ final class Utils {
 	
 	const TOKEN_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
+	/**
+	 * Check if this script is not started using Apache, NGINX or other.
+	 * @return bool True if started by a HTTP web server.
+	 */
 	public static function is_manual_running() : bool {
 		return !isset( $_SERVER["REQUEST_METHOD"] );
 	}
 	
+	/**
+	 * Get command line arguments.
+	 * @return array Arguments array.
+	 */
 	public static function get_running_args() : array {
 		return $_SERVER["argv"];
+	}
+	
+	/**
+	 * Beautify an URL path by removing all useless slashes and leading slash.
+	 * @param string $path The raw path.
+	 * @return string Beautified path.
+	 */
+	public static function beautify_url_path( string $path ) : string {
+		
+		$fp = "";
+		
+		foreach ( explode( '/', $path ) as $p ) {
+			if ( !empty($p) ) {
+				$fp .= "/{$path}";
+			}
+		}
+		
+		return $fp;
+		
 	}
 	
 	public static function generate_random( $length = 32 ) {

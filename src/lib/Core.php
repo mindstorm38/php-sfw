@@ -4,7 +4,9 @@
 
 namespace SFW;
 
+use SFW\Route\Route;
 use \Exception;
+use SFW\Route\ExactRoute;
 
 /**
  * 
@@ -40,10 +42,12 @@ final class Core {
 	private static $redirect_https = true;
 	private static $init_languages = true;
 	private static $start_session = false;
+	private static $setup_defaults_pages = true;
 	
 	private static $resources_handlers = [];
 	private static $resources_handlers_r = [];
 	
+	private static $routes = [];
 	private static $pages_aliases = [];
 	private static $pages_templates = [];
 	
@@ -70,13 +74,14 @@ final class Core {
 			die( "PHP {$minimum_php_version}+ required. Currently installed version is : " . phpversion() );
 		}
 		
-		// Registerin resources
+		// Registering resources
 		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
 		self::add_resources_handler( new ResourcesHandler( self::$frameworkd_base_dir ) );
 		
 		// App name
 		self::$app_name = $app_name;
 		
+		// Manual running
 		if ( Utils::is_manual_running() ) die();
 		
 		// PHP Configuration
@@ -105,6 +110,14 @@ final class Core {
 		
 		// Start session if selected
 		if ( self::$start_session ) SessionManager::session_start();
+		
+		// Default routes and pages
+		if ( self::$setup_defaults_pages ) {
+			
+			self::add_route( new ExactRoute( Route::cb_send_app_page("home"), "/" ) );
+			self::set_page_template("home", "sfw-template");
+			
+		}
 		
 	}
 	
@@ -172,6 +185,14 @@ final class Core {
 	 */
 	public static function set_start_session( bool $start_session ) {
 		self::$start_session = $start_session;
+	}
+	
+	/**
+	 * If true, the Core setup default pages, True by default because it contains errors pages.
+	 * @param bool $setup_default_pages Setup default pages.
+	 */
+	public static function set_setup_defaults_pages( bool $setup_default_pages ) {
+		self::$setup_defaults_pages = $setup_default_pages;
 	}
 	
 	// App
@@ -249,6 +270,38 @@ final class Core {
 		
 	}
 	
+	// Routes
+	
+	/**
+	 * Add a route to the application, a route define what actions to executes when using specific URL path.
+	 * @param Route $route The new route to add.
+	 */
+	public static function add_route( Route $route ) {
+		
+		$id = $route->identifier();
+		self::$routes[$id] = $route;
+		
+	}
+	
+	/**
+	 * Try to route the path.
+	 * @param string $path The path to route, it can be raw from <code>$_SERVER["REQUEST_URI"]</code>.
+	 * @return string|null The used route unique identifier or null if no route was found.
+	 */
+	public static function try_route( string $path ) : ?string {
+		
+		$bpath = Utils::beautify_url_path($path);
+		
+		foreach ( self::$routes as $id => $route ) {
+			if ( $route->try_route($path, $bpath) ) {
+				return $id;
+			}
+		}
+		
+		return null;
+		
+	}
+	
 	// Page Loading
 	
 	/**
@@ -305,7 +358,7 @@ final class Core {
 	 * @return \SFW\Page The loaded page object.
 	 * @see \SFW\Page
 	 */
-	public static function load_page( string $raw_id ) {
+	public static function load_page( string $raw_id ) : Page {
 		
 		$page = new Page( $raw_id, self::get_page_alias( $raw_id ) );
 		$page->template_identifier = self::get_page_template( $page->identifier );
