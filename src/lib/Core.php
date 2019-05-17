@@ -123,6 +123,8 @@ final class Core {
 			
 		}
 		
+		self::try_route( Utils::get_request_path() );
+		
 	}
 	
 	// Options

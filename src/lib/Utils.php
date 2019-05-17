@@ -43,6 +43,14 @@ final class Utils {
 		
 	}
 	
+	/**
+	 * Get the request path from the HTTP server from client.
+	 * @return string Requested path.
+	 */
+	public static function get_request_path() : string {
+		return explode( '?', $_SERVER["REQUEST_URI"], 2 )[0];
+	}
+	
 	public static function generate_random( $length = 32 ) {
 		$charactersLength = strlen( self::TOKEN_CHARS );
 		$randomString = '';
@@ -229,7 +237,10 @@ final class Utils {
 	}
 	
 	public static function get_request_uri() {
-		return explode( '?', $_SERVER['REQUEST_URI'], 2 )[0];
+		
+		trigger_error( "This function is deprecated.", E_USER_DEPRECATED );
+		return self::get_request_path();
+		
 	}
 	
 	public static function make_arrays_prop_list( array $arrays, string $prop_name ) {
