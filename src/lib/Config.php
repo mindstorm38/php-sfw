@@ -6,15 +6,31 @@ namespace SFW;
 
 use \Exception;
 
+/**
+ *
+ * Used to load "config.json" (in application root directory) and provide methods to get values from keys paths.
+ *
+ * @author Theo Rozier
+ *
+ */
 final class Config {
 	
+	/**
+	 * Config file name in application root directory.
+	 * @var string
+	 */
 	const CONFIG_FILE_PATH = "config.json";
 	
 	private static $loaded_config = null;
 	private static $file = null;
 	private static $cache = [];
 	
-	public static function get_file() {
+	/**
+	 * Get the absolute file path (using {@link Core::get_app_path}).
+	 * @return string The config file path.
+	 * @see Core::get_app_path
+	 */
+	public static function get_file() : string {
 		
 		if ( self::$file === null ) {
 			
@@ -27,6 +43,11 @@ final class Config {
 		
 	}
 	
+	/**
+	 * Get the configuration arrays representation (from "config.json").
+	 * @throws Exception If can't decode or can't find the config file.
+	 * @return array Array representing JSON configuration.
+	 */
 	public static function config() {
 		
 		if ( self::$loaded_config === null ) {
@@ -43,6 +64,13 @@ final class Config {
 		
 	}
 	
+	/**
+	 * Get a configuration value (there is no way for navigating in JSON array, but you can get them).
+	 * @param string $path Path of the configuration key, separate levels using ":". Like "root:key".
+	 * @param mixed $default Default value.
+	 * @throws Exception See {@link Config::config}
+	 * @return mixed Key value.
+	 */
 	public static function get( $path, $default = null ) {
 		
 		if ( gettype( $path ) !== "string" ) throw new Exception("'key' parameter must be a string");
@@ -74,7 +102,12 @@ final class Config {
 		
 	}
 	
-	public static function get_advised_url( string $path = "" ) {
+	/**
+	 * Get the advised URL of the website from the configuration file. Optionaly pass a path to append to the URL.
+	 * @param string $path Optional path to append.
+	 * @return string The valid advised URL.
+	 */
+	public static function get_advised_url( string $path = "" ) : string {
 		
 		$base_path = '/' . trim( self::get("global:base_path"), '/' );
 		if ( strlen( $base_path ) !== 1 ) $base_path .= '/';
@@ -85,10 +118,16 @@ final class Config {
 	
 	// Global configuration
 	
+	/**
+	 * @return bool If the config require secure HTTPS. False by default.
+	 */
 	public static function is_secure() : bool {
 		return boolval( Config::get("global:secure", false) );
 	}
 	
+	/**
+	 * @return string The advised host, or the current host by default.
+	 */
 	public static function get_advised_host() : string {
 		return Config::get( "global:advised_host", $_SERVER["SERVER_NAME"] );
 	}
