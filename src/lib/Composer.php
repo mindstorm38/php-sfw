@@ -35,7 +35,7 @@ final class Composer {
 			"APP_NAME" => $name
 		];
 		
-		$event->getIO()->write("Variables for templates : " . var_export($template_vars, true) . ".");
+		$event->getIO()->write("Variables for templates : " . var_export($vars, true) . ".");
 		
 		self::extract_default_workspace($dir, $vars);
 		
