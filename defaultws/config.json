@@ -1,0 +1,35 @@
+{
+	"global": {
+		"secure": false,
+		"advised_host": "localhost",
+		"base_path": ""
+	},
+	"prototype": {
+		"enabled": false,
+		"users": {
+			"guest": ""
+		}
+	},
+	"query": {
+		"enabled": true,
+		"path": "/query/"
+	},
+	"database": {
+		"host": "127.0.0.1:3306",
+		"user": "root",
+		"charset": "utf8",
+		"password": "",
+		"name": ""
+	},
+	"session": {
+		"name": "SFWSESSID",
+		"lifetime": 604800,
+		"path": "/",
+		"regenerate_interval": 900,
+		"configs": {
+			"default": {
+				"lifetime": 604800
+			}
+		}
+	}
+}
