@@ -16,7 +16,7 @@ final class Composer {
 		$dir_raw = $event->getIO()->ask("Application path (relative to root composer directory) : ");
 		$dir_root = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
 		
-		$dir = realpath( Utils::path_join($dir_root, $dir_raw) );
+		$dir = Utils::path_join($dir_root, $dir_raw);
 		
 		if ( !is_dir($dir) ) {
 			
@@ -25,17 +25,10 @@ final class Composer {
 			
 		}
 		
+		$dir = realpath($dir);
 		$dir_raw = substr( $dir, strlen($dir_root) );
 		
-		$event->getIO()->write("Using directory : '$dir_raw' ($dir).");
-		
-		if ( is_dir($dir) && count(scandir($dir)) != 0 ) {
-			
-			if ( !$event->getIO()->askConfirmation("Specified website directory isn't empty, keep initialize it ? (yes/no) ", false) ) {
-				return;
-			}
-			
-		}
+		$event->getIO()->askConfirmation("Using directory : '$dir_raw' ($dir) ? (y/n) ");
 		
 		do {
 			$name = $event->getIO()->ask("Application name (only alphanumeric, '-' & '_') : ");
