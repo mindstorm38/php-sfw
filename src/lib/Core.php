@@ -7,6 +7,7 @@ namespace SFW;
 use SFW\Route\Route;
 use \Exception;
 use SFW\Route\ExactRoute;
+use SFW\Route\StaticRoute;
 
 /**
  * 
@@ -115,7 +116,10 @@ final class Core {
 		if ( self::$setup_defaults_pages ) {
 			
 			self::add_route( new ExactRoute( Route::cb_send_app_page("home"), "/" ) );
+			self::add_route( new StaticRoute( Route::cb_send_static_ouput(), "/static") );
+			
 			self::set_page_template("home", "sfw-template");
+			self::set_page_template("error", "sfw-template");
 			
 		}
 		

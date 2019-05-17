@@ -28,14 +28,26 @@ abstract class Route {
 	
 	// Predefined callbacks
 	
-	public static function cb_send_app_page( string $page ) {
+	public static function cb_send_app_page( string $page ) : callable {
 		
-		return function( $vars ) use ($page) {
+		return function( $vars ) use ( $page ) {
 			
 			$page = Core::load_page($page);
 			$page->{"vars"} = $vars;
 			
 			@include_once $page->template_part_path("content");
+			
+		};
+		
+	}
+	
+	public static function cb_send_static_ouput() : callable {
+		
+		return function( $vars ) {
+			
+			Core::use_static_resource( $vars[0], function( $res ) {
+				fpassthru($res);
+			} );
 			
 		};
 		
