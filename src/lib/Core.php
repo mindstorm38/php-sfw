@@ -295,6 +295,13 @@ final class Core {
 	}
 	
 	/**
+	 * @return array Routes of the application with their unique identifier as key.
+	 */
+	public static function get_routes() : array {
+		return self::$routes;
+	}
+	
+	/**
 	 * Try to route the path.
 	 * @param string $path The path to route, it can be raw from <code>$_SERVER["REQUEST_URI"]</code>.
 	 * @return string|null The used route unique identifier or null if no route was found.
@@ -413,7 +420,7 @@ final class Core {
 	 */
 	public static function print_page( string $raw_id, array $vars = [] ) : bool {
 		
-		$page = Core::load_page($page);
+		$page = Core::load_page($raw_id);
 		$page->{"vars"} = $vars;
 		
 		@include_once $page->has_template() ? $page->template_part_path("main") : $page->page_part_path("init");
