@@ -111,7 +111,13 @@ final class Core {
 		// Start session if selected
 		if ( self::$start_session ) SessionManager::session_start();
 		
-		self::try_route( Utils::get_request_path_relative() );
+		// Let's route
+		if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
+			
+			http_response_code(404);
+			self::print_http_status(404);
+			
+		}
 		
 	}
 	
@@ -394,6 +400,33 @@ final class Core {
 		
 		return $page;
 		
+	}
+	
+	/**
+	 * Print the page loaded (using {@link Core::load_page}) from its identifier.
+	 * @param string $raw_id The identifier.
+	 * @param array $vars Variables to add to the page object in the 'vars' property.
+	 * @return bool If the page was successfuly printed.
+	 * @see Core::load_page
+	 */
+	public static function print_page( string $raw_id, array $vars = [] ) : bool {
+		
+		$page = Core::load_page($page);
+		$page->{"vars"} = $vars;
+		
+		@include_once $page->template_part_path("content");
+		
+	}
+	
+	/**
+	 * Print the HTTP 'error' page.
+	 * @param int $code The HTTP error code.
+	 * @param string $msg A custom message to be added on the error page.
+	 * @return bool If the page was successfuly printed.
+	 * @see Core::print_page
+	 */
+	public static function print_http_status( int $code, string $msg = null ) : bool {
+		return self::print_page( "error", [ "code" => $code, "msg" => $msg ] );
 	}
 	
 	// Static resources

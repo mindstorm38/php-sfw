@@ -31,12 +31,7 @@ abstract class Route {
 	public static function cb_send_app_page( string $page ) : callable {
 		
 		return function( $vars ) use ( $page ) {
-			
-			$page = Core::load_page($page);
-			$page->{"vars"} = $vars;
-			
-			@include_once $page->template_part_path("content");
-			
+			Core::print_page($page, $vars);
 		};
 		
 	}
