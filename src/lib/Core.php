@@ -425,6 +425,8 @@ final class Core {
 		
 		@include_once $page->has_template() ? $page->template_part_path("main") : $page->page_part_path("init");
 		
+		return true;
+		
 	}
 	
 	/**
