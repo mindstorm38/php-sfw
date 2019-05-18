@@ -43,9 +43,13 @@ abstract class Route {
 		
 		return function( $vars ) {
 			
-			Core::use_static_resource( $vars[0], function( $res ) {
+			$s = Core::use_static_resource( $vars[0], function( $res ) {
 				fpassthru($res);
 			} );
+			
+			if ( !$s ) {
+				Core::print_error_page(404);
+			}
 			
 		};
 		

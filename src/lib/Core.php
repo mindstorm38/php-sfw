@@ -113,10 +113,7 @@ final class Core {
 		
 		// Let's route
 		if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
-			
-			http_response_code(404);
 			self::print_error_page(404);
-			
 		}
 		
 	}
@@ -437,7 +434,10 @@ final class Core {
 	 * @see Core::print_page
 	 */
 	public static function print_error_page( int $code, string $msg = null ) : bool {
+		
+		http_response_code($code);
 		return self::print_page( "error", [ "code" => $code, "msg" => $msg ] );
+		
 	}
 	
 	// Static resources
