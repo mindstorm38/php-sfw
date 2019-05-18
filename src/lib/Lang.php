@@ -223,7 +223,7 @@ final class Lang {
 	 * @param string $identifier The identifier of the language.
 	 * @return string|null Language description or null if this language is not loaded.
 	 */
-	public static function get_language( string $identifier ) : ?string {
+	public static function get_language( string $identifier ) : ?array {
 		return self::$langs[$identifier] ?? null;
 	}
 	
@@ -379,7 +379,7 @@ final class Lang {
 			return $key;
 		}
 		
-		$ret = isset( $content[$key] ) ? Utils::str_format( $array[$key], $vars ) : $key;
+		$ret = isset( $content[$key] ) ? Utils::str_format( $content[$key], $vars ) : $key;
 		
 		if ( $formatting != null ) {
 			
