@@ -11,3 +11,4 @@ query.success.default=Success
 
 # Default pages
 home=Home
+error=Error : {0}

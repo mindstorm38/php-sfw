@@ -11,3 +11,4 @@ query.success.default=Succès
 
 # Pages par défaut
 home=Accueil
+error=Erreur : {0}

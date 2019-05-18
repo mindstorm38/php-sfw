@@ -115,7 +115,7 @@ final class Core {
 		if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
 			
 			http_response_code(404);
-			self::print_http_status(404);
+			self::print_error_page(404);
 			
 		}
 		
@@ -436,7 +436,7 @@ final class Core {
 	 * @return bool If the page was successfuly printed.
 	 * @see Core::print_page
 	 */
-	public static function print_http_status( int $code, string $msg = null ) : bool {
+	public static function print_error_page( int $code, string $msg = null ) : bool {
 		return self::print_page( "error", [ "code" => $code, "msg" => $msg ] );
 	}
 	
