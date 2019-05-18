@@ -50,7 +50,7 @@ final class Utils {
 			}
 		}
 		
-		return $fp;
+		return empty($fp) ? "/" : $fp;
 		
 	}
 	
