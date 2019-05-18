@@ -403,7 +403,9 @@ final class Core {
 	}
 	
 	/**
-	 * Print the page loaded (using {@link Core::load_page}) from its identifier.
+	 * <p>Print the page loaded (using {@link Core::load_page}) from its identifier.</p>
+	 * <p>If the page as a template, it include the template part 'main'.</p>
+	 * <p>Else, if no template is defined, it use the 'init' part of the page.</p>
 	 * @param string $raw_id The identifier.
 	 * @param array $vars Variables to add to the page object in the 'vars' property.
 	 * @return bool If the page was successfuly printed.
@@ -414,7 +416,7 @@ final class Core {
 		$page = Core::load_page($page);
 		$page->{"vars"} = $vars;
 		
-		@include_once $page->template_part_path("content");
+		@include_once $page->has_template() ? $page->template_part_path("main") : $page->page_part_path("init");
 		
 	}
 	
