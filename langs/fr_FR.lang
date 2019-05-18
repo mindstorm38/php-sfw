@@ -8,3 +8,6 @@ query.error.invalid_query_response=Réponse invalide de la requête
 
 # Succès de requêtes
 query.success.default=Succès
+
+# Pages par défaut
+home=Accueil

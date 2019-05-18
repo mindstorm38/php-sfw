@@ -1,3 +1,5 @@
+<?php @include_once $page->page_part_path("init"); ?>
+
 <!DOCTYPE html>
 <html>
 

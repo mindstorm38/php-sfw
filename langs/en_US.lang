@@ -8,3 +8,6 @@ query.error.invalid_query_response=Invalid query response type
 
 # Queries successes
 query.success.default=Success
+
+# Default pages
+home=Home
