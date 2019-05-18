@@ -38,7 +38,7 @@ class ResourcesHandler {
 	 * @param string $relative_path The relative path of the directory from base directory.
 	 * @return null|string The given directory path, or null if not exists.
 	 */
-	public function get_dir_safe( string $relative_path ) : string {
+	public function get_dir_safe( string $relative_path ) : ?string {
 		
 		$path = Utils::path_join( $this->base_dir, $relative_path );
 		return is_dir($path) ? $path : null;
@@ -50,7 +50,7 @@ class ResourcesHandler {
 	 * @param string $relative_path The relative path of the file from base directory.
 	 * @return null|string The given file path, or null if not exists.
 	 */
-	public function get_file_safe( string $relative_path ) : string {
+	public function get_file_safe( string $relative_path ) : ?string {
 		
 		$path = Utils::path_join( $this->base_dir, $relative_path );
 		return is_file($path) ? $path : null;
