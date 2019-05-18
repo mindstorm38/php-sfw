@@ -55,7 +55,7 @@ final class Config {
 			self::$loaded_config = @json_decode( file_get_contents(self::get_file()), true );
 			
 			if ( !is_array(self::$loaded_config) ) {
-				throw new Exception( "Can't found config file at : " . self::get_file() );
+				throw new Exception( "Can't found config file at : " . self::get_file() . ", main element must be a JSON object." );
 			}
 			
 		}
@@ -71,21 +71,33 @@ final class Config {
 	 * @throws Exception See {@link Config::config}
 	 * @return mixed Key value.
 	 */
-	public static function get( $path, $default = null ) {
+	public static function get( string $path, $default = null ) {
 		
-		if ( gettype( $path ) !== "string" ) throw new Exception("'key' parameter must be a string");
+		/*
+		if ( gettype( $path ) !== "string" ) {
+			throw new Exception("The 'key' parameter must be a string");
+		}
+		*/
 		
-		if ( array_key_exists( $path, self::$cache ) ) return self::$cache[ $path ];
+		if ( array_key_exists( $path, self::$cache ) ) {
+			return self::$cache[ $path ];
+		}
 		
 		$ret = self::config();
 		
 		$splited = explode( ":", $path );
 		
 		foreach ( $splited as $key ) {
+			
 			if ( !array_key_exists( $key, $ret ) ) {
-				return $default;
+				
+				$ret = $default;
+				break;
+				
 			}
+			
 			$ret = $ret[ $key ];
+			
 		}
 		
 		self::$cache[ $path ] = $ret;
@@ -108,12 +120,7 @@ final class Config {
 	 * @return string The valid advised URL.
 	 */
 	public static function get_advised_url( string $path = "" ) : string {
-		
-		$base_path = '/' . trim( self::get("global:base_path"), '/' );
-		if ( strlen( $base_path ) !== 1 ) $base_path .= '/';
-		
-		return ( self::is_secure() ? "https" : "http" ) . "://" . self::get_advised_host() . $base_path . ltrim( $path, '/' );
-		
+		return ( self::is_secure() ? "https" : "http" ) . "://" . self::get_advised_host() . self::get_base_path() . "/" . Utils::beautify_url_path($path);
 	}
 	
 	// Global configuration
@@ -130,6 +137,13 @@ final class Config {
 	 */
 	public static function get_advised_host() : string {
 		return Config::get( "global:advised_host", $_SERVER["SERVER_NAME"] );
+	}
+	
+	/**
+	 * @return string The base path where the website can be accessed.
+	 */
+	public static function get_base_path() : string {
+		return "/" . Utils::beautify_url_path( Config::get( "global:base_path", "" ) );
 	}
 	
 }

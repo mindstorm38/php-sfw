@@ -41,25 +41,30 @@ final class Utils {
 	 * @return string Beautified path.
 	 */
 	public static function beautify_url_path( string $path ) : string {
-		
-		$fp = "";
-		
-		foreach ( explode( '/', $path ) as $p ) {
-			if ( !empty($p) ) {
-				$fp .= "/{$path}";
-			}
-		}
-		
-		return empty($fp) ? "/" : $fp;
-		
+		return implode('/', array_filter(explode('/', $path)));
 	}
 	
 	/**
-	 * Get the request path from the HTTP server from client.
+	 * Get the request path from the HTTP client.
 	 * @return string Requested path.
 	 */
 	public static function get_request_path() : string {
 		return explode( '?', $_SERVER["REQUEST_URI"], 2 )[0];
+	}
+	
+	/**
+	 * Get the request path from HTTP client
+	 * @return string The requested path relative to the application 'base_path' (from config) or request path if 'base_path' don't appear to be used in it.
+	 * @see Utils::get_request_path
+	 * @see Config::get_base_path
+	 */
+	public static function get_request_path_relative() : string {
+		
+		$base_path = Config::get_base_path();
+		$path = self::get_request_path();
+		
+		return self::starts_with($path, $base_path) ? substr($path, strlen($base_path)) : $path;
+		
 	}
 	
 	/**

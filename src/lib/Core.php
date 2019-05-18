@@ -5,9 +5,9 @@
 namespace SFW;
 
 use SFW\Route\Route;
-use \Exception;
 use SFW\Route\ExactRoute;
 use SFW\Route\StaticRoute;
+use \Exception;
 
 /**
  * 
@@ -43,7 +43,6 @@ final class Core {
 	private static $redirect_https = true;
 	private static $init_languages = true;
 	private static $start_session = false;
-	private static $setup_defaults_pages = true;
 	
 	private static $resources_handlers = [];
 	private static $resources_handlers_r = [];
@@ -112,18 +111,7 @@ final class Core {
 		// Start session if selected
 		if ( self::$start_session ) SessionManager::session_start();
 		
-		// Default routes and pages
-		if ( self::$setup_defaults_pages ) {
-			
-			self::add_route( new ExactRoute( Route::cb_send_app_page("home"), "/" ) );
-			self::add_route( new StaticRoute( Route::cb_send_static_ouput(), "/static") );
-			
-			self::set_page_template("home", "sfw-template");
-			self::set_page_template("error", "sfw-template");
-			
-		}
-		
-		self::try_route( Utils::get_request_path() );
+		self::try_route( Utils::get_request_path_relative() );
 		
 	}
 	
@@ -191,14 +179,6 @@ final class Core {
 	 */
 	public static function set_start_session( bool $start_session ) {
 		self::$start_session = $start_session;
-	}
-	
-	/**
-	 * If true, the Core setup default pages, True by default because it contains errors pages.
-	 * @param bool $setup_default_pages Setup default pages.
-	 */
-	public static function set_setup_defaults_pages( bool $setup_default_pages ) {
-		self::$setup_defaults_pages = $setup_default_pages;
 	}
 	
 	// App
@@ -277,6 +257,25 @@ final class Core {
 	}
 	
 	// Routes
+	
+	/**
+	 * Setup default routes and pages from internal PHP-SFW pages.
+	 * Actions done :
+	 * <ul>
+	 * 	<li>Add ExactRoute to send 'home' page for the path '/'.</li>
+	 *  <li>Add StaticRoute for path '/static'.</li>
+	 *  <li>Set 'sfw-template' (internal default template) to 'home' & 'error' pages.</li>
+	 * </ul>
+	 */
+	public static function setup_default_routes_and_pages() {
+		
+		self::add_route( new ExactRoute( Route::cb_send_app_page("home"), "/" ) );
+		self::add_route( new StaticRoute( Route::cb_send_static_ouput(), "/static") );
+		
+		self::set_page_template("home", "sfw-template");
+		self::set_page_template("error", "sfw-template");
+		
+	}
 	
 	/**
 	 * Add a route to the application, a route define what actions to executes when using specific URL path.
