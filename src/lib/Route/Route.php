@@ -18,8 +18,11 @@ abstract class Route {
 	
 	public function try_route( string $path, string $bpath ) : bool {
 		
-		if ( ( $vars = $this->routable($path, $bpath) ) != null ) {
-			return $this->action($vars);
+		if ( ( $vars = $this->routable($path, $bpath) ) !== null ) {
+			
+			($this->action)($vars);
+			return true;
+			
 		}
 		
 		return false;

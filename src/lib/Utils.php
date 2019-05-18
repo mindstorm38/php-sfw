@@ -63,7 +63,7 @@ final class Utils {
 		$base_path = Config::get_base_path();
 		$path = self::get_request_path();
 		
-		return self::starts_with($path, $base_path) ? substr($path, strlen($base_path)) : $path;
+		return self::starts_with($path, $base_path) ? substr( $path, strlen($base_path) - 1 ) : $path;
 		
 	}
 	
