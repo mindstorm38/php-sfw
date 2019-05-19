@@ -8,6 +8,7 @@ use SFW\Route\Route;
 use SFW\Route\ExactRoute;
 use SFW\Route\StaticRoute;
 use \Exception;
+use \BadMethodCallException;
 
 /**
  * 
@@ -114,8 +115,15 @@ final class Core {
 		if ( self::$start_session ) SessionManager::session_start();
 		
 		// Let's route
-		if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
-			self::print_error_page(404);
+		
+		try {
+			
+			if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
+				self::print_error_page(404);
+			}
+			
+		} catch (Exception $e) {
+			self::print_error_page(500, $e->getMessage());
 		}
 		
 	}
@@ -281,7 +289,9 @@ final class Core {
 		self::set_page_template("home", "sfw-template");
 		self::set_page_template("error", "sfw-template");
 		
-		self::add_res_ext_processor( ".less.css", [LessCompiler::class, "print_compiled_resource"] );
+		self::add_res_ext_processor( ".less.css", function( string $path ) {
+			return substr( $path, 0, strlen($path) - 4 );
+		}, [LessCompiler::class, "print_compiled_resource"] );
 		
 	}
 	
@@ -485,11 +495,19 @@ final class Core {
 	
 	/**
 	 * Add a resource extension processor. It's used to add a resource processor on a specific extension.
+	 * If both <code>path_modifier</code> & <code>res_printer</code> are null, exception is thrown.
 	 * @param string $extension The extension.
-	 * @param callable $extension_cb The <code><b>callback( $res )</b></code>
+	 * @param null|callable $path_modifier The <code><b>path_modifier( $path ) : string</b></code> returning the new path to be used to open the resource. Null to don't change the path.
+	 * @param callable $res_printer The <code><b>callback( $res )</b></code> printing the transformed content of the resource.
 	 */
-	public static function add_res_ext_processor( string $extension, callable $extension_cb ) : void {
-		self::$static_res_ext_procs[$extension] = $extension_cb;
+	public static function add_res_ext_processor( string $extension, ?callable $path_modifier, ?callable $res_printer ) : void {
+		
+		if ( $path_modifier === null && $res_printer === null  ) {
+			throw new BadMethodCallException("Both 'path_modifier' and 'res_printer' can't be null.");
+		}
+		
+		self::$static_res_ext_procs[$extension] = [ $path_modifier, $res_printer ];
+		
 	}
 	
 	/**
@@ -514,25 +532,34 @@ final class Core {
 	 */
 	public static function send_static_resource_callback( string $res_path ) : void {
 		
-		$s = self::use_static_resource( $res_path, function( $res ) use ($res_path) {
-			
-			foreach ( self::$static_res_ext_procs as $ext => $proc ) {
-				if ( Utils::ends_with( $res_path, $ext ) ) {
-					
-					try {
-						
-						($proc)($res);
-						
-					} catch (Exception $e) {
-						self::print_error_page(500, $e->getMessage() );
-					}
-					
-					return;
-					
-				}
+		$pr = null;
+		
+		foreach ( self::$static_res_ext_procs as $ext => $proc ) {
+			if ( Utils::ends_with( $res_path, $ext ) ) {
+				
+				$pr = $proc;
+				break;
+				
 			}
+		}
+		
+		if ( $pr[0] !== null ) {
+			$res_path = ($pr[0])($res_path);
+		}
+		
+		$s = self::use_static_resource( $res_path, function( $res ) use ($pr) {
 			
-			fpassthru($res);
+			if ( $pr[1] !== null ) {
+				
+				try {
+					($pr[1])($res);
+				} catch (Exception $e) {
+					self::print_error_page(500, $e->getMessage() );
+				}
+				
+			} else {
+				fpassthru($res);
+			}
 			
 		} );
 			

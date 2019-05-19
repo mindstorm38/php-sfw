@@ -7,6 +7,7 @@
 	
 		<meta charset="utf8" />
 		<title><?= $page->title ?> - PHP-SFW</title>
+		<link rel="stylesheet" href="/static/styles/fonts.less.css" />
 		
 	</head>
 
