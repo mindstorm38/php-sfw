@@ -34,7 +34,7 @@ final class Core {
 	private static $app_name = null;
 	private static $app_base_dir = null;
 	
-	private static $frameworkd_base_dir = null;
+	private static $framework_base_dir = null;
 	
 	private static $minimum_php_version = Core::MINIMUM_PHP_VERSION;
 	private static $pages_dir = Core::DEFAULT_PAGES_DIR;
@@ -46,6 +46,8 @@ final class Core {
 	
 	private static $resources_handlers = [];
 	private static $resources_handlers_r = [];
+	
+	private static $static_res_ext_procs = [];
 	
 	private static $routes = [];
 	private static $pages_aliases = [];
@@ -63,7 +65,7 @@ final class Core {
 		header( "X-Powered-By: PHP-SFW/" . self::VERSION );
 		
 		self::$app_base_dir = realpath( $app_base_dir );
-		self::$frameworkd_base_dir = dirname(dirname(__DIR__));
+		self::$framework_base_dir = dirname(dirname(__DIR__));
 		
 		// Check versions
 		$minimum_php_version = self::$minimum_php_version;
@@ -76,7 +78,7 @@ final class Core {
 		
 		// Registering resources
 		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
-		self::add_resources_handler( new ResourcesHandler( self::$frameworkd_base_dir ) );
+		self::add_resources_handler( new ResourcesHandler( self::$framework_base_dir ) );
 		
 		// App name
 		self::$app_name = $app_name;
@@ -268,6 +270,7 @@ final class Core {
 	 * 	<li>Add ExactRoute to send 'home' page for the path '/'.</li>
 	 *  <li>Add StaticRoute for path '/static'.</li>
 	 *  <li>Set 'sfw-template' (internal default template) to 'home' & 'error' pages.</li>
+	 *  <li>Set a resource extension processor for the <code>.less.css</code> to {@link LessCompiler::compile_resource}.</li>
 	 * </ul>
 	 */
 	public static function setup_default_routes_and_pages() {
@@ -277,6 +280,8 @@ final class Core {
 		
 		self::set_page_template("home", "sfw-template");
 		self::set_page_template("error", "sfw-template");
+		
+		self::add_res_ext_processor( ".less.css", [LessCompiler::class, "print_compiled_resource"] );
 		
 	}
 	
@@ -475,6 +480,65 @@ final class Core {
 		}
 		
 		return false;
+		
+	}
+	
+	/**
+	 * Add a resource extension processor. It's used to add a resource processor on a specific extension.
+	 * @param string $extension The extension.
+	 * @param callable $extension_cb The <code><b>callback( $res )</b></code>
+	 */
+	public static function add_res_ext_processor( string $extension, callable $extension_cb ) : void {
+		self::$static_res_ext_procs[$extension] = $extension_cb;
+	}
+	
+	/**
+	 * Remove a resource extension processor from its extension.
+	 * @param string $extension The extension used by the processor.
+	 */
+	public static function remove_res_ext_processor( string $extension ) : void {
+		
+		if ( array_key_exists( $extension, self::$static_res_ext_procs ) ) {
+			unset( self::$static_res_ext_procs[$extension] );
+		}
+		
+	}
+	
+	/**
+	 * A callback to use for sending static resource to client.
+	 * It also call resource extension processors registered using {@link Core::add_res_ext_processor}.
+	 * @param string $res_path The relative resource path.
+	 * @see Core::add_res_ext_processor
+	 * @see Core::use_static_resource
+	 * @see Core::print_error_page
+	 */
+	public static function send_static_resource_callback( string $res_path ) : void {
+		
+		$s = self::use_static_resource( $res_path, function( $res ) use ($res_path) {
+			
+			foreach ( self::$static_res_ext_procs as $ext => $proc ) {
+				if ( Utils::ends_with( $res_path, $ext ) ) {
+					
+					try {
+						
+						($proc)($res);
+						
+					} catch (Exception $e) {
+						self::print_error_page(500, $e->getMessage() );
+					}
+					
+					return;
+					
+				}
+			}
+			
+			fpassthru($res);
+			
+		} );
+			
+		if ( !$s ) {
+			self::print_error_page(404);
+		}
 		
 	}
 	

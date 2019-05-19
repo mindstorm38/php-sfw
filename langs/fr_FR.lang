@@ -12,3 +12,12 @@ query.success.default=Succès
 # Pages par défaut
 home=Accueil
 error=Erreur : {0}
+
+# Messages des status HTTP
+http_status.400=Mauvaise Requête
+http_status.401=Non Authorisé
+http_status.402=Paiement Requis
+http_status.403=Interdit
+http_status.404=Introuvable
+http_status.500=Erreur Interne au Serveur
+http_status.503=Service indisponible

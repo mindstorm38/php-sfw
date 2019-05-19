@@ -41,6 +41,9 @@ abstract class Route {
 	
 	public static function cb_send_static_ouput() : callable {
 		
+		return [ Core::class, 'send_static_resource_callback' ];
+		
+		/*
 		return function( $vars ) {
 			
 			$s = Core::use_static_resource( $vars[0], function( $res ) {
@@ -52,6 +55,7 @@ abstract class Route {
 			}
 			
 		};
+		*/
 		
 	}
 	
