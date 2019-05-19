@@ -23,7 +23,7 @@ class StaticRoute extends Route {
 	protected function routable( string $path, string $bpath ) : ?array {
 		
 		if ( $this->base_path !== $bpath && Utils::starts_with( $bpath, $this->base_path ) ) {
-			return [ substr( $bpath, count($this->base_path) ) ];
+			return [ substr( $bpath, strlen($this->base_path) ) ];
 		}
 		
 		return null;

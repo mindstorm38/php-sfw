@@ -466,7 +466,7 @@ final class Core {
 				continue;
 			}
 			
-			$success = $callback($res);
+			$success = $callback($res) ?? true;
 			
 			fclose($res);
 			
