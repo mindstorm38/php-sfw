@@ -530,7 +530,7 @@ final class Core {
 	 * @see Core::use_static_resource
 	 * @see Core::print_error_page
 	 */
-	public static function send_static_resource_callback( string $res_path ) : void {
+	public static function send_static_resource( string $res_path ) : void {
 		
 		$pr = null;
 		
