@@ -81,6 +81,9 @@ final class Core {
 		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
 		self::add_resources_handler( new ResourcesHandler( self::$framework_base_dir ) );
 		
+		// Adding import directories for less
+		LessCompiler::get_compiler()->setImportDir( self::get_resource_dirs(self::STATIC_DIR) );
+		
 		// App name
 		self::$app_name = $app_name;
 		
@@ -115,7 +118,6 @@ final class Core {
 		if ( self::$start_session ) SessionManager::session_start();
 		
 		// Let's route
-		
 		try {
 			
 			if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
@@ -255,6 +257,25 @@ final class Core {
 	 */
 	public static function get_resources_handlers_reverse() : array {
 		return self::$resources_handlers_r;
+	}
+	
+	/**
+	 * Used to get all existing directories in all handlers.
+	 * @param string $dir_path The relative directory path.
+	 * @return array All real directories paths.
+	 */
+	public static function get_resource_dirs( string $dir_path ) : array {
+		
+		$dirs = [];
+		
+		foreach ( self::$resources_handlers as $resource ) {
+			if ( ( $dir = $resource->get_dir_safe($dir_path) ) !== null ) {
+				$dirs[] = $dir;
+			}
+		}
+		
+		return $dirs;
+		
 	}
 	
 	/**
