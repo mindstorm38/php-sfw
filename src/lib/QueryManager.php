@@ -8,9 +8,9 @@ use \Exception;
 use \Throwable;
 
 /**
- * 
+ *
  * Used to manage queries (defined by {@link Query}) and execute them to return JSON.
- * 
+ *
  * @author Théo Rozier
  *
  */
@@ -57,7 +57,7 @@ class QueryManager {
 			$namespace .= "\\";
 		}
 		
-		if ( !in_array( $namespace, $queries_namespaces ) ) {
+		if ( !in_array( $namespace, self::$queries_namespaces ) ) {
 			self::$queries_namespaces[] = $namespace;
 		}
 		
@@ -69,6 +69,10 @@ class QueryManager {
 	 * @return Query|null The cached or instantiated query. Or null if no query have this name.
 	 */
 	public static function get_query_instance( string $name ) {
+		
+		if ( empty($name) ) {
+			return null;
+		}
 		
 		if ( isset( self::$queries[$name] ) ) {
 			return self::$queries[$name];
@@ -114,18 +118,6 @@ class QueryManager {
 	 * @see QueryManager::get_query_instance
 	 */
 	public static function execute( string $name, array $array ) {
-		
-		if ( empty( $name ) ) {
-			
-			return [
-				QueryManager::JSON_ERROR => "INVALID_QUERY_NAME",
-				QueryManager::JSON_MESSAGE => Lang::get("query.error.invalid_query_name"),
-				QueryManager::JSON_DATA => [
-					"name" => $name
-				]
-			];
-			
-		}
 		
 		try {
 			
