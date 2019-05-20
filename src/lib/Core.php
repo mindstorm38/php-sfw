@@ -78,15 +78,12 @@ final class Core {
 			die( "PHP {$minimum_php_version}+ required. Currently installed version is : " . phpversion() );
 		}
 		
+		// App name
+		self::$app_name = $app_name;
+		
 		// Registering resources
 		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
 		self::add_resources_handler( new ResourcesHandler( self::$framework_base_dir ) );
-		
-		// Adding import directories for less
-		LessCompiler::get_compiler()->setImportDir( self::get_resource_dirs(self::STATIC_DIR) );
-		
-		// App name
-		self::$app_name = $app_name;
 		
 		// Manual running
 		if ( Utils::is_manual_running() ) die();
@@ -117,6 +114,12 @@ final class Core {
 		
 		// Start session if selected
 		if ( self::$start_session ) SessionManager::session_start();
+		
+		// Adding import directories for less
+		LessCompiler::get_compiler()->setImportDir( self::get_resource_dirs(self::STATIC_DIR) );
+		
+		// Adding query namespace for defaut queries
+		QueryManager::register_query_namespace("SFW\\Query");
 		
 	}
 	
