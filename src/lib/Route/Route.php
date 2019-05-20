@@ -3,6 +3,7 @@
 namespace SFW\Route;
 
 use SFW\Core;
+use SFW\QueryManager;
 
 abstract class Route {
 	
@@ -43,6 +44,14 @@ abstract class Route {
 		
 		return function( $vars ) {
 			Core::send_static_resource( $vars[0] );
+		};
+		
+	}
+	
+	public static function cb_execute_query() : callable {
+		
+		return function( $vars ) {
+			QueryManager::send_query_response($vars[0], $_POST);
 		};
 		
 	}

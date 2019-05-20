@@ -9,6 +9,7 @@ use SFW\Route\ExactRoute;
 use SFW\Route\StaticRoute;
 use \Exception;
 use \BadMethodCallException;
+use SFW\Route\QueryRoute;
 
 /**
  *
@@ -293,8 +294,9 @@ final class Core {
 	 */
 	public static function setup_default_routes_and_pages() {
 		
-		self::add_route( new ExactRoute( Route::cb_send_app_page("home"), "/" ) );
-		self::add_route( new StaticRoute( Route::cb_send_static_ouput(), "/static") );
+		self::add_route( new ExactRoute( Route::cb_send_app_page("home"), "" ) );
+		self::add_route( new StaticRoute( Route::cb_send_static_ouput(), "static" ) );
+		self::add_route( new QueryRoute( Route::cb_execute_query(), "query" ) );
 		
 		self::set_page_template("home", "sfw-template");
 		self::set_page_template("error", "sfw-template");
