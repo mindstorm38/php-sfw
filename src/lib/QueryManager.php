@@ -120,7 +120,9 @@ class QueryManager {
 			return [
 				QueryManager::JSON_ERROR => "INVALID_QUERY_NAME",
 				QueryManager::JSON_MESSAGE => Lang::get("query.error.invalid_query_name"),
-				QueryManager::JSON_DATA => []
+				QueryManager::JSON_DATA => [
+					"name" => $name
+				]
 			];
 			
 		}
@@ -134,7 +136,9 @@ class QueryManager {
 				return [
 					QueryManager::JSON_ERROR => "INVALID_QUERY_NAME",
 					QueryManager::JSON_MESSAGE => Lang::get("query.error.invalid_query_name"),
-					QueryManager::JSON_DATA => []
+					QueryManager::JSON_DATA => [
+						"name" => $name
+					]
 				];
 				
 			}
