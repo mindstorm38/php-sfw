@@ -21,3 +21,6 @@ http_status.403=Interdit
 http_status.404=Introuvable
 http_status.500=Erreur Interne au Serveur
 http_status.503=Service indisponible
+
+# Default home
+home.welcome=Bienvnue sur la page d'accueil par défaut de PHP-SFW. Si ceci est inattendu, contactez l'administrateur du site.
