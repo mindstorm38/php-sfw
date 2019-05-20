@@ -6,5 +6,6 @@ use SFW\Core;
 
 Core::setup_default_routes_and_pages();
 Core::start_application( "%{APP_NAME}%", __DIR__ );
+Core::try_route_requested_path();
 
 ?>

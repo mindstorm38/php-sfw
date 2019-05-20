@@ -1,6 +1,7 @@
 <?php
 
 use SFW\Core;
+use SFW\Lang;
 
 ?>
 
@@ -26,6 +27,8 @@ use SFW\Core;
 		<div class="php-sfw-content">
 			<?php @include_once $page->page_part_path("content"); ?>
 		</div>
+
+		<div class="php-sfw-footer"><?= Lang::get("sfw.credits", [ "</a>", "<a target=\"blank\" href=\"https://github.com/mindstorm38/php-sfw\">", "<a target=\"blank\" href=\"https://github.com/mindstorm38\">" ] ) ?></div>
 
 	</body>
 

@@ -22,6 +22,9 @@ http_status.404=Not Found
 http_status.500=Internal Server Error
 http_status.503=Service Unavailable
 
+# Common default SFW template
+sfw.credits=More information on {1}GitHub{0}, developped by {2}Théo Rozier{0}. MIT License.
+
 # Default home page
 home.welcome=Welcome to the default home page of PHP-SFW. If this is unexpected, contact the website administrator.
 

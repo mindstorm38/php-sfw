@@ -11,11 +11,11 @@ use \Exception;
 use \BadMethodCallException;
 
 /**
- * 
+ *
  * Core managing class for PHP-SFW.
- * 
+ *
  * The core is used to manage your "application".
- * 
+ *
  * @author Theo Rozier
  *
  */
@@ -116,17 +116,6 @@ final class Core {
 		
 		// Start session if selected
 		if ( self::$start_session ) SessionManager::session_start();
-		
-		// Let's route
-		try {
-			
-			if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
-				self::print_error_page(404);
-			}
-			
-		} catch (Exception $e) {
-			self::print_error_page(500, $e->getMessage());
-		}
 		
 	}
 	
@@ -313,7 +302,7 @@ final class Core {
 		self::add_res_ext_processor( ".less.css", function( string $path ) {
 			return substr( $path, 0, strlen($path) - 4 );
 		}, [LessCompiler::class, "print_compiled_resource"] );
-		
+			
 	}
 	
 	/**
@@ -350,6 +339,25 @@ final class Core {
 		}
 		
 		return null;
+		
+	}
+	
+	/**
+	 * Try route requested path (using {@link Utils::get_request_path_relative}) and catch error to <code>500</code> error page and route not found to <code>404</code> error page.
+	 */
+	public static function try_route_requested_path() : void {
+		
+		self::check_app_ready();
+		
+		try {
+			
+			if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
+				self::print_error_page(404);
+			}
+			
+		} catch (Exception $e) {
+			self::print_error_page(500, $e->getMessage());
+		}
 		
 	}
 	
@@ -587,7 +595,7 @@ final class Core {
 		if ( !$s ) {
 			self::print_error_page(404);
 		}
-		
+			
 	}
 	
 	// Utils
