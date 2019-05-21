@@ -6,9 +6,9 @@ use \BadMethodCallException;
 
 /**
  * 
- * <p>Used for managing resources from a specific base directory.</p>
+ * Used for managing resources from a specific base directory.
  * 
- * @author Mindstorm38
+ * @author Théo Rozier
  *
  */
 class ResourcesHandler {

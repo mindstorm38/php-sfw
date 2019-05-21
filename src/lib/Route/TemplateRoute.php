@@ -4,6 +4,13 @@ namespace SFW\Route;
 
 use \InvalidArgumentException;
 
+/**
+ * 
+ * Template /example/ww{z0}/{n1}
+ * 
+ * @author Théo Rozier
+ *
+ */
 class TemplateRoute extends Route {
 	
 	const VALID_SEGMENT_TYPES = [ 'a', 'n', 'z' ];

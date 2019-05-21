@@ -22,7 +22,7 @@ use SFW\Route\QueryRoute;
  */
 final class Core {
 	
-	const VERSION = "1.0.0";
+	const VERSION = "1.1.0";
 	const MINIMUM_PHP_VERSION = "7.1.0";
 	
 	const PAGES_DIR = "src/pages/";
@@ -82,8 +82,8 @@ final class Core {
 		self::$app_name = $app_name;
 		
 		// Registering resources
-		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
 		self::add_resources_handler( new ResourcesHandler( self::$framework_base_dir ) );
+		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
 		
 		// Manual running
 		if ( Utils::is_manual_running() ) die();
@@ -120,6 +120,9 @@ final class Core {
 		
 		// Adding query namespace for defaut queries
 		QueryManager::register_query_namespace("SFW\\Query");
+		
+		// Setting up default routes
+		self::setup_default_routes_and_pages();
 		
 	}
 	
@@ -278,8 +281,8 @@ final class Core {
 	 */
 	private static function add_resources_handler( ResourcesHandler $handler ) {
 		
-		array_unshift( self::$resources_handlers, $handler );
-		self::$resources_handlers_r[] = $handler;
+		self::$resources_handlers[] = $handler;
+		array_unshift( self::$resources_handlers_r, $handler );
 		
 	}
 	
@@ -291,23 +294,21 @@ final class Core {
 	 * <ul>
 	 * 	<li>Add ExactRoute to send 'home' page for the path '/'.</li>
 	 *  <li>Add StaticRoute for path '/static'.</li>
-	 *  <li>Set 'sfw-template' (internal default template) to 'home' & 'error' pages.</li>
-	 *  <li>Set a resource extension processor for the <code>.less.css</code> to {@link LessCompiler::compile_resource}.</li>
+	 *  <li>Set 'sfw' (internal default template) to 'home' & 'error' pages.</li>
+	 *  <li>Setup resource extension processor for LessCompiler ({@link LessCompiler::add_res_ext_processor}).
 	 * </ul>
 	 */
-	public static function setup_default_routes_and_pages() {
+	private static function setup_default_routes_and_pages() {
 		
 		self::add_route( new ExactRoute( Route::cb_send_app_page("home"), "" ) );
 		self::add_route( new StaticRoute( Route::cb_send_static_ouput(), "static" ) );
 		self::add_route( new QueryRoute( Route::cb_execute_query(), "query" ) );
 		
-		self::set_page_template("home", "sfw-template");
-		self::set_page_template("error", "sfw-template");
+		self::set_page_template("home", "sfw");
+		self::set_page_template("error", "sfw");
+
+		LessCompiler::add_res_ext_processor();
 		
-		self::add_res_ext_processor( ".less.css", function( string $path ) {
-			return substr( $path, 0, strlen($path) - 4 );
-		}, [LessCompiler::class, "print_compiled_resource"] );
-			
 	}
 	
 	/**

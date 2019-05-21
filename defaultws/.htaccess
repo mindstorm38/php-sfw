@@ -1,3 +1,6 @@
+# This file is exported and pre-configured for working with 'common.php' file.
+# Don't touch it if you want to use default routing system.
+
 Options +FollowSymlinks
 Options -Indexes
 RewriteEngine on
