@@ -94,9 +94,9 @@ final class Lang {
 	 */
 	public static function init_languages() : void {
 		
-		self::$initied = false;
+		Core::check_app_ready();
 		
-		// self::check_folder();
+		self::$initied = false;
 		
 		self::$default_lang = null;
 		self::$langs = [];
@@ -178,33 +178,6 @@ final class Lang {
 		if ( self::$default_lang == null && count(self::$langs) !== 0 ) {
 			self::$default_lang = array_keys( self::$langs )[0];
 		}
-		
-		/*
-		$json_content = @file_get_contents( self::get_folder() . Lang::JSON_FILE );
-		
-		if ( $json_content == null ) {
-			Core::fatal_error( "Create '" . self::get_folder() . Lang::JSON_FILE . "' before using language system" );
-			return;
-		}
-		
-		$json = json_decode( $json_content, true );
-		
-		foreach ( $json as $lang_obj ) {
-			self::$langs[] = $lang_obj;
-			if ( isset( $lang_obj["default"] ) && $lang_obj["default"] == true ) {
-				self::$default_lang = $lang_obj["identifier"];
-			}
-		}
-		
-		if ( count (self::$langs ) == 0 ) {
-			
-			Core::fatal_error( "Create minimum one language file before using language system" );
-			return;
-			
-		}
-		
-		if ( self::$default_lang == null ) self::$default_lang = self::$langs[0];
-		*/
 		
 		self::$initied = true;
 		
