@@ -348,7 +348,7 @@ final class Core {
 		if ( $index === null ) {
 			self::$routes[] = $route;
 		} else {
-			array_splice( self::$routes, $index, 0, $route );
+			array_splice( self::$routes, $index, 0, [$route] );
 		}
 		
 	}

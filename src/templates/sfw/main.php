@@ -3,6 +3,8 @@
 use SFW\Core;
 use SFW\Lang;
 
+$page->{"big_header"} = true;
+
 ?>
 
 <?php @include_once $page->page_part_path("init"); ?>
@@ -18,7 +20,7 @@ use SFW\Lang;
 		
 	</head>
 
-	<body>
+	<body class="<?= $page->big_header ? "big-header" : "" ?>">
 		
 		<div class="php-sfw-title">PHP-SFW</div>
 		<div class="php-sfw-description">A Simple PHP Framework</div>

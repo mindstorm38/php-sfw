@@ -31,3 +31,9 @@ home.welcome=Welcome to the default home page of PHP-SFW. If this is unexpected,
 
 # Default error page
 error.code_message=Error {0}
+
+# Prototype page
+prototype.welcome=The site is in prototype state, access is regulated. Please enter the credentials provided by the developper.
+prototype.user=User
+prototype.password=Password
+prototype.submit=Access the website

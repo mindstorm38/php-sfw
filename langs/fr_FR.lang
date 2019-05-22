@@ -31,3 +31,9 @@ home.welcome=Bienvnue sur la page d'accueil par défaut de PHP-SFW. Si ceci est 
 
 # Page d'erreur par défaut
 error.code_message=Erreur {0}
+
+# Page prototype
+prototype.welcome=Le site étant en état de prototype, l'accès y est règlementé. Merci d'entrer les identifiants qui vous ont été fourni par le développeur.
+prototype.user=Utilisateur
+prototype.password=Mot de passe
+prototype.submit=Accéder au site
