@@ -46,7 +46,7 @@ class TemplateRoute extends Route {
 		
 	}
 	
-	public function identifier() : string {
+	public function identifier() : ?string {
 		return $this->id;
 	}
 

@@ -54,7 +54,9 @@ final class Core {
 	
 	private static $static_res_ext_procs = [];
 	
+	private static $routes_ids = [];
 	private static $routes = [];
+	
 	private static $pages_aliases = [];
 	private static $pages_templates = [];
 	
@@ -112,6 +114,9 @@ final class Core {
 			
 		}
 		
+		// Starting prototype manager
+		Prototype::start();
+		
 		// Init languages if selected
 		if ( self::$init_languages ) {
 			Lang::init_languages();
@@ -119,7 +124,7 @@ final class Core {
 		
 		// Start session if selected
 		if ( self::$start_session ) {
-			SessionManager::session_start();
+			Sessionner::start();
 		}
 		
 		// Adding import directories for less
@@ -206,7 +211,7 @@ final class Core {
 	 * @throws Exception "Application not started".
 	 */
 	public static function check_app_ready() {
-		if ( self::$app_name === null ) throw new Exception( "Application not started" );
+		if ( self::$app_name === null ) throw new Exception( "Application not started." );
 	}
 	
 	/**
@@ -321,16 +326,35 @@ final class Core {
 	/**
 	 * Add a route to the application, a route define what actions to executes when using specific URL path.
 	 * @param Route $route The new route to add.
+	 * @param int|null $index If you want to put the route in the list at a specified index (usefull for "path checker" routes).
 	 */
-	public static function add_route( Route $route ) {
+	public static function add_route( Route $route, ?int $index = null ) {
 		
 		$id = $route->identifier();
-		self::$routes[$id] = $route;
+		$exists = in_array( $route, self::$routes );
+		
+		if ( $id !== null ) {
+			
+			if ( $exists ) {
+				array_diff( self::$routes, [ $route ] );
+			}
+			
+			self::$routes_ids[$id] = $route;
+			
+		} else if ( $exists ) {
+			return;
+		}
+		
+		if ( $index === null ) {
+			self::$routes[] = $route;
+		} else {
+			array_splice( self::$routes, $index, 0, $route );
+		}
 		
 	}
 	
 	/**
-	 * @return array Routes of the application with their unique identifier as key.
+	 * @return array Routes of the application.
 	 */
 	public static function get_routes() : array {
 		return self::$routes;
@@ -345,7 +369,7 @@ final class Core {
 		
 		$bpath = Utils::beautify_url_path($path);
 		
-		foreach ( self::$routes as $id => $route ) {
+		foreach ( self::$routes as $route ) {
 			if ( $route->try_route($path, $bpath) ) {
 				return $id;
 			}

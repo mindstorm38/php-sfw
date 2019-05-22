@@ -13,17 +13,14 @@ abstract class Route {
 		$this->action = $action;
 	}
 	
-	public abstract function identifier() : string;
+	public abstract function identifier() : ?string;
 	
 	protected abstract function routable( string $path, string $bpath ) : ?array;
 	
 	public function try_route( string $path, string $bpath ) : bool {
 		
 		if ( ( $vars = $this->routable($path, $bpath) ) !== null ) {
-			
-			($this->action)($vars);
-			return true;
-			
+			return ($this->action)($vars) ?? true;
 		}
 		
 		return false;

@@ -12,6 +12,7 @@ query.success.default=Success
 # Default pages
 home=Home
 error=Error : {0}
+prototype_login=Prototype Login
 
 # HTTP Status messages
 http_status.400=Bad Request

@@ -30,12 +30,25 @@ final class Sessionner {
 	private static $max_lifetime = 0;
 	
 	/**
+	 * @return bool Is the sessionner started.
+	 */
+	public static function is_started() : bool {
+		return self::$sessions;
+	}
+	
+	/**
 	 * Start session managing
 	 */
 	public static function start() {
 		
+		Core::check_app_ready();
+		
 		if ( self::$started ) {
 			throw new BadMethodCallException("Session already started.");
+		}
+		
+		if ( headers_sent() ) {
+			throw new BadMethodCallException("Session can't be started, headers already sent !");
 		}
 		
 		if ( !@function_exists( "session_name" ) ) {
@@ -157,8 +170,8 @@ final class Sessionner {
 			throw new BadMethodCallException("Invalid 'session' argument, must extend '" . self::DEFAULT_SESS_CLASS . "' class.");
 		}
 		
-		if ( isset( self::$sessions ) ) {
-			throw new BadMethodCallException("A session '{$session_id}' is already started.");
+		if ( isset( self::$sessions[$session_id] ) ) {
+			throw new BadMethodCallException("A session '{$session_id}' is already used.");
 		}
 		
 		self::$sessions[$session_id] = $session;
@@ -171,7 +184,7 @@ final class Sessionner {
 	
 	public static function save_sessions( string...$sessions_ids ) {
 		
-		if ( self::$started ) {
+		if ( !self::$started ) {
 			throw new BadMethodCallException("Can't save a session if Sessionner is not started");
 		}
 		

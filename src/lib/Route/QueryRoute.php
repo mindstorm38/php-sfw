@@ -18,7 +18,7 @@ class QueryRoute extends Route {
 		
 	}
 	
-	public function identifier() : string {
+	public function identifier() : ?string {
 		return "{$this->base_path}<QUERY>";
 	}
 	

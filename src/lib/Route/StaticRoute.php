@@ -16,7 +16,7 @@ class StaticRoute extends Route {
 		
 	}
 	
-	public function identifier() : string {
+	public function identifier() : ?string {
 		return "{$this->base_path}<STATIC>";
 	}
 
