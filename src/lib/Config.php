@@ -120,7 +120,7 @@ final class Config {
 	 * @return string The valid advised URL.
 	 */
 	public static function get_advised_url( string $path = "" ) : string {
-		return ( self::is_secure() ? "https" : "http" ) . "://" . self::get_advised_host() . self::get_base_path() . "/" . Utils::beautify_url_path($path);
+		return ( self::is_secure() ? "https" : "http" ) . "://" . self::get_advised_host() . ($base_path = self::get_base_path()) . ($base_path === "/" ? "" : "/") . Utils::beautify_url_path($path);
 	}
 	
 	// Global configuration
