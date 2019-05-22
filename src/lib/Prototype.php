@@ -58,7 +58,7 @@ final class Prototype {
 		
 		Sessionner::set_session("sfw-prototype", self::$session);
 		
-		Core::add_route( new PathCheckerRoute( [__CLASS__, "cb_check_prototype_logged"] ) );
+		Core::add_route( new PathCheckerRoute( [__CLASS__, "cb_check_prototype_logged"], "", ["static"] ), 0 );
 		Core::set_page_template("prototype", "sfw");
 		
 	}
