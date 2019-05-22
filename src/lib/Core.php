@@ -65,24 +65,21 @@ final class Core {
 	 */
 	public static function start_application( string $app_name, string $app_base_dir ) {
 		
-		if ( self::$app_name !== null ) die( "Application already started" );
-		
-		header( "X-Powered-By: PHP-SFW/" . self::VERSION );
-		
-		self::$app_base_dir = realpath( $app_base_dir );
-		self::$framework_base_dir = dirname(dirname(__DIR__));
-		
-		// Check versions
-		$minimum_php_version = self::$minimum_php_version;
-		
-		if ( version_compare( $minimum_php_version, Core::MINIMUM_PHP_VERSION, "lt" ) ) {
-			die( "Invalid minimum php version given, PHP " . Core::MINIMUM_PHP_VERSION . "+ required by PHP-SFW. Given version : " . $minimum_php_version );
-		} else if ( version_compare( PHP_VERSION, $minimum_php_version, "lt" ) ) {
-			die( "PHP {$minimum_php_version}+ required. Currently installed version is : " . phpversion() );
+		if ( self::$app_name !== null ) {
+			throw new Exception("Application already started.");
 		}
 		
-		// App name
+		// Check versions
+		if ( version_compare( self::$minimum_php_version, Core::MINIMUM_PHP_VERSION, "lt" ) ) {
+			throw new Exception( "Invalid minimum php version (set using 'set_minimum_php_version' method), PHP " . Core::MINIMUM_PHP_VERSION . "+ required by PHP-SFW. Given version : " . self::$minimum_php_version );
+		} else if ( version_compare( PHP_VERSION, self::$minimum_php_version, "lt" ) ) {
+			throw new Exception( "PHP {" . self::$minimum_php_version . "}+ required. Currently installed version is : " . phpversion() );
+		}
+		
+		// App name and directories
 		self::$app_name = $app_name;
+		self::$app_base_dir = realpath( $app_base_dir );
+		self::$framework_base_dir = dirname(dirname(__DIR__));
 		
 		// Registering resources
 		self::add_resources_handler( new ResourcesHandler( self::$framework_base_dir ) );
@@ -90,6 +87,9 @@ final class Core {
 		
 		// Manual running
 		if ( Utils::is_manual_running() ) die();
+		
+		// Set header only if runned by a HTTP server
+		header( "X-Powered-By: PHP-SFW/" . self::VERSION );
 		
 		// PHP Configuration
 		@ini_set( 'display_errors', 1 );
@@ -113,10 +113,14 @@ final class Core {
 		}
 		
 		// Init languages if selected
-		if ( self::$init_languages ) Lang::init_languages();
+		if ( self::$init_languages ) {
+			Lang::init_languages();
+		}
 		
 		// Start session if selected
-		if ( self::$start_session ) SessionManager::session_start();
+		if ( self::$start_session ) {
+			SessionManager::session_start();
+		}
 		
 		// Adding import directories for less
 		LessCompiler::get_compiler()->setImportDir( self::get_resource_dirs(self::STATIC_DIR) );
