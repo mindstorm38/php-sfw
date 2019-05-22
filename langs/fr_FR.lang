@@ -23,7 +23,7 @@ http_status.500=Erreur Interne au Serveur
 http_status.503=Service indisponible
 
 # Communs aux templates par défaut 
-sfw.credits=Plus d'information sur {1}GitHub{0}, développé par {2}Théo Rozier{0}. License MIT.
+sfw.credits=Plus d'information sur {1}GitHub{0}, développé par {2}{3}{0}. License MIT.
 
 # Page d'accueil par défaut
 home.welcome=Bienvnue sur la page d'accueil par défaut de PHP-SFW. Si ceci est inattendu, contactez l'administrateur du site.
