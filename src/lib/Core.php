@@ -17,13 +17,16 @@ use SFW\Route\QueryRoute;
  *
  * The core is used to manage your "application".
  *
- * @author Theo Rozier
+ * @author Théo Rozier
  *
  */
 final class Core {
 	
 	const VERSION = "1.1.0";
 	const MINIMUM_PHP_VERSION = "7.1.0";
+	
+	const AUTHOR = "Théo Rozier";
+	const AUTHOR_LINK = "https://theorozier.fr/";
 	
 	const PAGES_DIR = "src/pages/";
 	const TEMPLATES_DIR = "src/templates/";
