@@ -1,5 +1,0 @@
-<?php 
-
-// SOME INIT CODE
-
-?>

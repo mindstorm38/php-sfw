@@ -1,5 +1,0 @@
-<?php 
-
-// TEMPLATE PAGE HEAD CONTENT
-
-?>

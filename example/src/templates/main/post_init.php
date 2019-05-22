@@ -1,5 +1,0 @@
-<?php
-
-// POST-INIT CODE, AFTER PAGE INIT
-
-?>
