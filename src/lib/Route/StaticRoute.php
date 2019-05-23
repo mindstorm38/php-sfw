@@ -8,9 +8,9 @@ class StaticRoute extends Route {
 	
 	private $base_path;
 	
-	public function __construct( callable $action, string $base_path ) {
+	public function __construct( string $identifier, string $base_path ) {
 		
-		parent::__construct($action);
+		parent::__construct($identifier);
 		
 		$this->base_path = Utils::beautify_url_path($base_path);
 		

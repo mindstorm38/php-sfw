@@ -26,9 +26,9 @@ class TemplateRoute extends Route {
 	private $segments;
 	private $id = "";
 	
-	public function __construct( callable $action, string $template ) {
+	public function __construct( string $identifier, string $type, string $template ) {
 		
-		parent::__construct($action);
+		parent::__construct($identifier, $type);
 		
 		$this->segments = self::parse($template);
 		

@@ -7,9 +7,10 @@ namespace SFW;
 use SFW\Route\Route;
 use SFW\Route\ExactRoute;
 use SFW\Route\StaticRoute;
+use SFW\Route\QueryRoute;
+use SFW\Route\FilterRoute;
 use \Exception;
 use \BadMethodCallException;
-use SFW\Route\QueryRoute;
 
 /**
  *
@@ -36,6 +37,10 @@ final class Core {
 	const DEFAULT_PAGES_DIR = Core::PAGES_DIR;
 	const DEFAULT_TEMPLATES_DIR = Core::TEMPLATES_DIR;
 	
+	const DEFAULT_HOME_ROUTE = "home_page";
+	const DEFAULT_STATIC_ROUTE = "static_res";
+	const DEFAULT_QUERY_ROUTE = "query_exec";
+	
 	private static $app_name = null;
 	private static $app_base_dir = null;
 	
@@ -54,8 +59,9 @@ final class Core {
 	
 	private static $static_res_ext_procs = [];
 	
-	private static $routes_ids = [];
 	private static $routes = [];
+	private static $normal_routes = [];
+	private static $filter_routes = [];
 	
 	private static $pages_aliases = [];
 	private static $pages_templates = [];
@@ -306,15 +312,15 @@ final class Core {
 	 * <ul>
 	 * 	<li>Add ExactRoute to send 'home' page for the path '/'.</li>
 	 *  <li>Add StaticRoute for path '/static'.</li>
-	 *  <li>Set 'sfw' (internal default template) to 'home' & 'error' pages.</li>
+	 *  <li>Set 'sfw' (internal) template to 'home' & 'error' pages.</li>
 	 *  <li>Setup resource extension processor for LessCompiler ({@link LessCompiler::add_res_ext_processor}).
 	 * </ul>
 	 */
 	private static function setup_default_routes_and_pages() {
 		
-		self::add_route( new ExactRoute( Route::cb_send_app_page("home"), "" ) );
-		self::add_route( new StaticRoute( Route::cb_send_static_ouput(), "static" ) );
-		self::add_route( new QueryRoute( Route::cb_execute_query(), "query" ) );
+		self::add_route( new ExactRoute( Core::DEFAULT_HOME_ROUTE, "" ), Route::controller_print_page("home") );
+		self::add_route( new StaticRoute( Core::DEFAULT_STATIC_ROUTE, "static" ), Route::controller_send_static_resource() );
+		self::add_route( new QueryRoute( Core::DEFAULT_QUERY_ROUTE, "query" ), Route::controller_send_query_response() );
 		
 		self::set_page_template("home", "sfw");
 		self::set_page_template("error", "sfw");
@@ -325,31 +331,27 @@ final class Core {
 	
 	/**
 	 * Add a route to the application, a route define what actions to executes when using specific URL path.
-	 * @param Route $route The new route to add.
-	 * @param int|null $index If you want to put the route in the list at a specified index (usefull for "path checker" routes).
+	 * @param Route $route The new route to add (can be either "normal" Route or FilterRoute).
+	 * @param callable $controller An optionnal controller if you want to setup one to the route.
 	 */
-	public static function add_route( Route $route, ?int $index = null ) {
+	public static function add_route( Route $route, callable $controller = null ) {
 		
-		$id = $route->identifier();
-		$exists = in_array( $route, self::$routes );
+		$arr = null;
 		
-		if ( $id !== null ) {
-			
-			if ( $exists ) {
-				array_diff( self::$routes, [ $route ] );
-			}
-			
-			self::$routes_ids[$id] = $route;
-			
-		} else if ( $exists ) {
-			return;
-		}
-		
-		if ( $index === null ) {
-			self::$routes[] = $route;
+		if ($route instanceof FilterRoute) {
+			$arr =& self::$filter_routes;
 		} else {
-			array_splice( self::$routes, $index, 0, [$route] );
+			$arr =& self::$normal_routes;
 		}
+		
+		$id = $route->get_identifier();
+		
+		if ( isset( self::$routes[$id] ) ) {
+			array_diff( $arr, [self::$routes[$id]] );
+		}
+		
+		self::$routes[$id] = $route;
+		$arr[] = $route;
 		
 	}
 	
@@ -370,8 +372,27 @@ final class Core {
 		$bpath = Utils::beautify_url_path($path);
 		
 		foreach ( self::$routes as $route ) {
-			if ( $route->try_route($path, $bpath) ) {
-				return $route->identifier() ?? "";
+			
+			if ( ($vars = $route->routable($path, $bpath)) !== null ) {
+				
+				foreach ( self::$filter_routes as $filter_route ) {
+					
+					if ( $filter_route->filter($path, $bpath, $route) ) {
+						return $filter_route->get_identifier();
+					}
+					
+				}
+				
+				$route->call_controller($vars);
+				return $route;
+				
+			}
+			
+		}
+		
+		foreach ( self::$filter_routes as $filter_route ) {
+			if ( $filter_route->filter($path, $bpath, null) ) {
+				return $filter_route->get_identifier();
 			}
 		}
 		

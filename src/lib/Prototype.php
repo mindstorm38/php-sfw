@@ -2,8 +2,8 @@
 
 namespace SFW;
 
-use SFW\Route\PathCheckerRoute;
 use \Exception;
+use SFW\Route\LastRouteFilterRoute;
 
 /**
  * 
@@ -14,6 +14,11 @@ use \Exception;
  *
  */
 final class Prototype {
+	
+	const EXCEPT_ROUTES = [
+		Core::DEFAULT_STATIC_ROUTE,
+		Core::DEFAULT_QUERY_ROUTE
+	];
 	
 	private static $session = null;
 	
@@ -58,7 +63,7 @@ final class Prototype {
 		
 		Sessionner::set_session("sfw-prototype", self::$session);
 		
-		Core::add_route( new PathCheckerRoute( [__CLASS__, "cb_check_prototype_logged"], "", ["static"] ), 0 );
+		Core::add_route( new LastRouteFilterRoute( "prototype-logged-filter", self::EXCEPT_ROUTES ), [__CLASS__, "controller_check_logged"] );
 		Core::set_page_template("prototype", "sfw");
 		
 	}
@@ -84,7 +89,7 @@ final class Prototype {
 	 * Don't call it, used by the path checker route.
 	 * @param array $vars Variable returned by routing.
 	 */
-	public static function cb_check_prototype_logged( $vars ) {
+	public static function controller_check_logged( $vars ) {
 		
 		self::check_started();
 		
