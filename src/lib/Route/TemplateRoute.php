@@ -1,13 +1,13 @@
-<?php 
+<?php
 
 namespace SFW\Route;
 
 use \InvalidArgumentException;
 
 /**
- * 
+ *
  * Template /example/ww{z0}/{n1}
- * 
+ *
  * @author Théo Rozier
  *
  */
@@ -26,9 +26,9 @@ class TemplateRoute extends Route {
 	private $segments;
 	private $id = "";
 	
-	public function __construct( string $identifier, string $type, string $template ) {
+	public function __construct( string $identifier, string $template ) {
 		
-		parent::__construct($identifier, $type);
+		parent::__construct($identifier);
 		
 		$this->segments = self::parse($template);
 		
@@ -49,7 +49,7 @@ class TemplateRoute extends Route {
 	public function identifier() : ?string {
 		return $this->id;
 	}
-
+	
 	protected function routable(string $path, string $bpath) : ?array {
 		
 		$ps = explode('/', $bpath);

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SFW\Route;
 
@@ -22,7 +22,7 @@ class ExactRoute extends Route {
 		return $this->path;
 	}
 	
-	protected function routable( string $path, string $bpath ) : ?array {
+	public function routable( string $path, string $bpath ) : ?array {
 		return $this->path === ( $this->use_beautified ? $bpath : $path ) ? [] : null;
 	}
 	

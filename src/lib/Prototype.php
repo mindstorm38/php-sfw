@@ -6,10 +6,10 @@ use \Exception;
 use SFW\Route\LastRouteFilterRoute;
 
 /**
- * 
+ *
  * <p>A class for managing prototype configuration of the website.</p>
  * <p>This is used to create a private access website while developping.</p>
- * 
+ *
  * @author Théo Rozier
  *
  */
@@ -89,7 +89,7 @@ final class Prototype {
 	 * Don't call it, used by the path checker route.
 	 * @param array $vars Variable returned by routing.
 	 */
-	public static function controller_check_logged( $vars ) {
+	public static function controller_check_logged() {
 		
 		self::check_started();
 		

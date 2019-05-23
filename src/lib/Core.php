@@ -336,6 +336,10 @@ final class Core {
 	 */
 	public static function add_route( Route $route, callable $controller = null ) {
 		
+		if ( $controller !== null ) {
+			$route->set_controller($controller);
+		}
+		
 		$arr = null;
 		
 		if ($route instanceof FilterRoute) {

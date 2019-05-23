@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace SFW\Route;
 
@@ -14,7 +14,7 @@ class LastRouteFilterRoute extends FilterRoute {
 		
 	}
 	
-	public function routable( string $path, string $bpath, ?Route $last_route ) : ?array {
+	public function routable_filter( string $path, string $bpath, ?Route $last_route ) : ?array {
 		return ( $last_route === null || !in_array($last_route, $this->excepts_routes) ) ? [] : null;
 	}
 	

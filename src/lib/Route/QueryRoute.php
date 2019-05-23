@@ -22,7 +22,7 @@ class QueryRoute extends Route {
 		return "{$this->base_path}<QUERY>";
 	}
 	
-	protected function routable( string $path, string $bpath ) : ?array {
+	public function routable( string $path, string $bpath ) : ?array {
 		
 		if ( Utils::starts_with( $bpath, "{$this->base_path}/" ) && strlen($bpath) > $this->base_path_len_min && strpos( $bpath, "/", $this->base_path_len_min ) === false ) {
 			return [ substr( $bpath, $this->base_path_len_min ) ];
