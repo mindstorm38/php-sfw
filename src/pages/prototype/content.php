@@ -8,4 +8,4 @@ use SFW\Lang;
 
 <input type="text" name="sfw-proto-login:user" placeholder="<?= Lang::get("prototype.user") ?>">
 <input type="password" name="sfw-proto-login:password" placeholder="<?= Lang::get("prototype.password") ?>">
-<button><?= Lang::get("prototype.submit") ?></button>
+<button data-form-submit="sfw-proto-login"><?= Lang::get("prototype.submit") ?></button>
