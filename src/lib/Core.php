@@ -371,7 +371,7 @@ final class Core {
 		
 		foreach ( self::$routes as $route ) {
 			if ( $route->try_route($path, $bpath) ) {
-				return $route->identifier();
+				return $route->identifier() ?? "";
 			}
 		}
 		
