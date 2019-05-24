@@ -20,6 +20,72 @@ final class Utils {
 	const TOKEN_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
 	/**
+	 * @var array All extensions associated to the mime type.
+	 * @see Utils::get
+	 */
+	const MIME_TYPE = [
+		
+		// Standard
+		'txt' => 'text/plain',
+		'htm' => 'text/html',
+		'html' => 'text/html',
+		'php' => 'text/html',
+		'css' => 'text/css',
+		'js' => 'application/javascript',
+		'json' => 'application/json',
+		'xml' => 'application/xml',
+		'swf' => 'application/x-shockwave-flash',
+		'flv' => 'video/x-flv',
+		
+		// Images
+		'png' => 'image/png',
+		'jpe' => 'image/jpeg',
+		'jpeg' => 'image/jpeg',
+		'jpg' => 'image/jpeg',
+		'gif' => 'image/gif',
+		'bmp' => 'image/bmp',
+		'ico' => 'image/vnd.microsoft.icon',
+		'tiff' => 'image/tiff',
+		'tif' => 'image/tiff',
+		'svg' => 'image/svg+xml',
+		'svgz' => 'image/svg+xml',
+		
+		// Archives
+		'zip' => 'application/zip',
+		'rar' => 'application/x-rar-compressed',
+		'exe' => 'application/x-msdownload',
+		'msi' => 'application/x-msdownload',
+		'cab' => 'application/vnd.ms-cab-compressed',
+		
+		// Audio/Video
+		'mp3' => 'audio/mpeg',
+		'qt' => 'video/quicktime',
+		'mov' => 'video/quicktime',
+		
+		// Adobe
+		'pdf' => 'application/pdf',
+		'psd' => 'image/vnd.adobe.photoshop',
+		'ai' => 'application/postscript',
+		'eps' => 'application/postscript',
+		'ps' => 'application/postscript',
+		
+		// MS office
+		'doc' => 'application/msword',
+		'rtf' => 'application/rtf',
+		'xls' => 'application/vnd.ms-excel',
+		'ppt' => 'application/vnd.ms-powerpoint',
+		'docx' => 'application/msword',
+		'xlsx' => 'application/vnd.ms-excel',
+		'pptx' => 'application/vnd.ms-powerpoint',
+		
+		
+		// Open Office
+		'odt' => 'application/vnd.oasis.opendocument.text',
+		'ods' => 'application/vnd.oasis.opendocument.spreadsheet'
+		
+	];
+	
+	/**
 	 * Check if this script is not started using Apache, NGINX or other.
 	 * @return bool True if started by a HTTP web server.
 	 */
@@ -118,9 +184,9 @@ final class Utils {
 		
 		if ( $timestamp == null )
 			$timestamp = time();
-		
-		return date( "d/m/Y H:i:s", $timestamp );
-		
+			
+			return date( "d/m/Y H:i:s", $timestamp );
+			
 	}
 	
 	/**
@@ -300,8 +366,20 @@ final class Utils {
 	 * @return mixed Extension without starting point.
 	 * @see pathinfo()
 	 */
-	public static function get_file_extension( $file_path ) : string {
+	public static function get_file_extension( string $file_path ) : string {
 		return pathinfo( $file_path, PATHINFO_EXTENSION );
+	}
+	
+	/**
+	 * Get a file mime type from the path or just the name.
+	 * @param string $file_path File path or name.
+	 * @return string|null File extension mime type or null if mime type is not registered.
+	 */
+	public static function get_file_mime_type( string $file_path ) : ?string {
+		
+		$ext = self::get_file_extension($file_path);
+		return isset(self::MIME_TYPE[$ext]) ? self::MIME_TYPE[$ext] : null;
+		
 	}
 	
 	/**
@@ -350,7 +428,7 @@ final class Utils {
 		$length = count( $parts );
 		
 		if ( $length !== 2 ) return $defaults;
-			
+		
 		$min = $parts[0];
 		$max = $parts[1];
 		
@@ -406,8 +484,8 @@ final class Utils {
 			$n = intval( $matches[1] );
 			return $args[ $n ];
 		}, $format );
-		
-		return $format;
+			
+			return $format;
 			
 	}
 	

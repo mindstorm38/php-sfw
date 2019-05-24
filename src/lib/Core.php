@@ -551,7 +551,7 @@ final class Core {
 	/**
 	 * Use a static resource using a callback.
 	 * @param string $static_path The relative static path.
-	 * @param callable $callback The callback to use when resource is opened, must have a single resource argument.
+	 * @param callable $callback The callback to use when resource is opened, must have a resource argument and optionnaly the full path.
 	 * @return bool True if the file has been found and writen.
 	 */
 	public static function use_static_resource( string $static_path, callable $callback ) : bool {
@@ -572,7 +572,7 @@ final class Core {
 				continue;
 			}
 			
-			$success = $callback($res) ?? true;
+			$success = $callback($res, $res_path) ?? true;
 			
 			fclose($res);
 			
@@ -638,7 +638,7 @@ final class Core {
 			$res_path = ($pr[0])($res_path);
 		}
 		
-		$s = self::use_static_resource( $res_path, function( $res ) use ($pr) {
+		$s = self::use_static_resource( $res_path, function( $res, $real_res_path ) use ($pr) {
 			
 			if ( $pr[1] !== null ) {
 				
@@ -649,14 +649,17 @@ final class Core {
 				}
 				
 			} else {
+				
+				Utils::content_type( Utils::get_file_mime_type($real_res_path) );
 				fpassthru($res);
+				
 			}
 			
 		} );
 			
-		if ( !$s ) {
-			self::print_error_page(404);
-		}
+			if ( !$s ) {
+				self::print_error_page(404);
+			}
 			
 	}
 	

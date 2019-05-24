@@ -15,7 +15,7 @@ class LastRouteFilterRoute extends FilterRoute {
 	}
 	
 	public function routable_filter( string $path, string $bpath, ?Route $last_route ) : ?array {
-		return ( $last_route === null || !in_array($last_route, $this->excepts_routes) ) ? [] : null;
+		return ( $last_route === null || !in_array($last_route->get_identifier(), $this->excepts_routes) ) ? [] : null;
 	}
 	
 }
