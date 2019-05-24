@@ -388,7 +388,7 @@ final class Core {
 				}
 				
 				$route->call_controller($vars);
-				return $route;
+				return $route->get_identifier();
 				
 			}
 			
