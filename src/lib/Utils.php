@@ -373,13 +373,10 @@ final class Utils {
 	/**
 	 * Get a file mime type from the path or just the name.
 	 * @param string $file_path File path or name.
-	 * @return string|null File extension mime type or null if mime type is not registered.
+	 * @return string File extension mime type or <code>application/octet-stream</code>.
 	 */
-	public static function get_file_mime_type( string $file_path ) : ?string {
-		
-		$ext = self::get_file_extension($file_path);
-		return isset(self::MIME_TYPE[$ext]) ? self::MIME_TYPE[$ext] : null;
-		
+	public static function get_file_mime_type( string $file_path ) : string {
+		return self::MIME_TYPE[ self::get_file_extension($file_path) ] ?? "application/octet-stream";
 	}
 	
 	/**
