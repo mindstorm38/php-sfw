@@ -15,14 +15,15 @@ use \BadMethodCallException;
  */
 final class Sessionner {
 	
-	const DEFAULT_SESS_LIFETIME = 86400;
+	const DEFAULT_SESS_LIFETIME              = 86400;
+	const DEFAULT_SESS_AUTO_UPDATE           = true;
 	
-	const DEFAULT_SESS_COOKIE = "SFWSESSID";
-	const DEFAULT_SESS_REGENERATE_INTERVAL = 900;
+	const DEFAULT_SESS_COOKIE                = "SFWSESSID";
+	const DEFAULT_SESS_REGENERATE_INTERVAL   = 900;
 	
-	const DEFAULT_SESS_CLASS = "SFW\\Session";
+	const DEFAULT_SESS_CLASS                 = "SFW\\Session";
 	
-	const DEFAULT_SESS_ID = "default";
+	const DEFAULT_SESS_ID                    = "default";
 	
 	private static $started = false;
 	private static $sessions = null;
@@ -62,7 +63,16 @@ final class Sessionner {
 		
 		foreach ( self::$sessions as $id => $session ) {
 			
-			$session->load_config( self::get_session_config($id) );
+			try {
+				
+				$session->load_config( self::get_session_config($id) );
+				
+			} catch (BadMethodCallException $e) {
+				
+				Logger::warning("Failed to load configuration for '{$id}' session : {$e->getMessage()}");
+				continue;
+				
+			}
 			
 			if ( $session->get_lifetime() > self::$max_lifetime ) {
 				self::$max_lifetime = $session->get_lifetime();
@@ -102,15 +112,47 @@ final class Sessionner {
 			self::setup_session_vars();
 		}
 		
+		$stored_sessions = json_decode($_SESSION["SESSIONS"], true);
+		
 		foreach ( self::$sessions as $id => $session ) {
 			
-			if ( !isset( $_SESSION[$id] ) ) {
-				$_SESSION[$id] = [];
+			$t = time();
+			$e = isset( $stored_sessions[$id] );
+			$au = $session->is_auto_update();
+			
+			if ( !$e ) {
+				
+				$stored_sessions[$id] = [
+					"data" => []
+				];
+				
 			}
 			
-			$session->load( $_SESSION[$id] );
+			$sess = &$stored_sessions[$id];
+			
+			if ( $e ) {
+				
+				if ( ($t - $sess["last_update"]) > $session->get_lifetime() ) {
+					
+					$sess["data"] = [];
+					
+					if ( !$au ) {
+						$sess["last_update"] = $t;
+					}
+					
+				}
+				
+			}
+			
+			if ( $au ) {
+				$sess["last_update"] = $t;
+			}
+			
+			$session->load($sess);
 			
 		}
+		
+		$_SESSION["SESSIONS"] = json_encode($stored_sessions);
 		
 		session_write_close();
 		
@@ -128,7 +170,7 @@ final class Sessionner {
 	}
 	
 	private static function is_session_init() : bool {
-		return isset( $_SESSION["IP_ADDR"] ) && isset( $_SESSION["USER_AGENT"] ) && isset( $_SESSION["LAST_REGEN"] );
+		return isset( $_SESSION["SESSIONS"] ) && isset( $_SESSION["IP_ADDR"] ) && isset( $_SESSION["USER_AGENT"] ) && isset( $_SESSION["LAST_REGEN"] );
 	}
 	
 	private static function is_obsolete() : bool {
@@ -137,6 +179,7 @@ final class Sessionner {
 	
 	private static function setup_session_vars() {
 		
+		$_SESSION["SESSIONS"] = "{}";
 		$_SESSION["IP_ADDR"] = $_SERVER["REMOTE_ADDR"];
 		$_SESSION["USER_AGENT"] = $_SERVER["HTTP_USER_AGENT"];
 		
@@ -192,6 +235,8 @@ final class Sessionner {
 		
 		session_start();
 		
+		$stored_sessions = json_decode($_SESSION["SESSIONS"], true);
+		
 		foreach ( $sessions_ids as $session_id ) {
 			
 			$sess = self::get_session($session_id);
@@ -203,9 +248,12 @@ final class Sessionner {
 				
 			}
 			
-			$_SESSION[$session_id] = $sess->get_data();
-		
+			$stored_sessions["SESSIONS"][$session_id]["data"] = $sess->get_data();
+			$stored_sessions["SESSIONS"][$session_id]["last_update"] = time();
+			
 		}
+		
+		$_SESSION["SESSIONS"] = json_encode($stored_sessions);
 		
 		session_write_close();
 		

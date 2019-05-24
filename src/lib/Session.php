@@ -15,9 +15,9 @@ use \BadMethodCallException;
 class Session implements ArrayAccess {
 	
 	protected $lifetime = Sessionner::DEFAULT_SESS_LIFETIME;
+	protected $auto_update = Sessionner::DEFAULT_SESS_AUTO_UPDATE;
 	
-	protected $config;
-	
+	protected $config = [];
 	protected $data = [];
 	
 	public function __construct() {}
@@ -38,16 +38,28 @@ class Session implements ArrayAccess {
 			
 		}
 		
+		if ( isset($raw_config["auto_update"]) ) {
+			$this->auto_update = boolval($raw_config["auto_update"]);
+		}
+		
 		$this->config = $raw_config;
 		
 	}
 	
-	public function get_lifetime() {
+	public function get_lifetime() : int {
 		return $this->lifetime;
 	}
 	
 	public function set_lifetime( int $lifetime ) {
 		$this->lifetime = $lifetime;
+	}
+	
+	public function is_auto_update() : bool {
+		return $this->auto_update;
+	}
+	
+	public function set_auto_update( bool $auto_update ) {
+		$this->auto_update = $auto_update;
 	}
 	
 	public function get_data() {

@@ -18,13 +18,12 @@
 		"name": ""
 	},
 	"session": {
-		"name": "SFWSESSID",
-		"lifetime": 604800,
-		"path": "/",
+		"cookie": "SFWSESSID",
 		"regenerate_interval": 900,
 		"configs": {
 			"default": {
-				"lifetime": 604800
+				"lifetime": 604800,
+				"auto_update": true
 			}
 		}
 	}
