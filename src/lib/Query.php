@@ -13,9 +13,9 @@ namespace SFW;
  */
 abstract class Query {
 
-     public abstract function required_variables();
+     public abstract function required_variables() : array;
 
-     public abstract function execute( $vars );
+     public abstract function execute( array $vars );
 
 }
 

@@ -106,7 +106,14 @@ class QueryManager {
 			
 		}
 		
-		return self::$queries[ $name ] = new $new_query_class();
+		try {
+			
+			$obj = new $new_query_class();
+			return self::$queries[ $name ] = $obj;
+			
+		} catch (Throwable $e) {
+			return null;
+		}
 		
 	}
 	
