@@ -121,7 +121,9 @@ final class Core {
 		}
 		
 		// Starting prototype manager
-		Prototype::start();
+		if ( Prototype::start() ) {
+			self::$start_session = true;
+		}
 		
 		// Init languages if selected
 		if ( self::$init_languages ) {
