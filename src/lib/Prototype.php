@@ -44,6 +44,16 @@ final class Prototype {
 	}
 	
 	/**
+	 * @return bool Check if user and password are correct.
+	 */
+	public static function can_log( string $user, string $password ) : bool {
+		
+		$users = self::get_users();
+		return isset( $users[$user] ) ? ( empty($users[$user]) || $users[$user] === hash("sha256", $password) ) : false;
+		
+	}
+	
+	/**
 	 * Start the prototype if needed, starting add several routes, pages and middleware to ensure prototype connection.
 	 */
 	public static function start() : void {

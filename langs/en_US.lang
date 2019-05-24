@@ -37,3 +37,6 @@ prototype.welcome=The site is in prototype state, access is regulated. Please en
 prototype.user=User
 prototype.password=Password
 prototype.submit=Access the website
+prototype.not_started=Prototype is not started
+prototype.wrong_login=Mauvais identifiants
+prototype.logged=Logged

@@ -16,7 +16,17 @@ const SFWPrototype = (function(){
 
 			if ( err ) {
 
+				Form.getField("sfw-proto-login", "user").classList.add("invalid");
+				Form.getField("sfw-proto-login", "password").classList.add("invalid");
 
+				setTimeout( function() {
+
+					Form.getField("sfw-proto-login", "user").classList.remove("invalid");
+					Form.getField("sfw-proto-login", "password").classList.remove("invalid");
+
+				}, 1000 );
+
+				return;
 
 			}
 

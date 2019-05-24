@@ -37,3 +37,6 @@ prototype.welcome=Le site étant en état de prototype, l'accès y est règlemen
 prototype.user=Utilisateur
 prototype.password=Mot de passe
 prototype.submit=Accéder au site
+prototype.not_started=Le mode prototype n'est pas démarré
+prototype.wrong_login=Wrong login
+prototype.logged=Connecté
