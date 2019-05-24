@@ -44,16 +44,6 @@ final class Prototype {
 	}
 	
 	/**
-	 * @return bool Check if user and password are correct.
-	 */
-	public static function can_log( string $user, string $password ) : bool {
-		
-		$users = self::get_users();
-		return isset( $users[$user] ) ? ( empty($users[$user]) || $users[$user] === hash("sha256", $password) ) : false;
-		
-	}
-	
-	/**
 	 * Start the prototype if needed, starting add several routes, pages and middleware to ensure prototype connection.
 	 */
 	public static function start() : void {
@@ -83,6 +73,24 @@ final class Prototype {
 	 */
 	public static function check_started() {
 		if ( !self::is_started() ) throw new Exception("Prototype is not started.");
+	}
+	
+	/**
+	 * @return bool Check if user and password are correct.
+	 */
+	public static function try_log( string $user, string $password ) : bool {
+		
+		self::check_started();
+		
+		$users = self::get_users();
+		$valid = isset( $users[$user] ) ? ( empty($users[$user]) || $users[$user] === hash("sha256", $password) ) : false;
+		
+		if ( !valid ) return false;
+		
+		self::$session["user"] = $user;
+		
+		return true;
+		
 	}
 	
 	/**

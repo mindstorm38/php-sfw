@@ -23,7 +23,7 @@ class PrototypeLogin extends Query {
 			return new QueryResponse( "PROTOTYPE_NOT_STARTED", "prototype.not_started" );
 		}
 		
-		if ( Prototype::can_log( $vars["user"], $vars["password"] ) ) {
+		if ( Prototype::try_log( $vars["user"], $vars["password"] ) ) {
 			return new QueryResponse( false, "prototype.logged" );
 		} else {
 			return new QueryResponse( "WRONG_LOGIN", "prototype.wrong_login" );
