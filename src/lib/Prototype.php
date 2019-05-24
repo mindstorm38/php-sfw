@@ -15,6 +15,8 @@ use SFW\Route\LastRouteFilterRoute;
  */
 final class Prototype {
 	
+	const SESSION_ID = "sfw-prototype";
+	
 	const EXCEPT_ROUTES = [
 		Core::DEFAULT_STATIC_ROUTE,
 		Core::DEFAULT_QUERY_ROUTE
@@ -46,12 +48,12 @@ final class Prototype {
 	/**
 	 * Start the prototype if needed, starting add several routes, pages and middleware to ensure prototype connection.
 	 */
-	public static function start() : void {
+	public static function start() : bool {
 		
 		Core::check_app_ready();
 		
 		if ( !self::is_enabled() ) {
-			return;
+			return false;
 		}
 		
 		if ( self::is_started() ) {
@@ -61,10 +63,12 @@ final class Prototype {
 		self::$session = new Session();
 		self::$session["user"] = null;
 		
-		Sessionner::set_session("sfw-prototype", self::$session);
+		Sessionner::set_session( self::SESSION_ID, self::$session );
 		
 		Core::add_route( new LastRouteFilterRoute( "prototype-logged-filter", self::EXCEPT_ROUTES ), [__CLASS__, "controller_check_logged"] );
 		Core::set_page_template("prototype", "sfw");
+		
+		return true;
 		
 	}
 	
@@ -85,11 +89,23 @@ final class Prototype {
 		$users = self::get_users();
 		$valid = isset( $users[$user] ) ? ( empty($users[$user]) || $users[$user] === hash("sha256", $password) ) : false;
 		
-		if ( !valid ) return false;
+		if ( !$valid ) return false;
 		
-		self::$session["user"] = $user;
+		self::set_logged_user($user);
 		
 		return true;
+		
+	}
+	
+	/**
+	 * Set logged user.
+	 * @param string $user The user name.
+	 */
+	private static function set_logged_user( string $user ) {
+		
+		self::check_started();
+		self::$session["user"] = $user;
+		Sessionner::save_sessions( self::SESSION_ID );
 		
 	}
 	
@@ -99,7 +115,9 @@ final class Prototype {
 	private static function logged_user() : ?string {
 		
 		self::check_started();
-		return self::$session["user"] ?? null;
+		$user = self::$session["user"];
+		
+		return isset( self::get_users()[$user] ) ? ( self::$session["user"] ?? null ) : null;
 		
 	}
 	
