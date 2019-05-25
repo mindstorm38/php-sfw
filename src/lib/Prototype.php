@@ -115,9 +115,9 @@ final class Prototype {
 	private static function logged_user() : ?string {
 		
 		self::check_started();
-		$user = self::$session["user"];
+		$user = self::$session["user"] ?? null;
 		
-		return isset( self::get_users()[$user] ) ? ( self::$session["user"] ?? null ) : null;
+		return $user !== null && isset( self::get_users()[$user] ) ? $user : null;
 		
 	}
 	

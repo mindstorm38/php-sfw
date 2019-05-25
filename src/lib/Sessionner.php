@@ -9,7 +9,7 @@ use \BadMethodCallException;
  * <p>This class is not compatible with {@link SessionManager} and {@link SessionHandler}</p>
  * <p>This class is using "session:[name|regenerate_interval|configs]" options in the configuration (config.json), "config:[lifetime|path]" are no longer used.</p>
  * <p>You can create your personnal sessions handlers extending the {@link Session} class.</p>
- * 
+ *
  * @author Théo Rozier
  *
  */
@@ -148,7 +148,7 @@ final class Sessionner {
 				$sess["last_update"] = $t;
 			}
 			
-			$session->load($sess);
+			$session->load($sess["data"]);
 			
 		}
 		
@@ -248,8 +248,8 @@ final class Sessionner {
 				
 			}
 			
-			$stored_sessions["SESSIONS"][$session_id]["data"] = $sess->get_data();
-			$stored_sessions["SESSIONS"][$session_id]["last_update"] = time();
+			$stored_sessions[$session_id]["data"] = $sess->get_data();
+			$stored_sessions[$session_id]["last_update"] = time();
 			
 		}
 		
