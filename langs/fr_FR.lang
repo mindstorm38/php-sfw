@@ -2,9 +2,10 @@
 
 # Erreur de requêtes
 query.error.invalid_query_name=Nom de requête invalide
-query.error.missing_parameter=Paramètre '{0}' manquant
+query.error.missing_parameter=Paramètre(s) {0} manquant
 query.error.query_execution=Exception d'execution de la requête : {0}
 query.error.invalid_query_response=Réponse invalide de la requête
+query.error.invalid_session_token=Clé de session invalide
 
 # Succès de requêtes
 query.success.default=Succès

@@ -188,7 +188,10 @@ final class Sessionner {
 	}
 	
 	private static function setup_last_regen_var() {
+		
 		$_SESSION["LAST_REGEN"] = time();
+		$_SESSION["TOKEN"] = Utils::generate_random();
+		
 	}
 	
 	private static function need_regenerate() : bool {
@@ -261,6 +264,10 @@ final class Sessionner {
 			throw new BadMethodCallException("Invalid sessions '" . join("', '", $errors) . "' given, must be registered first in Sessionner (other valid sessions has been saved).");
 		}
 		
+	}
+	
+	public static function get_session_token() : ?string {
+		return $_SESSION["TOKEN"] ?? null;
 	}
 	
 	public static function get_cookie() {

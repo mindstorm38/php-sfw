@@ -23,6 +23,8 @@ class QueryManager {
 	const JSON_DATA                  = "data";
 	const JSON_MESSAGE               = "message";
 	
+	const SESSION_TOKEN_PARAM        = "session-token";
+	
 	public static $registered_queries = [];
 	public static $queries_namespaces = [];
 	public static $queries = [];
@@ -144,19 +146,33 @@ class QueryManager {
 			
 			$required_variables = $query_instance->required_variables();
 			
-			foreach ( $required_variables as $required_variable ) {
+			$req_sess_token = $query_instance->require_session_token();
+			
+			if ( $req_sess_token ) {
+				$required_variables[] = self::SESSION_TOKEN_PARAM;
+			}
+			
+			$missing_vars = array_diff(array_keys($array), $required_variables);
+			
+			if ( !empty($missing_vars) ) {
 				
-				if ( !array_key_exists( $required_variable, $array ) ) {
-					
-					return [
-						QueryManager::JSON_ERROR => "MISSING_PARAMETER",
-						QueryManager::JSON_MESSAGE => Lang::get( "query.error.missing_parameter", [ $required_variable ] ),
-						QueryManager::JSON_DATA => [
-							"param" => $required_variable
-						]
-					];
-					
-				}
+				return [
+					QueryManager::JSON_ERROR => "MISSING_PARAMETER",
+					QueryManager::JSON_MESSAGE => Lang::get( "query.error.missing_parameter", [ implode(', ', $missing_vars) ] ),
+					QueryManager::JSON_DATA => [
+						"params" => $missing_vars
+					]
+				];
+				
+			}
+			
+			if ( $req_sess_token && Sessionner::get_session_token() !== $array[self::SESSION_TOKEN_PARAM] ) {
+				
+				return [
+					QueryManager::JSON_ERROR => "INVALID_SESSION_TOKEN",
+					QueryManager::JSON_MESSAGE => Lang::get("query.error.invalid_session_token"),
+					QueryManager::JSON_DATA => []
+				];
 				
 			}
 			
