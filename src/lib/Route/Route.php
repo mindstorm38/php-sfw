@@ -63,6 +63,12 @@ abstract class Route {
 	
 	// Predefined callbacks
 	
+	/**
+	 * Create a controller used to print page, variables returned by route are passed to {@link Core::print_page}.
+	 * @param string $page The page ID printed.
+	 * @return callable The controller.
+	 * @see Core::print_page
+	 */
 	public static function controller_print_page( string $page ) : callable {
 		
 		return function( ...$vars ) use ( $page ) {
@@ -71,6 +77,11 @@ abstract class Route {
 		
 	}
 	
+	/**
+	 * Create a controller that call {@link Core::send_static_resource}.
+	 * @return callable The controller.
+	 * @see Core::send_static_resource
+	 */
 	public static function controller_send_static_resource() : callable {
 		
 		return function( string $path ) {
@@ -79,10 +90,17 @@ abstract class Route {
 		
 	}
 	
-	public static function controller_send_query_response() : callable {
+	/**
+	 * Create a controller to send query response using specified {@link QueryManager}.
+	 * @param QueryManager $manager The query manager you want to use.
+	 * @return callable The controller.
+	 * @see QueryManager
+	 * @see QueryManager::send_query_response
+	 */
+	public static function controller_send_query_response( QueryManager $manager ) : callable {
 		
-		return function( string $name ) {
-			QueryManager::send_query_response($name, $_POST);
+		return function( string $name ) use ($manager) {
+			$manager->send_query_response($name, $_POST);
 		};
 		
 	}

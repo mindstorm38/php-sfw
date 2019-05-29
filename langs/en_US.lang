@@ -5,7 +5,7 @@ query.error.invalid_query_name=Invalid query name
 query.error.missing_parameter=Missing parameter(s) {0}
 query.error.query_execution=Query execution exception : {0}
 query.error.invalid_query_response=Invalid query response type
-query.error.invalid_session_token=Invalid session token
+query.error.not_allowed=Not allowed
 
 # Queries successes
 query.success.default=Success

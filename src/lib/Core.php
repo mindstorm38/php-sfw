@@ -322,7 +322,7 @@ final class Core {
 		
 		self::add_route( new ExactRoute( Core::DEFAULT_HOME_ROUTE, "" ), Route::controller_print_page("home") );
 		self::add_route( new StaticRoute( Core::DEFAULT_STATIC_ROUTE, "static" ), Route::controller_send_static_resource() );
-		self::add_route( new QueryRoute( Core::DEFAULT_QUERY_ROUTE, "query" ), Route::controller_send_query_response() );
+		self::add_route( new QueryRoute( Core::DEFAULT_QUERY_ROUTE, "query" ), Route::controller_send_query_response(QueryManager::get_main()) );
 		
 		self::set_page_template("home", "sfw");
 		self::set_page_template("error", "sfw");

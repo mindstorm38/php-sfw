@@ -190,7 +190,7 @@ final class Sessionner {
 	private static function setup_last_regen_var() {
 		
 		$_SESSION["LAST_REGEN"] = time();
-		$_SESSION["TOKEN"] = Utils::generate_random();
+		$_SESSION["NONCE"] = Utils::generate_random();
 		
 	}
 	
@@ -266,8 +266,12 @@ final class Sessionner {
 		
 	}
 	
-	public static function get_session_token() : ?string {
-		return $_SESSION["TOKEN"] ?? null;
+	/**
+	 * @return string|null The session nonce (mainly used for QueryManagers), or null if session not started.
+	 * @see QueryManager
+	 */
+	public static function get_session_nonce() : ?string {
+		return $_SESSION["NONCE"] ?? null;
 	}
 	
 	public static function get_cookie() {

@@ -8,8 +8,8 @@ use \Exception;
 use \Throwable;
 
 /**
- *
- * Used to manage queries (defined by {@link Query}) and execute them to return JSON.
+ * <p>Used to manage queries (defined by {@link Query}) and execute them to return JSON.</p>
+ * <p>Can also be used staticaly for a main manager. <b>Note that the default QueryManager use session nonce (see {@link Sessionner::get_session_nonce}).</b></p>
  *
  * @author Théo Rozier
  *
@@ -23,11 +23,40 @@ class QueryManager {
 	const JSON_DATA                  = "data";
 	const JSON_MESSAGE               = "message";
 	
-	const SESSION_TOKEN_PARAM        = "session-token";
+	// Cryptographic Nonce
+	const NONCE_PARAM        = "\$nonce\$";
 	
-	public static $registered_queries = [];
-	public static $queries_namespaces = [];
-	public static $queries = [];
+	// Main manager
+	
+	private static $main = null;
+	
+	public static function __callStatic(string $name, array $args) {
+		
+		if ( self::$main === null ) {
+			self::$main = new QueryManager();
+		}
+		
+		(self::$main->$name)(...$args);
+		
+	}
+	
+	/**
+	 * @return QueryManager The main query manager, using session nonces.
+	 */
+	public static function get_main() : QueryManager {
+		return self::$main;
+	}
+	
+	// Manager class
+	
+	private $require_nonce;
+	private $registered_queries = [];
+	private $queries_namespaces = [];
+	private $queries = [];
+	
+	public function __construct( bool $require_nonce = true ) {
+		$this->require_nonce = $require_nonce;
+	}
 	
 	/**
 	 * Register a query class with a custom name.
@@ -35,9 +64,9 @@ class QueryManager {
 	 * @param mixed $class_path Query class path.
 	 * @throws Exception If a query of the same name if already registered. Or the query class doesn't exists.
 	 */
-	public static function register_query_class( string $name, $class_path ) : void {
+	public function register_query_class( string $name, $class_path ) : void {
 		
-		if ( array_key_exists( $name, self::$registered_queries ) ) {
+		if ( array_key_exists( $name, $this->registered_queries ) ) {
 			throw new Exception("This query already exists '{$name}'");
 		}
 		
@@ -45,7 +74,7 @@ class QueryManager {
 			throw new Exception("Invalid query class path '{$class_path}'");
 		}
 		
-		self::$registered_queries[ $name ] = $class_path;
+		$this->registered_queries[ $name ] = $class_path;
 		
 	}
 	
@@ -53,14 +82,14 @@ class QueryManager {
 	 * Add a namespace (using a PSR-4 autoloading) as base for searching for all queries.
 	 * @param string $namespace
 	 */
-	public static function register_query_namespace( string $namespace ) : void {
+	public function register_query_namespace( string $namespace ) : void {
 		
 		if ( $namespace[ strlen($namespace) - 1 ] !== "\\" ) {
 			$namespace .= "\\";
 		}
 		
-		if ( !in_array( $namespace, self::$queries_namespaces ) ) {
-			self::$queries_namespaces[] = $namespace;
+		if ( !in_array( $namespace, $this->queries_namespaces ) ) {
+			$this->queries_namespaces[] = $namespace;
 		}
 		
 	}
@@ -70,19 +99,19 @@ class QueryManager {
 	 * @param string $name The name of the query (if using registered namespaces, you can use the Query Class name).
 	 * @return Query|null The cached or instantiated query. Or null if no query have this name.
 	 */
-	public static function get_query_instance( string $name ) {
+	public function get_query_instance( string $name ) {
 		
 		if ( empty($name) ) {
 			return null;
 		}
 		
-		if ( isset( self::$queries[$name] ) ) {
-			return self::$queries[$name];
+		if ( isset( $this->queries[$name] ) ) {
+			return $this->queries[$name];
 		}
 		
 		$new_query_class = null;
 		
-		foreach ( self::$queries_namespaces as $ns ) {
+		foreach ( $this->queries_namespaces as $ns ) {
 			
 			$new_query_class = $ns . $name;
 			
@@ -96,11 +125,11 @@ class QueryManager {
 		
 		if ( $new_query_class === null ) {
 			
-			if ( !array_key_exists( $name, self::$registered_queries ) ) {
+			if ( !array_key_exists( $name, $this->registered_queries ) ) {
 				return null;
 			}
 			
-			$new_query_class = self::$registered_queries[ $name ];
+			$new_query_class = $this->registered_queries[ $name ];
 			
 			if ( !class_exists( $new_query_class ) ) {
 				return null;
@@ -111,7 +140,7 @@ class QueryManager {
 		try {
 			
 			$obj = new $new_query_class();
-			return self::$queries[ $name ] = $obj;
+			return $this->queries[ $name ] = $obj;
 			
 		} catch (Throwable $e) {
 			return null;
@@ -126,11 +155,11 @@ class QueryManager {
 	 * @return array The associative array result.
 	 * @see QueryManager::get_query_instance
 	 */
-	public static function execute( string $name, array $array ) {
+	public function execute( string $name, array $array ) {
 		
 		try {
 			
-			$query_instance = self::get_query_instance( $name );
+			$query_instance = $this->get_query_instance( $name );
 			
 			if ( $query_instance == null ) {
 				
@@ -144,15 +173,17 @@ class QueryManager {
 				
 			}
 			
-			$required_variables = $query_instance->required_variables();
-			
-			$req_sess_token = $query_instance->require_session_token();
-			
-			if ( $req_sess_token ) {
-				$required_variables[] = self::SESSION_TOKEN_PARAM;
+			if ( $this->require_nonce && ( !isset($array[self::NONCE_PARAM]) || Sessionner::get_session_nonce() !== $array[self::NONCE_PARAM] ) ) {
+				
+				return [
+					QueryManager::JSON_ERROR => "NOT_ALLOWED",
+					QueryManager::JSON_MESSAGE => Lang::get("query.error.not_allowed"),
+					QueryManager::JSON_DATA => []
+				];
+				
 			}
 			
-			$missing_vars = array_diff(array_keys($array), $required_variables);
+			$missing_vars = array_diff( array_keys($array), $query_instance->required_variables() );
 			
 			if ( !empty($missing_vars) ) {
 				
@@ -162,16 +193,6 @@ class QueryManager {
 					QueryManager::JSON_DATA => [
 						"params" => $missing_vars
 					]
-				];
-				
-			}
-			
-			if ( $req_sess_token && Sessionner::get_session_token() !== $array[self::SESSION_TOKEN_PARAM] ) {
-				
-				return [
-					QueryManager::JSON_ERROR => "INVALID_SESSION_TOKEN",
-					QueryManager::JSON_MESSAGE => Lang::get("query.error.invalid_session_token"),
-					QueryManager::JSON_DATA => []
 				];
 				
 			}
@@ -219,10 +240,10 @@ class QueryManager {
 	 * @param array $array Parameters.
 	 * @see QueryManager::execute
 	 */
-	public static function send_query_response( string $name, array $array ) {
+	public function send_query_response( string $name, array $array ) {
 		
 		Utils::content_type_json();
-		echo json_encode( self::execute($name, $array) );
+		echo json_encode( $this->execute($name, $array) );
 		
 	}
 	
