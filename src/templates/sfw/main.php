@@ -18,7 +18,7 @@ $page->{"big_header"} = true;
 		<meta charset="utf8" />
 		<title><?= $page->title ?> - PHP-SFW</title>
 		<link rel="stylesheet" href="/static/styles/sfw-main.less.css" />
-		<script type="text/javascript" src="/static/libraries/jshutils-1.0.1.js"></script>
+		<script type="text/javascript" src="/static/libraries/jshutils-1.0.2.js"></script>
 		<script type="text/javascript">
 			Query.setNonce("<?= Sessionner::get_session_nonce() ?>");
 		</script>
