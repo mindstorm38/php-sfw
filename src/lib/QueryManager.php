@@ -10,6 +10,7 @@ use \Throwable;
 /**
  * <p>Used to manage queries (defined by {@link Query}) and execute them to return JSON.</p>
  * <p>Can also be used staticaly for a main manager. <b>Note that the default QueryManager use session nonce (see {@link Sessionner::get_session_nonce}).</b></p>
+ * <p>To call main QueryManager directly using static methods, you must prefix your static calls by 'main_'.</p>
  *
  * @author Théo Rozier
  *
@@ -30,21 +31,33 @@ class QueryManager {
 	
 	private static $main = null;
 	
-	public static function __callStatic(string $name, array $args) {
+	/**
+	 * @return QueryManager The main query manager, using session nonces.
+	 */
+	public static function get_main() : QueryManager {
 		
 		if ( self::$main === null ) {
 			self::$main = new QueryManager();
 		}
 		
-		(self::$main->$name)(...$args);
+		return self::$main;
 		
 	}
 	
-	/**
-	 * @return QueryManager The main query manager, using session nonces.
-	 */
-	public static function get_main() : QueryManager {
-		return self::$main;
+	public static function __callStatic(string $name, array $args) {
+		
+		if ( substr($name, 0, 5) === "main_" ) {
+			
+			$c = [ self::get_main(), substr($name, 5) ];
+			
+			if ( is_callable($c) ) {
+				call_user_func_array( [ self::get_main(), substr($name, 5) ], $args );
+			} else {
+				throw new Exception("Invalid Main QueryManager method '" . $c[1] . "'.");
+			}
+			
+		}
+		
 	}
 	
 	// Manager class
@@ -183,7 +196,13 @@ class QueryManager {
 				
 			}
 			
-			$missing_vars = array_diff( array_keys($array), $query_instance->required_variables() );
+			$missing_vars = [];
+			
+			foreach ( $query_instance->required_variables() as $rv ) {
+				if ( !array_key_exists($rv, $array) ) {
+					$missing_vars[] = $rv;
+				}
+			}
 			
 			if ( !empty($missing_vars) ) {
 				

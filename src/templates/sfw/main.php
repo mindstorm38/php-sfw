@@ -2,6 +2,7 @@
 
 use SFW\Core;
 use SFW\Lang;
+use SFW\Sessionner;
 
 $page->{"big_header"} = true;
 
@@ -18,8 +19,12 @@ $page->{"big_header"} = true;
 		<title><?= $page->title ?> - PHP-SFW</title>
 		<link rel="stylesheet" href="/static/styles/sfw-main.less.css" />
 		<script type="text/javascript" src="/static/libraries/jshutils-1.0.1.js"></script>
-		
+		<script type="text/javascript">
+			Query.setNonce("<?= Sessionner::get_session_nonce() ?>");
+		</script>
+
 		<?php @include_once $page->page_part_path("head"); ?>
+
 		
 	</head>
 

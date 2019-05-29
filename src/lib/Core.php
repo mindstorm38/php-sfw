@@ -139,7 +139,7 @@ final class Core {
 		LessCompiler::get_compiler()->setImportDir( self::get_resource_dirs(self::STATIC_DIR) );
 		
 		// Adding query namespace for defaut queries
-		QueryManager::register_query_namespace("SFW\\Query");
+		QueryManager::main_register_query_namespace("SFW\\Query");
 		
 		// Setting up default routes
 		self::setup_default_routes_and_pages();

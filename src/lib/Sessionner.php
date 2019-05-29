@@ -25,6 +25,8 @@ final class Sessionner {
 	
 	const DEFAULT_SESS_ID                    = "default";
 	
+	const SESSION_NONCE_SIZE                 = 32;
+	
 	private static $started = false;
 	private static $sessions = null;
 	
@@ -190,7 +192,7 @@ final class Sessionner {
 	private static function setup_last_regen_var() {
 		
 		$_SESSION["LAST_REGEN"] = time();
-		$_SESSION["NONCE"] = Utils::generate_random();
+		$_SESSION["NONCE"] = Utils::generate_random(SESSION_NONCE_SIZE);
 		
 	}
 	
