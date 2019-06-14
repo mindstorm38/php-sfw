@@ -23,7 +23,7 @@ use \BadMethodCallException;
  */
 final class Core {
 	
-	const VERSION = "1.1.0";
+	const VERSION = "1.2.0";
 	const MINIMUM_PHP_VERSION = "7.1.0";
 	
 	const AUTHOR = "Théo Rozier";

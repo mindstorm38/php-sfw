@@ -1,17 +1,18 @@
 # PHP-SFW
 PHP-SFW is an Object-Oriented PHP framework. It provide lot of utilities for a powerfull databases managing. Since 1.1.0 work with routes and had default pages, prototype access and more !
 
-This README is currently written for version `v1.1.0`.
+This README is currently written for version `v1.2.0`.
 
 ## Summary
 1. [Install SFW](#1-install-sfw)
 2. [Default working directory](#2-default-working-directory)
 3. [Understanding Resources Handling](#3-understanding-resources-handling)
 4. [Routes](#4-routes)
-5. [Pages & Templates](#5-pages-templates)
+5. [Pages & Templates](#5-pages-and-templates)
 6. [Config](#6-config)
 7. [Languages](#7-languages)
 8. [Database](#8-database)
+9. [Prototype website](#9-prototype-website)
 
 ## 1) Install SFW
 This framework can only work using the `composer` PHP package manager, check [here](https://getcomposer.org/) for more informations about it.
@@ -49,9 +50,11 @@ By default there is a resource handler pointing to the base directory of your ap
 The last added resource handler has priority and, depending on the used method, overwrite SFW sources.
 
 ## 4) Routes
-In most web frameworks, there is a notion of `route`, routes are used to execute actions according to the requested URL path.
+In most web frameworks, there is a notion of `route`, routes are used to execute a `controller` according to the requested URL path.
 
-To add route, use `Core::add_route`. To optimize a maximum, create your own routes extending `Route` class.
+There is two types of routes, normal routes, and filter routes. If a normal route is validated, then all filters routes are tested in registering order and can know what kind of normal route have been validated, they can stop it action and execute another normal controller, or just do nothing.
+
+To add route, use `Core::add_route`. To optimize a maximum, create your own routes extending `Route` or `FilterRoute` class.
 
 #### • ExactRoute
 An `ExactRoute` just check if the given path at instantiation correspond to the request path.
@@ -83,7 +86,7 @@ The `QueryRoute` just avoid using a TemplateRoute `<base_dir>/{a}`.
 
 By default a query route with base directory `query` is created.
 
-## 5) Pages & Templates
+## 5) Pages and Templates
 Pages and templates are stored in `src/pages` and `src/templates` under resource handlers base paths.
 Place their files inside a directory named by their identifier.
 
@@ -118,3 +121,8 @@ It is recommended to use the class fetching system, to do that you have to creat
 > In earlier versions, it was not possible to easily create your own SQL queries. It was mandatory to uses classes `SQLManager`,` SQLSerializable`, `TableDefinition` & `TableManager`.
 
 > **Now these classes are depreciated.**
+
+## 9) Prototype website
+Framework configuration allows you to make your site a prototype by restricting its access using `prototype:enabled` configuration value.
+
+If you enable prototyping, access credentials will then be requested to access the entire site, these are specified in the `prototype:users` configuration section. In this section, keys are usernames and values their password, passwords can be left empty, but otherwise the password must be encoded in SHA-256.
