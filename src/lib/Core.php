@@ -619,11 +619,12 @@ final class Core {
 	 * A callback to use for sending static resource to client.
 	 * It also call resource extension processors registered using {@link Core::add_res_ext_processor}.
 	 * @param string $res_path The relative resource path.
+	 * @param boolean $nocache Force resend cached resources.
 	 * @see Core::add_res_ext_processor
 	 * @see Core::use_static_resource
 	 * @see Core::print_error_page
 	 */
-	public static function send_static_resource( string $res_path ) : void {
+	public static function send_static_resource( string $res_path, bool $nocache = false ) : void {
 		
 		$pr = null;
 		
@@ -640,7 +641,29 @@ final class Core {
 			$res_path = ($pr[0])($res_path);
 		}
 		
-		$s = self::use_static_resource( $res_path, function( $res, $real_res_path ) use ($pr) {
+		$s = self::use_static_resource( $res_path, function( $res, $real_res_path ) use ($pr, $nocache) {
+			
+			if ( !$nocache ) {
+				
+				$last_mod = filemtime($real_res_path);
+				$headers = getallheaders();
+				
+				if ( isset($headers["If-Modified-Since"]) ) {
+					
+					$if_mod_since = Utils::parse_http_header_date($headers["If-Modified-Since"]);
+					
+					if ( $if_mod_since !== false && $lastmod <= $if_mod_since ) {
+						
+						http_response_code(304);
+						return;
+						
+					}
+					
+				}
+				
+				header("Last-Modified: " . Utils::get_http_header_date($last_mod));
+				
+			}
 			
 			if ( $pr[1] !== null ) {
 				
@@ -659,9 +682,9 @@ final class Core {
 			
 		} );
 			
-			if ( !$s ) {
-				self::print_error_page(404);
-			}
+		if ( !$s ) {
+			self::print_error_page(404);
+		}
 			
 	}
 	

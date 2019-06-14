@@ -4,6 +4,8 @@
 
 namespace SFW;
 
+use \DateTime;
+
 /**
  *
  * Contains lot of useful utilities.
@@ -84,6 +86,11 @@ final class Utils {
 		'ods' => 'application/vnd.oasis.opendocument.spreadsheet'
 		
 	];
+	
+	/**
+	 * @var string The date format used for HTTP headers.
+	 */
+	const DATE_FORMAT_RFC2616 = "D, d M Y H:i:s \G\M\T";
 	
 	/**
 	 * Check if this script is not started using Apache, NGINX or other.
@@ -236,6 +243,24 @@ final class Utils {
 		header('Cache-Control: max-age=0, no-cache, no-store, must-revalidate');
 		header('Pragma: no-cache');
 		header("Expires: Wed, 11 Jan 1984 05:00:00 GMT");
+	}
+	
+	/**
+	 * Get a date formatted using right HTTP header date format (RFC2616).
+	 * @param int $time The UNIX timestamp.
+	 * @return string Formatted date
+	 */
+	public static function get_http_header_date( int $time ) : string {
+		return gmdate(self::DATE_FORMAT_RFC2616, $time);
+	}
+	
+	/**
+	 * Parse a date formatted using HTTP header date format (RFC2616) and return an UNIX timestamp.
+	 * @param string $date The formatted HTTP header date.
+	 * @return int The UNIX timestamp parsed.
+	 */
+	public static function parse_http_header_date( string $date ) : int {
+		return DateTime::createFromFormat(self::DATE_FORMAT_RFC2616, $date)->getTimestamp();
 	}
 	
 	/**
