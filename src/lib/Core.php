@@ -681,7 +681,7 @@ final class Core {
 			}
 			
 		} );
-			
+		
 		if ( !$s ) {
 			self::print_error_page(404);
 		}
@@ -697,6 +697,16 @@ final class Core {
 	public static function redirect_base( string $path = "" ) {
 		Utils::redirect( Config::get_advised_url( $path ) );
 	}
+	
+	/*
+	public static function generate_signed_token() {
+		
+		$secret = Config::get("global:secret", "");
+		$token = Utils::generate_random();
+		
+		
+	}
+	*/
 	
 	public static function missing_extension( $extension, $fatal = false, $extra = "" ) {
 		
