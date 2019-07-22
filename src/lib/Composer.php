@@ -8,6 +8,8 @@ final class Composer {
 	
 	const ARG_WEBSITE_DIR = "dir";
 	
+	const APP_SECRET_LENGTH = 16;
+	
 	/**
 	 * Command event for composer for initializing
 	 */
@@ -38,7 +40,8 @@ final class Composer {
 		
 		$vars = [
 			"REL_PATH_TO_AUTOLOADER" => "",
-			"APP_NAME" => $name
+			"APP_NAME" => $name,
+			"APP_SECRET" => Utils::generate_random(self::APP_SECRET_LENGTH)
 		];
 		
 		for ( $i = 0; $i < substr_count($dir_raw, DIRECTORY_SEPARATOR); $i++ ) {

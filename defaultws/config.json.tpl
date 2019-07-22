@@ -2,7 +2,8 @@
 	"global": {
 		"secure": false,
 		"advised_host": "localhost",
-		"base_path": ""
+		"base_path": "",
+		"secret": "%{APP_SECRET}%"
 	},
 	"prototype": {
 		"enabled": false,
