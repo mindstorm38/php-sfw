@@ -81,7 +81,7 @@ class JsonWebToken {
 			throw new Exception("Invalid token format.");
 		}
 		
-		$header = json_decode($splitted[0], true);
+		$header = json_decode(self::base64url_decode($splitted[0]), true);
 		
 		if ( !isset($header["typ"]) || $header["typ"] !== "JWT" ) {
 			throw new Exception("Invalid or missing token type, supported types : JWT.");
@@ -98,7 +98,7 @@ class JsonWebToken {
 			throw new Exception("Unverified token.");
 		}
 		
-		return json_decode($splitted[1], true);
+		return json_decode(self::base64url_decode($splitted[1]), true);
 		
 	}
 	
