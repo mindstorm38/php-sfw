@@ -71,7 +71,9 @@ class JsonWebToken {
 		
 	}
 	
-	public static function verify(string $token, string $secret) : array {
+	public static function verify(string $token) : array {
+		
+		$secret = self::get_secret();
 		
 		$splitted = explode(".", $token);
 		
