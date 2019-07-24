@@ -46,7 +46,7 @@ class JsonWebToken {
 			throw new Exception("Algorithm '{$algo}' not implemented.");
 		}
 		
-		return forward_static_call($func_name, $content, $secret);
+		return call_user_func([__CLASS__, $func_name], $content, $secret);
 		
 	}
 	
