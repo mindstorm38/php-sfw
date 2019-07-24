@@ -698,16 +698,6 @@ final class Core {
 		Utils::redirect( Config::get_advised_url( $path ) );
 	}
 	
-	/*
-	public static function generate_signed_token() {
-		
-		$secret = Config::get("global:secret", "");
-		$token = Utils::generate_random();
-		
-		
-	}
-	*/
-	
 	public static function missing_extension( $extension, $fatal = false, $extra = "" ) {
 		
 		$doclink = self::get_php_doc_link( 'book.' . $extension . '.php' );

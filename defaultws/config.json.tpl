@@ -2,8 +2,7 @@
 	"global": {
 		"secure": false,
 		"advised_host": "localhost",
-		"base_path": "",
-		"secret": "%{APP_SECRET}%"
+		"base_path": ""
 	},
 	"prototype": {
 		"enabled": false,
@@ -27,5 +26,9 @@
 				"auto_update": true
 			}
 		}
+	},
+	"jwt": {
+		"secret": "%{JWT_SECRET}%",
+		"algo": "HS256"
 	}
 }
