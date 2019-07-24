@@ -29,7 +29,7 @@ class JsonWebToken {
 		$algo = Config::get("jwt:algo");
 		
 		if ( $algo === null ) {
-			self::throw_not_configured("algo");
+			self::throw_not_configured("algorithm");
 		}
 		
 		$algo = strtoupper($algo);

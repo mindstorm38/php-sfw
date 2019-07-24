@@ -29,6 +29,6 @@
 	},
 	"jwt": {
 		"secret": "%{JWT_SECRET}%",
-		"algo": "HS256"
+		"algorithm": "HS256"
 	}
 }
