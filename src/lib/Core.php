@@ -71,7 +71,7 @@ final class Core {
 	 * @param string $app_name Application name, for now this is not used anywhere.
 	 * @param string $app_base_dir Application base directory, used for locating languages, config and other relative paths.
 	 */
-	public static function start_application( string $app_name, string $app_base_dir ) {
+	public static function start_application( string $app_name, string $app_base_dir, bool $die_if_manual = true ) {
 		
 		if ( self::$app_name !== null ) {
 			throw new Exception("Application already started.");
@@ -94,7 +94,9 @@ final class Core {
 		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
 		
 		// Manual running
-		if ( Utils::is_manual_running() ) die();
+		if ( Utils::is_manual_running() ) {
+			if ( $die_if_manual ) die(); else return;
+		}
 		
 		// Set header only if runned by a HTTP server
 		header( "X-Powered-By: PHP-SFW/" . self::VERSION );
