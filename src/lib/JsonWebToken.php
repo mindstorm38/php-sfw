@@ -59,7 +59,7 @@ class JsonWebToken {
 		$secret = self::get_secret();
 		$algo = self::get_algorithm();
 		
-		$header = [,
+		$header = [
 			"typ" => "JWT",
 			"alg" => $algo
 		];

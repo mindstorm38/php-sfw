@@ -8,7 +8,7 @@ final class Composer {
 	
 	const ARG_WEBSITE_DIR = "dir";
 	
-	const JWT_SECRET_LENGTH = 16;
+	const JWT_SECRET_LENGTH = 32;
 	
 	/**
 	 * Get default configuration template variables
