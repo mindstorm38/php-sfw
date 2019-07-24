@@ -90,8 +90,9 @@ class JsonWebToken {
 		}
 		
 		$algo = $header["alg"];
+		$signature = self::execute_algo($algo, ($splitted[0] . "." . $splitted[1]), $secret);
 		
-		if ( self::base64url_encode(self::execute_algo($algo, ($splitted[0] . "." . $splitted[1]), $secret)) !== $splitted[2] ) {
+		if ( self::base64url_encode($signature) !== $splitted[2] ) {
 			throw new Exception("Unverified token.");
 		}
 		
