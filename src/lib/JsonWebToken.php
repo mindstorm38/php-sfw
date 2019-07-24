@@ -26,7 +26,7 @@ class JsonWebToken {
 	
 	public static function get_algorithm() : string {
 		
-		$algo = Config::get("jwt:algo");
+		$algo = Config::get("jwt:algorithm");
 		
 		if ( $algo === null ) {
 			self::throw_not_configured("algorithm");
