@@ -148,7 +148,8 @@ final class Lang {
 						"language" => $identifier,
 						"country" => "",
 						"files" => [],
-						"data" => null
+						"data" => null,
+						"http" => []
 					];
 					
 				}
@@ -169,6 +170,14 @@ final class Lang {
 				
 				if ( isset( $language_block["default"] ) && $language_block["default"] === true ) {
 					self::$default_lang = $identifier;
+				}
+				
+				if ( isset( $language_block["http"] ) && is_array($language_block["http"]) ) {
+					
+					foreach ( $language_block["http"] as $locale => $active ) {
+						self::$langs[$identifier]["http"][$locale] = $active;
+					}
+					
 				}
 				
 			}
@@ -297,6 +306,46 @@ final class Lang {
 			
 		} else {
 			return false;
+		}
+		
+	}
+	
+	/**
+	 * Get a language identifier from the http locale.
+	 * @param string $http_locale HTTP locale to check.
+	 * @return string|null The language identifier.
+	 */
+	public static function get_language_from_http_locale(string $http_locale) : ?string {
+		
+		foreach ( self::$langs as $identifier => $infos ) {
+			if ( isset($infos["http"][$http_locale]) && $infos["http"][$http_locale] === true ) {
+				return $identifier;
+			}
+		}
+		
+		return null;
+		
+	}
+	
+	/**
+	 * Set the current used language using its HTTP locale.
+	 * @param string $http_locale The HTTP locale to search for.
+	 * @return bool True if the languages exists and has been set.
+	 * @see Lang::set_current_language
+	 */
+	public static function set_current_language_from_http_locale(string $http_locale) : bool {
+		
+		$id = self::get_language_from_http_locale($http_locale);
+		return $id === null ? false : self::set_current_language($id);
+		
+	}
+	
+	public static function set_current_language_from_accept_languages() {
+		
+		foreach ( Utils::parse_accept_languages() as $lang ) {
+			if ( self::set_current_language_from_http_locale($lang["id"]) ) {
+				return;
+			}
 		}
 		
 	}

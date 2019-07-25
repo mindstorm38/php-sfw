@@ -3,11 +3,19 @@
 		"language": "English",
 		"country": "United States",
 		"identifier": "en_US",
+		"http": {
+			"en": true,
+			"en-US": true
+		},
 		"default": true
 	},
 	{
 		"language": "French",
 		"country": "France",
-		"identifier": "fr_FR"
+		"identifier": "fr_FR",
+		"http": {
+			"fr": true,
+			"fr-FR": true
+		}
 	}
 ]

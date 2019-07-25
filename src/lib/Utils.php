@@ -555,6 +555,46 @@ final class Utils {
 		
 	}
 	
+	/**
+	 * Get accept languages ordered by quality factor. Return empty if not given in server constants.
+	 * @return array Accepted locales by the user agent stored in an array of objects following this format : ["id" => <id>, "q" => <quality_factor>].
+	 */
+	public static function parse_accept_languages() : array {
+		
+		if ( !isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ) {
+			return [];
+		}
+			
+		$lang = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+		$split_langs = explode(",", $lang);
+		
+		$ret = [];
+		
+		foreach ( $split_langs as $split_lang ) {
+			
+			$lang_params = explode(";", $split_lang);
+			
+			$q = 1;
+			
+			if ( count($lang_params) >= 2 && substr($lang_params[1], 0, 2) == "q=" ) {
+				$q = floatval(substr($lang_params[1], 2));
+			}
+			
+			$ret[] = [
+				"id" => $lang_params[0],
+				"q" => $q
+			];
+			
+		}
+		
+		usort($ret, function($a, $b) {
+			return $b["q"] - $a["q"];
+		});
+			
+		return $ret;
+				
+	}
+	
 	// Array Page functions
 	
 	public static function get_page_infos( array $array, $items_per_page, $pages_offset, $current_page, $filter = null, $fillEmpty = false ) {
