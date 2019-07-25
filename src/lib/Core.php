@@ -23,7 +23,7 @@ use \BadMethodCallException;
  */
 final class Core {
 	
-	const VERSION = "1.3.0-SNAPSHOT.2";
+	const VERSION = "1.3.0-SNAPSHOT.3";
 	const MINIMUM_PHP_VERSION = "7.1.0";
 	
 	const AUTHOR = "Théo Rozier";
@@ -93,6 +93,14 @@ final class Core {
 		self::add_resources_handler( new ResourcesHandler( self::$framework_base_dir ) );
 		self::add_resources_handler( new ResourcesHandler( self::$app_base_dir ) );
 		
+		// Init languages if selected (now placed before checking manual running)
+		if ( self::$init_languages ) {
+			
+			Lang::init_languages();
+			Lang::set_current_language_from_accept_languages();
+			
+		}
+		
 		// Manual running
 		if ( Utils::is_manual_running() ) {
 			if ( $die_if_manual ) die(); else return;
@@ -125,11 +133,6 @@ final class Core {
 		// Starting prototype manager
 		if ( Prototype::start() ) {
 			self::$start_session = true;
-		}
-		
-		// Init languages if selected
-		if ( self::$init_languages ) {
-			Lang::init_languages();
 		}
 		
 		// Start session if selected

@@ -340,6 +340,9 @@ final class Lang {
 		
 	}
 	
+	/**
+	 * Set current language using {@link Lang::set_current_language_from_http_locale} and locales provided by user agent using "Accept-Language" header.
+	 */
 	public static function set_current_language_from_accept_languages() {
 		
 		foreach ( Utils::parse_accept_languages() as $lang ) {
