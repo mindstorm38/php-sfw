@@ -23,7 +23,7 @@ use \BadMethodCallException;
  */
 final class Core {
 	
-	const VERSION = "1.3.0-SNAPSHOT.5";
+	const VERSION = "1.3.0-SNAPSHOT.6";
 	const MINIMUM_PHP_VERSION = "7.1.0";
 	
 	const AUTHOR = "Théo Rozier";
@@ -391,7 +391,7 @@ final class Core {
 				
 				foreach ( self::$filter_routes as $filter_route ) {
 					
-					if ( $filter_route->filter($path, $bpath, $route) ) {
+					if ( $filter_route->filter($method, $path, $bpath, $route) ) {
 						return $filter_route->get_identifier();
 					}
 					
@@ -405,7 +405,7 @@ final class Core {
 		}
 		
 		foreach ( self::$filter_routes as $filter_route ) {
-			if ( $filter_route->filter($path, $bpath, null) ) {
+			if ( $filter_route->filter($method, $path, $bpath, null) ) {
 				return $filter_route->get_identifier();
 			}
 		}
