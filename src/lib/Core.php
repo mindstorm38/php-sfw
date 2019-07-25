@@ -23,7 +23,7 @@ use \BadMethodCallException;
  */
 final class Core {
 	
-	const VERSION = "1.2.0";
+	const VERSION = "1.3.0-SNAPSHOT.1";
 	const MINIMUM_PHP_VERSION = "7.1.0";
 	
 	const AUTHOR = "Théo Rozier";
@@ -322,9 +322,9 @@ final class Core {
 	 */
 	private static function setup_default_routes_and_pages() {
 		
-		self::add_route( new ExactRoute( Core::DEFAULT_HOME_ROUTE, "" ), Route::controller_print_page("home") );
-		self::add_route( new StaticRoute( Core::DEFAULT_STATIC_ROUTE, "static" ), Route::controller_send_static_resource() );
-		self::add_route( new QueryRoute( Core::DEFAULT_QUERY_ROUTE, "query" ), Route::controller_send_query_response(QueryManager::get_main()) );
+		self::add_route( new ExactRoute("GET", Core::DEFAULT_HOME_ROUTE, ""), Route::controller_print_page("home") );
+		self::add_route( new StaticRoute("GET", Core::DEFAULT_STATIC_ROUTE, "static"), Route::controller_send_static_resource() );
+		self::add_route( new QueryRoute("POST", Core::DEFAULT_QUERY_ROUTE, "query"), Route::controller_send_query_response(QueryManager::get_main()) );
 		
 		self::set_page_template("home", "sfw");
 		self::set_page_template("error", "sfw");

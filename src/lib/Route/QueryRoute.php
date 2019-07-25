@@ -9,9 +9,9 @@ class QueryRoute extends Route {
 	private $base_path;
 	private $base_path_len_min;
 	
-	public function __construct( string $identifier, string $base_path ) {
+	public function __construct(string $method, string $identifier, string $base_path) {
 		
-		parent::__construct($identifier);
+		parent::__construct($method, $identifier);
 		
 		$this->base_path = Utils::beautify_url_path($base_path);
 		$this->base_path_len_min = strlen($this->base_path) + 1;

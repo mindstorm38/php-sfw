@@ -4,8 +4,8 @@ namespace SFW\Route;
 
 abstract class FilterRoute extends Route {
 	
-	public function __construct( string $identifier ) {
-		parent::__construct($identifier);
+	public function __construct(string $method, string $identifier) {
+		parent::__construct($method, $identifier);
 	}
 	
 	public function routable( string $path, string $bpath ) : ?array {

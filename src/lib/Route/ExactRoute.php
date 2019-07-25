@@ -9,9 +9,9 @@ class ExactRoute extends Route {
 	private $path;
 	private $use_beautified;
 	
-	public function __construct( string $identifier, string $path, bool $use_beautified = true ) {
+	public function __construct(string $method, string $identifier, string $path, bool $use_beautified = true) {
 		
-		parent::__construct($identifier);
+		parent::__construct($method, $identifier);
 		
 		$this->path = $use_beautified ? Utils::beautify_url_path($path) : $path;
 		$this->use_beautified = $use_beautified;

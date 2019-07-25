@@ -16,7 +16,7 @@ abstract class Route {
 	protected $identifier;
 	protected $controller = null;
 	
-	public function __construct( string $method, string $identifier ) {
+	public function __construct(string $method, string $identifier) {
 		
 		$this->method = strtoupper($method);
 		$this->identifier = $identifier;

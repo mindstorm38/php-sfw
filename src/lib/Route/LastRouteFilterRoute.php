@@ -6,9 +6,9 @@ class LastRouteFilterRoute extends FilterRoute {
 	
 	private $excepts_routes;
 	
-	public function __construct( string $identifier, array $excepts_routes ) {
+	public function __construct(string $method, string $identifier, array $excepts_routes) {
 		
-		parent::__construct($identifier);
+		parent::__construct($method, $identifier);
 		
 		$this->excepts_routes = $excepts_routes;
 		
