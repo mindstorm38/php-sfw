@@ -12,11 +12,19 @@ abstract class Route {
 	const ROUTE_RES = "res";
 	const ROUTE_API = "api";
 	
-	private $identifier;
+	protected $method;
+	protected $identifier;
 	protected $controller = null;
 	
-	public function __construct( string $identifier ) {
+	public function __construct( string $method, string $identifier ) {
+		
+		$this->method = strtoupper($method);
 		$this->identifier = $identifier;
+		
+	}
+	
+	public function get_method() : string {
+		return $this->method;
 	}
 	
 	public function get_identifier() : string {
@@ -45,6 +53,10 @@ abstract class Route {
 	}
 	
 	public abstract function routable( string $path, string $bpath ) : ?array;
+	
+	public function routable_base( string $method, string $path, string $bpath ) : ?array {
+		return ( $this->method === $method ) ? $this->routable($path, $bpath) : null;
+	}
 	
 	/*
 	public function try_route( string $path, string $bpath ) : bool {

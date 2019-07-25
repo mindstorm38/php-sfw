@@ -14,9 +14,9 @@ abstract class FilterRoute extends Route {
 	
 	public abstract function routable_filter( string $path, string $bpath, ?Route $last_route ) : ?array;
 	
-	public function filter( string $path, string $bpath, ?Route $last_route ) : bool {
+	public function filter( string $method, string $path, string $bpath, ?Route $last_route ) : bool {
 		
-		if ( ($vars = $this->routable_filter($path, $bpath, $last_route)) !== null ) {
+		if ( $this->method === $method && ($vars = $this->routable_filter($path, $bpath, $last_route)) !== null ) {
 			return $this->call_controller($vars);
 		}
 		

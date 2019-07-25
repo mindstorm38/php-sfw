@@ -372,16 +372,17 @@ final class Core {
 	
 	/**
 	 * Try to route the path.
+	 * @param string $method The HTTP method used to access.
 	 * @param string $path The path to route, it can be raw from <code>$_SERVER["REQUEST_URI"]</code>.
 	 * @return string|null The used route unique identifier or null if no route was found.
 	 */
-	public static function try_route( string $path ) : ?string {
+	public static function try_route( string $method, string $path ) : ?string {
 		
 		$bpath = Utils::beautify_url_path($path);
 		
 		foreach ( self::$routes as $route ) {
 			
-			if ( ($vars = $route->routable($path, $bpath)) !== null ) {
+			if ( ($vars = $route->routable_base($method, $path, $bpath)) !== null ) {
 				
 				foreach ( self::$filter_routes as $filter_route ) {
 					
@@ -417,7 +418,7 @@ final class Core {
 		
 		try {
 			
-			if ( self::try_route( Utils::get_request_path_relative() ) === null ) {
+			if ( self::try_route( $_SERVER['REQUEST_METHOD'], Utils::get_request_path_relative() ) === null ) {
 				self::print_error_page(404);
 			}
 			
