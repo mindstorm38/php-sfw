@@ -16,15 +16,19 @@ abstract class Route {
 	protected $identifier;
 	protected $controller = null;
 	
-	public function __construct(string $method, string $identifier) {
+	public function __construct(?string $method, string $identifier) {
 		
-		$this->method = strtoupper($method);
+		$this->method = $method === null ? null : strtoupper($method);
 		$this->identifier = $identifier;
 		
 	}
 	
 	public function get_method() : string {
 		return $this->method;
+	}
+	
+	public function valid_method(string $method) {
+		return is_null($this->method) ? true : $this->method === $method;
 	}
 	
 	public function get_identifier() : string {
@@ -55,7 +59,7 @@ abstract class Route {
 	public abstract function routable( string $path, string $bpath ) : ?array;
 	
 	public function routable_base( string $method, string $path, string $bpath ) : ?array {
-		return ( $this->method === $method ) ? $this->routable($path, $bpath) : null;
+		return $this->valid_method($method) ? $this->routable($path, $bpath) : null;
 	}
 	
 	/*

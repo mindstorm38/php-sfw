@@ -9,7 +9,7 @@ class ExactRoute extends Route {
 	private $path;
 	private $use_beautified;
 	
-	public function __construct(string $method, string $identifier, string $path, bool $use_beautified = true) {
+	public function __construct(?string $method, string $identifier, string $path, bool $use_beautified = true) {
 		
 		parent::__construct($method, $identifier);
 		

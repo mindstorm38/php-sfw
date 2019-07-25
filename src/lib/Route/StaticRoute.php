@@ -8,7 +8,7 @@ class StaticRoute extends Route {
 	
 	private $base_path;
 	
-	public function __construct(string $method, string $identifier, string $base_path) {
+	public function __construct(?string $method, string $identifier, string $base_path) {
 		
 		parent::__construct($method, $identifier);
 		

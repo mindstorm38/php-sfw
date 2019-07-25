@@ -65,7 +65,7 @@ final class Prototype {
 		
 		Sessionner::set_session( self::SESSION_ID, self::$session );
 		
-		Core::add_route( new LastRouteFilterRoute( "prototype-logged-filter", self::EXCEPT_ROUTES ), [__CLASS__, "controller_check_logged"] );
+		Core::add_route( new LastRouteFilterRoute( null, "prototype-logged-filter", self::EXCEPT_ROUTES ), [__CLASS__, "controller_check_logged"] );
 		Core::set_page_template("prototype", "sfw");
 		
 		return true;

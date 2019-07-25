@@ -4,7 +4,7 @@ namespace SFW\Route;
 
 abstract class FilterRoute extends Route {
 	
-	public function __construct(string $method, string $identifier) {
+	public function __construct(?string $method, string $identifier) {
 		parent::__construct($method, $identifier);
 	}
 	
@@ -16,7 +16,7 @@ abstract class FilterRoute extends Route {
 	
 	public function filter( string $method, string $path, string $bpath, ?Route $last_route ) : bool {
 		
-		if ( $this->method === $method && ($vars = $this->routable_filter($path, $bpath, $last_route)) !== null ) {
+		if ( $this->valid_method($method) && ($vars = $this->routable_filter($path, $bpath, $last_route)) !== null ) {
 			return $this->call_controller($vars);
 		}
 		
