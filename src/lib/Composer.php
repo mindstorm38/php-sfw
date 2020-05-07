@@ -17,7 +17,9 @@ final class Composer {
 	public static function get_default_config_vars() : array {
 		
 		return [
-			"JWT_SECRET" => Utils::generate_random(self::JWT_SECRET_LENGTH)
+			"JWT_SECRET" => Utils::generate_random(self::JWT_SECRET_LENGTH),
+            "ADVISED_HOST" => "localhost",
+            "SECURE" => false
 		];
 		
 	}
@@ -42,18 +44,34 @@ final class Composer {
 		$dir = realpath($dir);
 		$dir_raw = substr( $dir, strlen($dir_root) );
 		
-		$event->getIO()->askConfirmation("Using directory : '$dir_raw' ($dir) ? (y/n) ");
+		if (!$event->getIO()->askConfirmation("Using directory : '$dir_raw' ($dir) ? (y/n) "))
+		    return;
 		
 		do {
 			$name = $event->getIO()->ask("Application name (only alphanumeric, '-' & '_') : ");
-		} while ( !self::valid_identifier($name) );
-		
+		} while (!self::valid_identifier($name));
+
+		do {
+            $host = $event->getIO()->ask("Application hostname (leave empty if it is not a web application) : ");
+        } while (!empty($host) && !self::valid_host($host));
+
+		if (!empty($host)) {
+            $secure = $event->getIO()->ask("Require https ? (y/n) ", false);
+        }
+
 		$event->getIO()->write("Copying ...");
 		
 		$vars = array_merge([
 			"REL_PATH_TO_AUTOLOADER" => "",
 			"APP_NAME" => $name
 		], self::get_default_config_vars());
+
+		if (!empty($host)) {
+
+		    $vars["ADVISED_HOST"] = $host;
+		    $vars["SECURE"] = $secure;
+
+        }
 		
 		for ( $i = 0; $i < substr_count($dir_raw, DIRECTORY_SEPARATOR); $i++ ) {
 			$vars["REL_PATH_TO_AUTOLOADER"] .= "/..";
@@ -67,9 +85,13 @@ final class Composer {
 		
 	}
 	
-	private static function valid_identifier( string $id ) : bool {
+	private static function valid_identifier(string $id): bool {
 		return preg_match("/^[a-zA-Z0-9\-_]+$/", $id) === 1;
 	}
+
+	private static function valid_host(string $host): bool {
+	    return filter_var($host, FILTER_VALIDATE_DOMAIN) !== false;
+    }
 	
 	private static function get_default_ws_path() : string {
 		return realpath( __DIR__ . "/../../defaultws" );
