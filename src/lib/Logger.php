@@ -12,6 +12,12 @@ use \InvalidArgumentException;
  * 
  * @author Théo Rozier
  *
+ * @method static debug(string $message, Throwable $error = null)
+ * @method static info(string $message, Throwable $error = null)
+ * @method static warning(string $message, Throwable $error = null)
+ * @method static error(string $message, Throwable $error = null)
+ * @method static fatal(string $message, Throwable $error = null)
+ *
  */
 final class Logger {
 	
