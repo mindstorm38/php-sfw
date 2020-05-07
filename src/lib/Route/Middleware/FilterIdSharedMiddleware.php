@@ -14,6 +14,14 @@ class FilterIdSharedMiddleware extends SharedMiddleware {
         $this->inclusive = $inclusive;
     }
 
+    public function is_inclusive(): bool {
+        return $this->inclusive;
+    }
+
+    public function is_exclusive(): bool {
+        return !$this->inclusive;
+    }
+
     public function can_add_to(string $route_id, Route $route) : bool {
         return !$this->inclusive xor in_array($route_id, $this->ids);
     }
