@@ -26,7 +26,7 @@ use SFW\Util\OrderedTable;
  */
 final class Core {
 	
-	const VERSION = "1.3.0-SNAPSHOT.6";
+	const VERSION = "1.3.0-SNAPSHOT.7";
 	const MINIMUM_PHP_VERSION = "7.1.0";
 	
 	const AUTHOR = "Théo Rozier";
