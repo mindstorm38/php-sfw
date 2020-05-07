@@ -149,7 +149,7 @@ final class Composer {
 		$txt = file_get_contents($src);
 		
 		foreach ( $template_vars as $name => $val ) {
-			$txt = str_replace("%{" . $name . "}%", strval($val), $txt);
+			$txt = str_replace("%{" . $name . "}%", json_encode($val), $txt);
 		}
 		
 		return $txt;
