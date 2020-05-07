@@ -5,7 +5,7 @@
 namespace SFW;
 
 use SFW\Route\FallbackRoute;
-use SFW\Route\Middleware\SharedMiddleware;
+use SFW\Route\Middleware\Shared\SharedMiddleware;
 use SFW\Route\Route;
 use SFW\Route\ExactRoute;
 use SFW\Route\StaticRoute;
@@ -376,6 +376,12 @@ final class Core {
 
 		if ($action !== null) {
 			$route->set_action($action);
+		}
+
+		foreach (self::$shared_middlewares as $smw) {
+			if ($smw->can_add_to($id, $route)) {
+				$smw->add_to($route);
+			}
 		}
 
 		/*

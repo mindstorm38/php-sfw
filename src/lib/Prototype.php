@@ -4,7 +4,7 @@ namespace SFW;
 
 use \Exception;
 use SFW\Route\Middleware\AnonymousMiddleware;
-use SFW\Route\Middleware\FilterIdSharedMiddleware;
+use SFW\Route\Middleware\Shared\FilterIdSharedMiddleware;
 use SFW\Route\Route;
 
 /**
