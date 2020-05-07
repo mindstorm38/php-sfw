@@ -741,11 +741,10 @@ final class Core {
 			if ( !$nocache ) {
 				
 				$last_mod = filemtime($real_res_path);
-				$headers = apache_request_headers();
-				
-				if ( isset($headers["If-Modified-Since"]) ) {
+
+				if ( isset($_SERVER["HTTP_IF_MODIFIED_SINCE"]) ) {
 					
-					$if_mod_since = Utils::parse_http_header_date($headers["If-Modified-Since"]);
+					$if_mod_since = Utils::parse_http_header_date($_SERVER["HTTP_IF_MODIFIED_SINCE"]);
 					
 					if ( $if_mod_since !== false && $last_mod <= $if_mod_since ) {
 						

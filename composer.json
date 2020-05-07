@@ -8,8 +8,7 @@
 	"require" : {
 		"leafo/lessphp" : "0.4.0",
 		"ext-json": "*",
-    	"ext-pdo": "*",
-    	"ext-apache": "*"
+    	"ext-pdo": "*"
     },
 	"require-dev": {
 		"composer/composer" : "^1.8"

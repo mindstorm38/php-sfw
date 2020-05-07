@@ -594,6 +594,10 @@ final class Utils {
 		return $ret;
 				
 	}
+
+	public static function has_do_not_track(): bool {
+		return $_SERVER["HTTP_DNT"] != "0";
+	}
 	
 	// Array Page functions
 	
