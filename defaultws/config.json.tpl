@@ -1,7 +1,7 @@
 {
 	"global": {
-		"secure": false,
-		"advised_host": "localhost",
+		"secure": {SECURE},
+		"advised_host": "{ADVISED_HOST}",
 		"base_path": ""
 	},
 	"prototype": {
