@@ -1,7 +1,8 @@
 <?php
 
-namespace SFW\Route\Middleware;
+namespace SFW\Route\Middleware\Shared;
 
+use SFW\Route\Middleware\Middleware;
 use SFW\Route\Route;
 
 class FilterIdSharedMiddleware extends SharedMiddleware {
