@@ -24,10 +24,9 @@ class OrderedTable {
         $this->keyed[$key] = $obj;
 
         $count = count($this->list);
-        $i = 0;
 
-        while ($i++ < $count) {
-            if ($this->list[$i]->getOrder() >= $obj->get_order()) {
+        for ($i = 0; $i < $count; ++$i) {
+            if ($this->list[$i]->get_order() >= $obj->get_order()) {
                 array_splice($this->list, $i, 0, [$obj]);
                 return;
             }

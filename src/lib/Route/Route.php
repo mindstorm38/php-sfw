@@ -66,9 +66,8 @@ abstract class Route {
 
 	    $mws = $this->middlewares->get_sorted_list();
 	    $count = count($mws);
-	    $i = $count - 1;
 
-	    while ($i-- >= 0) {
+	    for ($i = ($count - 1); $i >= 0; --$i) {
 
 	        $mw = $mws[$i];
 
