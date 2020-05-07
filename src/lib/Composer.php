@@ -44,7 +44,7 @@ final class Composer {
 		$dir = realpath($dir);
 		$dir_raw = substr( $dir, strlen($dir_root) );
 		
-		if (!$event->getIO()->askConfirmation("Using directory : '$dir_raw' ($dir) ? (y/n) "))
+		if ($event->getIO()->askConfirmation("Using directory : '$dir_raw' ($dir) ? (y/n) ") == "n")
 		    return;
 		
 		do {
@@ -56,7 +56,7 @@ final class Composer {
         } while (!empty($host) && !self::valid_host($host));
 
 		if (!empty($host)) {
-            $secure = $event->getIO()->ask("Require https ? (y/n) ", false);
+            $secure = $event->getIO()->ask("Require https ? (y/n) ", false) != "n";
         }
 
 		$event->getIO()->write("Copying ...");
@@ -90,7 +90,8 @@ final class Composer {
 	}
 
 	private static function valid_host(string $host): bool {
-	    return filter_var($host, FILTER_VALIDATE_DOMAIN) !== false;
+	    return preg_match("^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$", $host) === 1 ||
+            preg_match("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$", $host) === 1;
     }
 	
 	private static function get_default_ws_path() : string {
