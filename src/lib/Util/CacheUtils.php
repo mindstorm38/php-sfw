@@ -45,19 +45,11 @@ final class CacheUtils {
 
 		// TODO : Support for IF_MATCH and IF_UNMODIFIED_SINCE.
 
-		if (isset($_SERVER["HTTP_IF_NONE_MATCH"])) {
-
-			if ($etag === null) {
-				$etag = EntityTag::from_timestamp($last_mod);
-			}
-
+		if (isset($_SERVER["HTTP_IF_NONE_MATCH"]) && $etag !== null) {
 			return EntityTag::header_list_weak_match($_SERVER["HTTP_IF_NONE_MATCH"], $etag);
-
 		} else if (isset($_SERVER["HTTP_IF_MODIFIED_SINCE"])) {
-
 			$if_mod_since = Utils::parse_http_header_date($_SERVER["HTTP_IF_MODIFIED_SINCE"]);
 			return $if_mod_since !== false && $last_mod <= $if_mod_since;
-
 		} else {
 			return false;
 		}
