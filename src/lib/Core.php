@@ -13,6 +13,7 @@ use SFW\Route\QueryRoute;
 use \Exception;
 use \BadMethodCallException;
 use SFW\Route\WrappedRoute;
+use SFW\Util\CacheUtils;
 use SFW\Util\OrderedTable;
 
 /**
@@ -397,24 +398,6 @@ final class Core {
 				$smw->add_to($route);
 			}
 		}
-
-		/*
-		$arr = null;
-		
-		if ($route instanceof FilterRoute) {
-			$arr =& self::$filter_routes;
-		} else {
-			$arr =& self::$normal_routes;
-		}
-		
-		$id = $route->get_identifier();
-		
-		if ( isset( self::$routes[$id] ) ) {
-			array_diff( $arr, [self::$routes[$id]] );
-		}
-		
-		self::$routes[$id] = $route;
-		$arr[] = $route;*/
 		
 	}
 
@@ -481,35 +464,6 @@ final class Core {
         }
 
 		return null;
-
-		/*
-		foreach ( self::$routes as $route ) {
-			
-			if ( ($vars = $route->routable_base($method, $path, $bpath)) !== null ) {
-				
-				foreach ( self::$filter_routes as $filter_route ) {
-					
-					if ( $filter_route->filter($method, $path, $bpath, $route) ) {
-						return $filter_route->get_identifier();
-					}
-					
-				}
-				
-				$route->call_controller($vars);
-				return $route->get_identifier();
-				
-			}
-			
-		}
-		
-		foreach ( self::$filter_routes as $filter_route ) {
-			if ( $filter_route->filter($method, $path, $bpath, null) ) {
-				return $filter_route->get_identifier();
-			}
-		}
-		
-		return null;
-		*/
 		
 	}
 	
@@ -624,18 +578,24 @@ final class Core {
 	}
 	
 	/**
+	 * <p><b>Must be called before headers send.</b></p>
 	 * <p>Print the page loaded (using {@link Core::load_page}) from its identifier.</p>
 	 * <p>If the page as a template, it include the template part 'main'.</p>
 	 * <p>Else, if no template is defined, it use the 'init' part of the page.</p>
 	 * @param string $raw_id The identifier.
 	 * @param array $vars Variables to add to the page object in the 'vars' property.
-	 * @return bool If the page was successfuly printed.
+	 * @return bool If the page was successfully printed.
 	 * @see Core::load_page
 	 */
-	public static function print_page( string $raw_id, array $vars = [] ) : bool {
-		
+	public static function print_page(string $raw_id, array $vars = []) : bool {
+
+		if (headers_sent())
+			return false;
+
 		$page = Core::load_page($raw_id);
 		$page->{"vars"} = $vars;
+
+		CacheUtils::send_no_store();
 		
 		@include_once $page->has_template() ? $page->template_part_path("main") : $page->page_part_path("init");
 		
@@ -644,13 +604,14 @@ final class Core {
 	}
 	
 	/**
+	 * <p><b>Must be called before headers send.</b></p>
 	 * Print the HTTP 'error' page.
 	 * @param int $code The HTTP error code.
 	 * @param string $msg A custom message to be added on the error page.
 	 * @return bool If the page was successfully printed.
 	 * @see Core::print_page
 	 */
-	public static function print_error_page( int $code, string $msg = null ) : bool {
+	public static function print_error_page(int $code, string $msg = null) : bool {
 		
 		http_response_code($code);
 		return self::print_page( "error", [ "code" => $code, "msg" => $msg ] );
@@ -725,16 +686,20 @@ final class Core {
 	}
 	
 	/**
+	 * <p><b>Must be called before headers send.</b></p>
 	 * A callback to use for sending static resource to client.
 	 * It also call resource extension processors registered using {@link Core::add_res_ext_processor}.
 	 * @param string $res_path The relative resource path.
-	 * @param boolean $nocache Force resend cached resources.
+	 * @param boolean $ignore_cache Force resend cached resources.
 	 * @see Core::add_res_ext_processor
 	 * @see Core::use_static_resource
 	 * @see Core::print_error_page
 	 */
-	public static function send_static_resource( string $res_path, bool $nocache = false ) : void {
-		
+	public static function send_static_resource(string $res_path, bool $ignore_cache = false): void {
+
+		if (headers_sent())
+			return;
+
 		$pr = null;
 		
 		foreach ( self::$static_res_ext_procs as $ext => $proc ) {
@@ -750,47 +715,32 @@ final class Core {
 			$res_path = ($pr[0])($res_path);
 		}
 		
-		$s = self::use_static_resource( $res_path, function( $res, $real_res_path ) use ($pr, $nocache) {
-			
-			if ( !$nocache ) {
-				
-				$last_mod = filemtime($real_res_path);
+		$s = self::use_static_resource($res_path, function($res, $real_res_path) use ($pr, $ignore_cache) {
 
-				if ( isset($_SERVER["HTTP_IF_MODIFIED_SINCE"]) ) {
-					
-					$if_mod_since = Utils::parse_http_header_date($_SERVER["HTTP_IF_MODIFIED_SINCE"]);
-					
-					if ( $if_mod_since !== false && $last_mod <= $if_mod_since ) {
-						
-						http_response_code(304);
-						return;
-						
-					}
-					
-				}
-				
-				header("Last-Modified: " . Utils::get_http_header_date($last_mod));
-				
-			}
-			
-			if ( $pr[1] !== null ) {
-				
+			$last_mod = filemtime($real_res_path);
+
+			CacheUtils::send_to_revalidate($last_mod);
+
+			if (!$ignore_cache && CacheUtils::validate_cache($last_mod)) {
+				http_response_code(304);
+			} else if ($pr[1] !== null) {
+
 				try {
 					($pr[1])($res);
 				} catch (Exception $e) {
-					self::print_error_page(500, $e->getMessage() );
+					self::print_error_page(500, $e->getMessage());
 				}
-				
+
 			} else {
-				
-				Utils::content_type( Utils::get_file_mime_type($real_res_path) );
+
+				Utils::content_type(Utils::get_file_mime_type($real_res_path));
 				fpassthru($res);
-				
+
 			}
 			
 		} );
 		
-		if ( !$s ) {
+		if (!$s) {
 			self::print_error_page(404);
 		}
 			

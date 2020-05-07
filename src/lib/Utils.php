@@ -145,7 +145,7 @@ final class Utils {
 	 * @param number $length Token length (default to 32).
 	 * @return string Generated token.
 	 */
-	public static function generate_random( int $length = 32 ) : string {
+	public static function generate_random(int $length = 32): string {
 		$charactersLength = strlen( self::TOKEN_CHARS );
 		$randomString = '';
 		for ( $i = 0; $i < $length; $i++ ) {
@@ -159,22 +159,22 @@ final class Utils {
 	 * @param string $string Input string.
 	 * @return string Output string were all characters are in lower case except first that is in upper case.
 	 */
-	public static function ucfirst( string $string ) : string {
+	public static function ucfirst(string $string) : string {
 		return ucfirst( strtolower( $string ) );
 	}
 	
 	/**
 	 * Secure a file path by replacing two or more following dot with only one.
-	 * @param mixed $path Input path.
-	 * @return mixed Output securized path.
+	 * @param string $path Input path.
+	 * @return string Output securized path.
 	 */
-	public static function secure_path( string $path ) : string {
+	public static function secure_path(string $path): string {
 		return preg_replace( '@\.\.*@', '.', $path );
 	}
 	
 	/**
 	 * Get timestamp in millis, it is just a shortcut for "{@link time()} * 1000".
-	 * @return number Timestamp millis.
+	 * @return int Timestamp millis.
 	 * @see time()
 	 */
 	public static function get_timestamp_ms() : int {
@@ -189,10 +189,11 @@ final class Utils {
 	 */
 	public static function date_format( int $timestamp = null ) : string {
 		
-		if ( $timestamp == null )
+		if ($timestamp == null) {
 			$timestamp = time();
+		}
 			
-			return date( "d/m/Y H:i:s", $timestamp );
+		return date("d/m/Y H:i:s", $timestamp);
 			
 	}
 	
@@ -240,6 +241,7 @@ final class Utils {
 	 */
 	public static function force_no_cache() : void {
 		if ( headers_sent() ) return;
+		trigger_error("Utils::force_no_cache method is now deprecated", E_USER_DEPRECATED);
 		header('Cache-Control: max-age=0, no-cache, no-store, must-revalidate');
 		header('Pragma: no-cache');
 		header("Expires: Wed, 11 Jan 1984 05:00:00 GMT");
