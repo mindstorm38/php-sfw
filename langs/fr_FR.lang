@@ -28,7 +28,7 @@ http_status.503=Service indisponible
 sfw.credits=Plus d'information sur {1}GitHub{0}, développé par {2}{3}{0}. License MIT.
 
 # Page d'accueil par défaut
-home.welcome=Bienvnue sur la page d'accueil par défaut de PHP-SFW. Si ceci est inattendu, contactez l'administrateur du site.
+home.welcome=Bienvenue sur la page d'accueil par défaut de PHP-SFW. Si ceci est inattendu, contactez l'administrateur du site.
 
 # Page d'erreur par défaut
 error.code_message=Erreur {0}
