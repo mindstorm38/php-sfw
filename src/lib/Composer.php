@@ -44,7 +44,7 @@ final class Composer {
 		$dir = realpath($dir);
 		$dir_raw = substr( $dir, strlen($dir_root) );
 		
-		if ($event->getIO()->askConfirmation("Using directory : '$dir_raw' ($dir) ? (y/n) ") == "n")
+		if (!$event->getIO()->askConfirmation("Using directory : '$dir_raw' ($dir) ? (y/n) "))
 		    return;
 		
 		do {
@@ -56,7 +56,7 @@ final class Composer {
         } while (!empty($host) && !self::valid_host($host));
 
 		if (!empty($host)) {
-            $secure = $event->getIO()->ask("Require https ? (y/n) ", false) != "n";
+            $secure = $event->getIO()->askConfirmation("Require https ? (y/n) ", false);
         }
 
 		$event->getIO()->write("Copying ...");
