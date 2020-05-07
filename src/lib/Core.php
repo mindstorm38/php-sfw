@@ -58,6 +58,7 @@ final class Core {
 	private static $redirect_https = true;
 	private static $init_languages = true;
 	private static $start_session = false;
+	private static $setup_defaults = true;
 	
 	private static $resources_handlers = [];
 	private static $resources_handlers_r = [];
@@ -143,29 +144,29 @@ final class Core {
 		}
 		
 		// Starting prototype manager
-		if ( Prototype::start() ) {
-			self::$start_session = true;
-		}
+		Prototype::start();
 		
 		// Set current language from user agent
-		if ( self::$init_languages ) {
+		if (self::$init_languages) {
 			Lang::set_current_language_from_accept_languages();
 		}
 		
 		// Start session if selected
-		if ( self::$start_session ) {
+		if (self::$start_session) {
 			Sessionner::start();
 		}
 		
 		// Adding import directories for less
 		LessCompiler::get_compiler()->setImportDir( self::get_resource_dirs(self::STATIC_DIR) );
 		
-		// Adding query namespace for defaut queries
+		// Adding query namespace for default queries
 		QueryManager::main_register_query_namespace("SFW\\Query");
-		
-		// Setting up default routes
-		self::setup_default_routes_and_pages();
-		
+
+		// Setting up default routes if selected
+		if (self::$setup_defaults) {
+			self::setup_default_routes_and_pages();
+		}
+
 	}
 	
 	// Options
@@ -176,7 +177,7 @@ final class Core {
 	 * @see Core::MINIMUM_PHP_VERSION
 	 * @see Core::start_application
 	 */
-	public static function set_minimum_php_version( string $minimum_php_version ) {
+	public static function set_minimum_php_version(string $minimum_php_version) {
 		self::$minimum_php_version = $minimum_php_version;
 	}
 	
@@ -185,7 +186,7 @@ final class Core {
 	 * Define pages directory, used by pages manager (relative to application base directory).
 	 * @param string $pages_dir Pages directory.
 	 */
-	public static function set_pages_dir( string $pages_dir ) {
+	public static function set_pages_dir(string $pages_dir) {
 		trigger_error("Pages directory is no longer used, now use the application resources handler.", E_USER_DEPRECATED);
 		self::$pages_dir = $pages_dir;
 	}
@@ -195,43 +196,52 @@ final class Core {
 	 * Define templates directory, used by pages manager (relative to application base directory).
 	 * @param string $templates_dir Templates directory.
 	 */
-	public static function set_templates_dir( string $templates_dir ) {
+	public static function set_templates_dir(string $templates_dir) {
 		trigger_error("Templates directory is no longer used, now use the application resources handler.", E_USER_DEPRECATED);
 		self::$templates_dir = $templates_dir;
 	}
 	
 	/**
-	 * If true, tell SFW to redirect to the advised host (config option "global:advised_host") if not already using it.
+	 * If true, tell SFW to redirect to the advised host (config option "global:advised_host") if not already using it (default to <b>true</b>).
 	 * @param bool $redirect_wrong_host Redirect wrong host.
 	 */
-	public static function set_redirect_wrong_host( bool $redirect_wrong_host ) {
+	public static function set_redirect_wrong_host(bool $redirect_wrong_host) {
 		self::$redirect_wrong_host = $redirect_wrong_host;
 	}
 	
 	/**
-	 * If true, tell SFW to redirect to the same URL, but using the right protocol depending on HTTPS config option "global:secure" (redirect to http:// if false, or https:// if true).
+	 * If true, tell SFW to redirect to the same URL, but using the right protocol depending on HTTPS config option "global:secure" (redirect to http:// if false, or https:// if true, default to <b>true</b>).
 	 * @param bool $redirect_https Redirect HTTPS.
 	 */
-	public static function set_redirect_https( bool $redirect_https ) {
+	public static function set_redirect_https(bool $redirect_https) {
 		self::$redirect_https = $redirect_https;
 	}
 	
 	/**
-	 * If true, {@link Lang::init_languages} is called on application start.
+	 * If true, {@link Lang::init_languages} is called on application start (default to <b>true</b>).
 	 * @param bool $init_languages Init languages.
 	 * @see Lang::init_languages
 	 */
-	public static function set_init_languages( bool $init_languages ) {
+	public static function set_init_languages(bool $init_languages) {
 		self::$init_languages = $init_languages;
 	}
 	
 	/**
-	 * If true, {@link SessionManager::session_start) is called on application start.
+	 * If true, {@link SessionManager::session_start) is called on application start (default to <b>false</b>).
 	 * @param bool $start_session Start session.
 	 * @see SessionManager::session_start
 	 */
-	public static function set_start_session( bool $start_session ) {
+	public static function set_start_session(bool $start_session) {
 		self::$start_session = $start_session;
+	}
+
+	/**
+	 * If true, the core add defaults SFW routes using {@link Core::setup_default_routes_and_pages()} (default to <b>true</b>).
+	 * @param bool $setup_defaults Setup SFW defaults routes, middlewares, pages and templates.
+	 * @see Core::setup_default_routes_and_pages
+	 */
+	public static function set_setup_defaults(bool $setup_defaults) {
+		self::$setup_defaults = $setup_defaults;
 	}
 	
 	// App

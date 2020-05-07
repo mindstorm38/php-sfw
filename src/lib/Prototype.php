@@ -71,6 +71,9 @@ final class Prototype {
 
 		// Core::add_route( new LastRouteFilterRoute( null, "prototype-logged-filter", self::EXCEPT_ROUTES ), [__CLASS__, "controller_check_logged"] );
 
+        // Force start sessions if not already set
+        Core::set_start_session(true);
+
         Core::add_shared_middleware(self::$check_logged_middleware);
 		Core::set_page_template("prototype", "sfw");
 		
