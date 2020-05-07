@@ -719,22 +719,31 @@ final class Core {
 
 			$last_mod = filemtime($real_res_path);
 
-			CacheUtils::send_to_revalidate($last_mod);
 
 			if (!$ignore_cache && CacheUtils::validate_cache($last_mod)) {
-				http_response_code(304);
-			} else if ($pr[1] !== null) {
 
-				try {
-					($pr[1])($res);
-				} catch (Exception $e) {
-					self::print_error_page(500, $e->getMessage());
-				}
+				http_response_code(304);
+				CacheUtils::send_to_revalidate($last_mod);
 
 			} else {
 
-				Utils::content_type(Utils::get_file_mime_type($real_res_path));
-				fpassthru($res);
+				http_response_code(200);
+				CacheUtils::send_to_revalidate($last_mod);
+
+				if ($pr[1] !== null) {
+
+					try {
+						($pr[1])($res);
+					} catch (Exception $e) {
+						self::print_error_page(500, $e->getMessage());
+					}
+
+				} else {
+
+					Utils::content_type(Utils::get_file_mime_type($real_res_path));
+					fpassthru($res);
+
+				}
 
 			}
 			

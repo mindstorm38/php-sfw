@@ -40,9 +40,9 @@ final class Logger {
 
 	    if (self::$format_method == null) {
 
-            $format_method = function( int $date, string $level, string $message, Throwable $error = null ) {
+		    self::$format_method = function( int $date, string $level, string $message, Throwable $error = null ) {
 
-                $msg = gmdate( "d/m/Y G:i:s", $date ) . "[" . strtoupper( $level ) . "] {$message}";
+                $msg = gmdate( "d/m/Y G:i:s", $date ) . " [" . strtoupper( $level ) . "] {$message}\n";
 
                 if ( $error !== null ) {
 
@@ -126,6 +126,10 @@ final class Logger {
 		
 		$latest_file = self::get_log_file( self::LATEST_LOG_FILE );
 		$latest_file_mdate = date("z Y", filemtime($latest_file));
+
+		if (!is_dir(dirname($latest_file))) {
+			mkdir(dirname($latest_file));
+		}
 		
 		if ( date("z Y") !== $latest_file_mdate ) {
 			rename( $latest_file, self::get_log_file(date(self::DATED_LOG_FILE)) );

@@ -92,7 +92,8 @@ final class Sessionner {
 		@ini_set("session.cookie_httponly", true);
 		@ini_set("session.use_trans_sid", false);
 		
-		session_cache_limiter("private");
+		// session_cache_limiter("private");
+		session_cache_limiter("");
 		session_name( self::get_cookie() );
 		session_start();
 		

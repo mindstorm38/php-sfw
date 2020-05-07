@@ -262,7 +262,7 @@ final class Utils {
 	 * @return int The UNIX timestamp parsed.
 	 */
 	public static function parse_http_header_date( string $date ) : int {
-		return DateTime::createFromFormat(self::DATE_FORMAT_RFC2616, $date)->getTimestamp();
+		return DateTime::createFromFormat(self::DATE_FORMAT_RFC2616, $date, new \DateTimeZone("GMT"))->getTimestamp();
 	}
 	
 	/**
