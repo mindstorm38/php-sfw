@@ -115,7 +115,11 @@ final class Core {
 		}
 		
 		// Set header only if runned by a HTTP server
-		header( "X-Powered-By: PHP-SFW/" . self::VERSION );
+		header("X-Powered-By: PHP-SFW/" . self::VERSION);
+
+		if (Prototype::is_enabled()) {
+			header("X-Is-Prototype: 1");
+		}
 		
 		// PHP Configuration
 		@ini_set( 'display_errors', 1 );
