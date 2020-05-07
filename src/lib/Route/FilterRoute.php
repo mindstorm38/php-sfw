@@ -2,9 +2,11 @@
 
 namespace SFW\Route;
 
-abstract class FilterRoute extends Route {
+trigger_error("FilterRoute class is now deprecated", E_USER_DEPRECATED);
+
+abstract class FilterRoute extends MethodRoute {
 	
-	public function __construct(?string $method, string $identifier) {
+	/*public function __construct(?string $method, string $identifier) {
 		parent::__construct($method, $identifier);
 	}
 	
@@ -22,7 +24,7 @@ abstract class FilterRoute extends Route {
 		
 		return false;
 		
-	}
+	}*/
 	
 }
 

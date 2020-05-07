@@ -27,30 +27,40 @@ final class Logger {
 	];
 	
 	private static $level = 80;
-	
 	private static $directory = "logs";
-	
-	private static $format_method = function( int $date, string $level, string $message, Throwable $error = null ) {
-		
-		$msg = gmdate( "d/m/Y G:i:s", $date ) . "[" . strtoupper( $level ) . "] {$message}";
-		
-		if ( $error !== null ) {
-			
-			$msg .= " [" . get_class($error) + " : {$error->getMessage()}]\n";
-			
-			$trace = explode( "\n", $error->getTraceAsString() );
-			
-			array_walk( $trace, function( &$s ) {
-				$s = "\t\t{$s}";
-			} );
-			
-			$msg .= implode( "\n", $trace );
-			
-		}
-		
-		return $msg;
-		
-	};
+	private static $format_method = null;
+
+	private static function get_format_method() : callable {
+
+	    if (self::$format_method == null) {
+
+            $format_method = function( int $date, string $level, string $message, Throwable $error = null ) {
+
+                $msg = gmdate( "d/m/Y G:i:s", $date ) . "[" . strtoupper( $level ) . "] {$message}";
+
+                if ( $error !== null ) {
+
+                    $msg .= " [" . get_class($error) . " : {$error->getMessage()}]\n";
+
+                    $trace = explode( "\n", $error->getTraceAsString() );
+
+                    array_walk( $trace, function( &$s ) {
+                        $s = "\t\t{$s}";
+                    } );
+
+                    $msg .= implode( "\n", $trace );
+
+                }
+
+                return $msg;
+
+            };
+
+        }
+
+	    return self::$format_method;
+
+    }
 	
 	/**
 	 * @return number[] Current levels identifiers associated to their level.
@@ -106,7 +116,7 @@ final class Logger {
 		if ( self::$levels[ $level ] > self::$level ) return;
 		
 		$time = time();
-		$msg = self::$format_method( $time, $level, $message, $error );
+		$msg = (self::get_format_method())( $time, $level, $message, $error );
 		
 		$latest_file = self::get_log_file( self::LATEST_LOG_FILE );
 		$latest_file_mdate = date("z Y", filemtime($latest_file));
@@ -132,7 +142,7 @@ final class Logger {
 		}
 		
 	}
-	
+
 }
 
 ?>

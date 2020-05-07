@@ -4,13 +4,16 @@
 
 namespace SFW;
 
+use SFW\Route\FallbackRoute;
+use SFW\Route\Middleware\SharedMiddleware;
 use SFW\Route\Route;
 use SFW\Route\ExactRoute;
 use SFW\Route\StaticRoute;
 use SFW\Route\QueryRoute;
-use SFW\Route\FilterRoute;
 use \Exception;
 use \BadMethodCallException;
+use SFW\Route\WrappedRoute;
+use SFW\Util\OrderedTable;
 
 /**
  *
@@ -37,9 +40,11 @@ final class Core {
 	const DEFAULT_PAGES_DIR = Core::PAGES_DIR;
 	const DEFAULT_TEMPLATES_DIR = Core::TEMPLATES_DIR;
 	
-	const DEFAULT_HOME_ROUTE = "home_page";
-	const DEFAULT_STATIC_ROUTE = "static_res";
-	const DEFAULT_QUERY_ROUTE = "query_exec";
+	const DEFAULT_HOME_ROUTE     = "home_page";
+	const DEFAULT_STATIC_ROUTE   = "static_res";
+	const DEFAULT_QUERY_ROUTE    = "query_exec";
+	const DEFAULT_FALLBACK_ROUTE = "fallback";
+	const DEFAULT_FALLBACK_ORDER = PHP_INT_MAX;
 	
 	private static $app_name = null;
 	private static $app_base_dir = null;
@@ -58,20 +63,26 @@ final class Core {
 	private static $resources_handlers_r = [];
 	
 	private static $static_res_ext_procs = [];
-	
-	private static $routes = [];
-	private static $normal_routes = [];
-	private static $filter_routes = [];
+
+	private static $routes = null;
+	private static $shared_middlewares = [];
+
+	/*private static $normal_routes = [];
+	private static $filter_routes = [];*/
 	
 	private static $pages_aliases = [];
 	private static $pages_templates = [];
-	
-	/**
-	 * Start the application, only one application can be launched in the same runtime.
-	 * @param string $app_name Application name, for now this is not used anywhere.
-	 * @param string $app_base_dir Application base directory, used for locating languages, config and other relative paths.
-	 */
-	public static function start_application( string $app_name, string $app_base_dir, bool $die_if_manual = true ) {
+
+    /**
+     * Start the application, only one application can be launched in the same runtime.
+     * @param string $app_name Application name, for now this is not used anywhere.
+     * @param string $app_base_dir Application base directory, used for locating languages, config and other relative paths.
+     * @param bool $die_if_manual The application is detecting if it was started manually,
+     *                            in this case this method returns before initializing web-side behaviours.
+     *                            But if this parameter is <b>true</b>, this method call <b>die()</b> instead of returns.
+     * @throws Exception
+     */
+	public static function start_application(string $app_name, string $app_base_dir, bool $die_if_manual = true) {
 		
 		if ( self::$app_name !== null ) {
 			throw new Exception("Application already started.");
@@ -228,11 +239,12 @@ final class Core {
 	public static function check_app_ready() {
 		if ( self::$app_name === null ) throw new Exception( "Application not started." );
 	}
-	
+
 	/**
 	 * @return string Base directory of the application (absolute path) defined at start.
-	 * @see Core::start_application
+	 * @throws Exception If the app is not ready.
 	 * @see Core::check_app_ready
+	 * @see Core::start_application
 	 */
 	public static function get_app_base_dir() : string {
 		self::check_app_ready();
@@ -243,10 +255,11 @@ final class Core {
 	 * Simplify and join given path to the base application directory (get it using {@link Core::get_app_base_dir}). It use the utiliy method {@link Utils::path_join}.
 	 * @param string ...$paths Paths to append.
 	 * @return string Full absolute path.
+	 * @throws Exception If the app is not ready.
 	 * @see Core::check_app_ready
 	 * @see Utils::path_join
 	 */
-	public static function get_app_path( ...$paths ) : string {
+	public static function get_app_path(...$paths) : string {
 		self::check_app_ready();
 		array_unshift( $paths, self::$app_base_dir );
 		return Utils::path_join( $paths );
@@ -255,6 +268,7 @@ final class Core {
 	/**
 	 * Get application name.
 	 * @return string Application name.
+	 * @throws Exception If the app is not ready.
 	 * @see Core::check_app_ready
 	 */
 	public static function get_app_name() : string {
@@ -287,7 +301,7 @@ final class Core {
 	 * @param string $dir_path The relative directory path.
 	 * @return array All real directories paths.
 	 */
-	public static function get_resource_dirs( string $dir_path ) : array {
+	public static function get_resource_dirs(string $dir_path) : array {
 		
 		$dirs = [];
 		
@@ -306,7 +320,7 @@ final class Core {
 	 * @param ResourcesHandler $handler The handler to add.
 	 * @see ResourcesHandler
 	 */
-	private static function add_resources_handler( ResourcesHandler $handler ) {
+	private static function add_resources_handler(ResourcesHandler $handler) {
 		
 		self::$resources_handlers[] = $handler;
 		array_unshift( self::$resources_handlers_r, $handler );
@@ -327,28 +341,44 @@ final class Core {
 	 */
 	private static function setup_default_routes_and_pages() {
 		
-		self::add_route( new ExactRoute("GET", Core::DEFAULT_HOME_ROUTE, ""), Route::controller_print_page("home") );
-		self::add_route( new StaticRoute("GET", Core::DEFAULT_STATIC_ROUTE, "static"), Route::controller_send_static_resource() );
-		self::add_route( new QueryRoute("POST", Core::DEFAULT_QUERY_ROUTE, "query"), Route::controller_send_query_response(QueryManager::get_main()) );
-		
+		self::add_route(Core::DEFAULT_HOME_ROUTE, 100, new ExactRoute("GET", ""), Route::action_print_page("home"));
+		self::add_route(Core::DEFAULT_STATIC_ROUTE, 300, new StaticRoute("GET", "static"), Route::action_send_static_resource());
+		self::add_route(Core::DEFAULT_QUERY_ROUTE, 200, new QueryRoute("POST", "query"), Route::action_send_query_response(QueryManager::get_main()));
+		self::add_route(Core::DEFAULT_FALLBACK_ROUTE, Core::DEFAULT_FALLBACK_ORDER, new FallbackRoute(), Route::action_print_error_page(404));
+
 		self::set_page_template("home", "sfw");
 		self::set_page_template("error", "sfw");
 
 		LessCompiler::add_res_ext_processor();
 		
 	}
-	
-	/**
-	 * Add a route to the application, a route define what actions to executes when using specific URL path.
-	 * @param Route $route The new route to add (can be either "normal" Route or FilterRoute).
-	 * @param callable $controller An optionnal controller if you want to setup one to the route.
-	 */
-	public static function add_route( Route $route, callable $controller = null ) {
-		
-		if ( $controller !== null ) {
-			$route->set_controller($controller);
+
+	public static function get_routes(): OrderedTable {
+
+		if (self::$routes === null) {
+			self::$routes = new OrderedTable();
 		}
-		
+
+		return self::$routes;
+
+	}
+
+    /**
+     * Add a route to the application, a route define what actions to executes when using specific URL path.
+     * @param string $id
+     * @param int $order
+     * @param Route $route The new route to add (can be either "normal" Route or FilterRoute).
+     * @param callable|null $action An optional action if you want to setup one to the route.
+     */
+	public static function add_route(string $id, int $order, Route $route, ?callable $action = null) {
+
+		self::get_routes()->add($id, new WrappedRoute($id, $order, $route));
+
+		if ($action !== null) {
+			$route->set_action($action);
+		}
+
+		/*
 		$arr = null;
 		
 		if ($route instanceof FilterRoute) {
@@ -364,27 +394,75 @@ final class Core {
 		}
 		
 		self::$routes[$id] = $route;
-		$arr[] = $route;
+		$arr[] = $route;*/
 		
 	}
-	
-	/**
-	 * @return array Routes of the application.
-	 */
-	public static function get_routes() : array {
-		return self::$routes;
+
+	public static function rem_route(string $id): bool {
+		return self::get_routes()->remove($id);
 	}
-	
+
+	public static function has_route(string $id): bool {
+		return self::get_routes()->has($id);
+	}
+
+	public static function add_shared_middleware(SharedMiddleware $shared_mw) {
+
+		if (isset(self::$shared_middlewares[$shared_mw->get_identifier()])) {
+			throw new BadMethodCallException("A middleware already exists with the identifier '{$shared_mw->get_identifier()}'.");
+		}
+
+		self::$shared_middlewares[$shared_mw->get_identifier()] = $shared_mw;
+
+		self::get_routes()->each(function($route_id, $wrapped_route) use ($shared_mw) {
+			if ($shared_mw->can_add_to($route_id, $wrapped_route->get_route())) {
+				$shared_mw->add_to($wrapped_route->get_route());
+			}
+		});
+
+	}
+
+	public static function rem_shared_middleware(SharedMiddleware $shared_mw): bool {
+
+	    $id = $shared_mw->get_identifier();
+
+	    if (!isset(self::$shared_middlewares[$id]) || self::$shared_middlewares[$id] !== $shared_mw) {
+	        return false;
+        }
+
+	    self::get_routes()->each(function($route_id, $wrapped_route) use ($shared_mw) {
+            $wrapped_route->get_route()->rem_middleware($shared_mw->get_identifier());
+        });
+
+	    return true;
+
+    }
+
 	/**
 	 * Try to route the path.
 	 * @param string $method The HTTP method used to access.
 	 * @param string $path The path to route, it can be raw from <code>$_SERVER["REQUEST_URI"]</code>.
 	 * @return string|null The used route unique identifier or null if no route was found.
 	 */
-	public static function try_route( string $method, string $path ) : ?string {
+	public static function try_route(string $method, string $path): ?string {
 		
 		$bpath = Utils::beautify_url_path($path);
-		
+
+		foreach (self::get_routes()->get_sorted_list() as $wrapped_route) {
+            $route = $wrapped_route->get_route();
+            if (($vars = $route->routable($method, $path, $bpath)) !== null) {
+
+                $next = $route->build_middleware_chain($vars);
+                ($next)();
+
+                return $wrapped_route->get_identifier();
+
+            }
+        }
+
+		return null;
+
+		/*
 		foreach ( self::$routes as $route ) {
 			
 			if ( ($vars = $route->routable_base($method, $path, $bpath)) !== null ) {
@@ -411,11 +489,13 @@ final class Core {
 		}
 		
 		return null;
+		*/
 		
 	}
 	
 	/**
 	 * Try route requested path (using {@link Utils::get_request_path_relative}) and catch error to <code>500</code> error page and route not found to <code>404</code> error page.
+	 * @throws Exception If the app is not ready.
 	 */
 	public static function try_route_requested_path() : void {
 		
@@ -424,7 +504,7 @@ final class Core {
 		try {
 			
 			if ( self::try_route( $_SERVER['REQUEST_METHOD'], Utils::get_request_path_relative() ) === null ) {
-				self::print_error_page(404);
+				self::print_error_page(404, "No fallback route");
 			}
 			
 		} catch (Exception $e) {
@@ -478,6 +558,7 @@ final class Core {
 	 * Get last modification of the page directory (identifier is not checked, you can ask for any page identifier).
 	 * @param string $id Page identifier.
 	 * @return number|bool Last modification time in UNIX timestamp format, or FALSE if invalid path.
+	 * @throws Exception If the app is not ready.
 	 */
 	public static function get_page_last_mod( string $id ) {
 		return filemtime( self::get_app_path( self::$pages_dir, $id ) );
@@ -486,7 +567,7 @@ final class Core {
 	/**
 	 * Load page from its identifier or its alias.
 	 * @param string $raw_id Identifier (can be an alias).
-	 * @return \SFW\Page The loaded page object.
+	 * @return Page The loaded page object.
 	 * @see \SFW\Page
 	 */
 	public static function load_page( string $raw_id ) : Page {
@@ -546,7 +627,7 @@ final class Core {
 	 * Print the HTTP 'error' page.
 	 * @param int $code The HTTP error code.
 	 * @param string $msg A custom message to be added on the error page.
-	 * @return bool If the page was successfuly printed.
+	 * @return bool If the page was successfully printed.
 	 * @see Core::print_page
 	 */
 	public static function print_error_page( int $code, string $msg = null ) : bool {
@@ -654,13 +735,13 @@ final class Core {
 			if ( !$nocache ) {
 				
 				$last_mod = filemtime($real_res_path);
-				$headers = getallheaders();
+				$headers = apache_request_headers();
 				
 				if ( isset($headers["If-Modified-Since"]) ) {
 					
 					$if_mod_since = Utils::parse_http_header_date($headers["If-Modified-Since"]);
 					
-					if ( $if_mod_since !== false && $lastmod <= $if_mod_since ) {
+					if ( $if_mod_since !== false && $last_mod <= $if_mod_since ) {
 						
 						http_response_code(304);
 						return;
@@ -715,7 +796,7 @@ final class Core {
 		);
 		
 		if ( $extra != "" ) {
-			$message .= " " + $extra;
+			$message .= " " . $extra;
 		}
 		
 		if ( $fatal ) {

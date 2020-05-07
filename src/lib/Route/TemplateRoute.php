@@ -11,7 +11,7 @@ use \InvalidArgumentException;
  * @author Théo Rozier
  *
  */
-class TemplateRoute extends Route {
+class TemplateRoute extends MethodRoute {
 	
 	const VALID_SEGMENT_TYPES = [ 'a', 'n', 'z' ];
 	const DEFAULT_SEGMENT_TYPE = "a";
@@ -24,33 +24,13 @@ class TemplateRoute extends Route {
 	//
 	
 	private $segments;
-	private $id = "";
-	
-	public function __construct(?string $method, string $identifier, string $template) {
-		
-		parent::__construct($method, $identifier);
-		
+
+	public function __construct(?string $method, string $template) {
+		parent::__construct($method);
 		$this->segments = self::parse($template);
-		
-		foreach ( $this->segments as $seg ) {
-			
-			$this->id .= "/{$seg["s"]}";
-			
-			if ( isset( $seg["type"] ) ) {
-				$this->id .= "{" . $seg["type"] . "," . $seg["idx"] . "}";
-			}
-			
-			$this->id .= "{$seg["e"]}";
-			
-		}
-		
 	}
 	
-	public function identifier() : ?string {
-		return $this->id;
-	}
-	
-	protected function routable(string $path, string $bpath) : ?array {
+	public function method_routable(string $path, string $bpath) : ?array {
 		
 		$ps = explode('/', $bpath);
 		
@@ -81,7 +61,7 @@ class TemplateRoute extends Route {
 				$sp = substr($part, 0, $sl);
 				$ep = substr($part, -$el);
 				
-				if ( $seg["s"] !== $sp || $seg["e"] !== ep ) {
+				if ( $seg["s"] !== $sp || $seg["e"] !== $ep ) {
 					return null;
 				}
 				
@@ -112,7 +92,7 @@ class TemplateRoute extends Route {
 							return null;
 						}
 						
-						$vars[ $set["idx"] ] = intval($c);
+						$vars[ $seg["idx"] ] = intval($c);
 						break;
 						
 				}

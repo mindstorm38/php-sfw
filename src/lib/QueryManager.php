@@ -14,6 +14,12 @@ use \Throwable;
  *
  * @author Théo Rozier
  *
+ * @method static main_register_query_class(string $name, $class_path)
+ * @method static main_register_query_namespace(string $string)
+ * @method static main_get_query_instance(string $name)
+ * @method static main_execute(string $name, array $array)
+ * @method static main_send_query_response(string $name, array $array)
+ *
  */
 class QueryManager {
 	
