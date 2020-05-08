@@ -1,9 +1,16 @@
 # This file is exported and pre-configured for working with 'common.php' file.
 # Don't touch it if you want to use default routing system.
 
-Options +FollowSymlinks
-Options -Indexes
-RewriteEngine on
-Options -MultiViews
+<IfModule rewrite_module>
 
-RewriteRule .* common.php [QSA,L]
+    <IfModule negotiation_module>
+        Options -MultiViews
+    </IfModule>
+
+    Options +FollowSymlinks
+    Options -Indexes
+
+    RewriteEngine on
+    RewriteRule .* common.php [QSA,L]
+
+</IfModule>
