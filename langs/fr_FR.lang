@@ -32,6 +32,8 @@ home.welcome=Bienvenue sur la page d'accueil par défaut de PHP-SFW. Si ceci est
 
 # Page d'erreur par défaut
 error.code_message=Erreur {0}
+error.anonymized_exception=Exception [{0}], veuillez transmettre ce code d'erreur à l'administrateur du site.
+error.no_fallback_route=Pas de voie de repli. Si ceci est inattendu, contactez l'administrateur du site.
 
 # Page prototype
 prototype.welcome=Le site étant en état de prototype, l'accès y est règlementé. Merci d'entrer les identifiants qui vous ont été fourni par le développeur.

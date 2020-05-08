@@ -10,12 +10,12 @@ use SFW\Route\Route;
 use SFW\Route\ExactRoute;
 use SFW\Route\StaticRoute;
 use SFW\Route\QueryRoute;
-use \Exception;
-use \BadMethodCallException;
-use SFW\Route\WrappedRoute;
 use SFW\Util\CacheUtils;
 use SFW\Util\OrderedTable;
 use SFW\Util\OrderedWrapped;
+use \Throwable;
+use \Exception;
+use \BadMethodCallException;
 
 /**
  *
@@ -28,7 +28,7 @@ use SFW\Util\OrderedWrapped;
  */
 final class Core {
 	
-	const VERSION = "1.3.0-SNAPSHOT.7";
+	const VERSION = "1.3.0-SNAPSHOT.8";
 	const MINIMUM_PHP_VERSION = "7.1.0";
 	
 	const AUTHOR = "Théo Rozier";
@@ -250,15 +250,15 @@ final class Core {
 	
 	/**
 	 * Throw an exception if the application is not started.
-	 * @throws Exception "Application not started".
+	 * @throws BadMethodCallException "Application not started".
 	 */
 	public static function check_app_ready() {
-		if ( self::$app_name === null ) throw new Exception( "Application not started." );
+		if ( self::$app_name === null ) throw new BadMethodCallException( "Application not started." );
 	}
 
 	/**
 	 * @return string Base directory of the application (absolute path) defined at start.
-	 * @throws Exception If the app is not ready.
+	 * @throws BadMethodCallException If the app is not ready.
 	 * @see Core::check_app_ready
 	 * @see Core::start_application
 	 */
@@ -271,7 +271,7 @@ final class Core {
 	 * Simplify and join given path to the base application directory (get it using {@link Core::get_app_base_dir}). It use the utiliy method {@link Utils::path_join}.
 	 * @param string ...$paths Paths to append.
 	 * @return string Full absolute path.
-	 * @throws Exception If the app is not ready.
+	 * @throws BadMethodCallException If the app is not ready.
 	 * @see Core::check_app_ready
 	 * @see Utils::path_join
 	 */
@@ -284,7 +284,7 @@ final class Core {
 	/**
 	 * Get application name.
 	 * @return string Application name.
-	 * @throws Exception If the app is not ready.
+	 * @throws BadMethodCallException If the app is not ready.
 	 * @see Core::check_app_ready
 	 */
 	public static function get_app_name() : string {
@@ -468,7 +468,7 @@ final class Core {
 	
 	/**
 	 * Try route requested path (using {@link Utils::get_request_path_relative}) and catch error to <code>500</code> error page and route not found to <code>404</code> error page.
-	 * @throws Exception If the app is not ready.
+	 * @throws BadMethodCallException If the app is not ready.
 	 */
 	public static function try_route_requested_path() : void {
 		
@@ -477,11 +477,11 @@ final class Core {
 		try {
 			
 			if (!self::try_route($_SERVER['REQUEST_METHOD'], Utils::get_request_path_relative())) {
-				self::print_error_page(404, "No fallback route");
+				self::print_error_page(404, Lang::get("error.no_fallback_route"));
 			}
 			
 		} catch (Exception $e) {
-			self::print_error_page(500, $e->getMessage());
+			self::print_exception_page($e);
 		}
 		
 	}
@@ -586,7 +586,7 @@ final class Core {
 	 * @return bool If the page was successfully printed.
 	 * @see Core::load_page
 	 */
-	public static function print_page(string $raw_id, array $vars = []) : bool {
+	public static function print_page(string $raw_id, array $vars = []): bool {
 
 		if (headers_sent())
 			return false;
@@ -594,6 +594,7 @@ final class Core {
 		$page = Core::load_page($raw_id);
 		$page["vars"] = $vars;
 
+		http_response_code(200);
 		CacheUtils::send_no_store();
 		
 		@include_once $page->has_template() ? $page->template_part_path("main") : $page->page_part_path("init");
@@ -610,11 +611,29 @@ final class Core {
 	 * @return bool If the page was successfully printed.
 	 * @see Core::print_page
 	 */
-	public static function print_error_page(int $code, string $msg = null) : bool {
+	public static function print_error_page(int $code, string $msg = null): bool {
 		
 		http_response_code($code);
 		return self::print_page( "error", [ "code" => $code, "msg" => $msg ] );
 		
+	}
+
+	/**
+	 * <p><b>Must be called before headers send.</b></p>
+	 * Print an HTTP 'error' page (using {@link Core::print_error_page()}) for and exception, and generating a custom exception
+	 * token used to anonymize the exception for the client and log the exception using {@link Logger}. Then the token can be
+	 * sent to the dev and recognized back by him.
+	 * @param Throwable $exception The exception to log and print to the client.
+	 * @return bool If the page was successfully printed.
+	 * @see Core::print_page()
+	 * @see Core::print_error_page()
+	 */
+	public static function print_exception_page(Throwable $exception): bool {
+
+		$exception_token = Utils::generate_random(32);
+		Logger::fatal("Anonymized exception [{$exception_token}] thrown by a client request.", $exception);
+		return self::print_error_page(500, Lang::get("error.anonymized_exception", [$exception_token]));
+
 	}
 	
 	// Static resources
@@ -642,7 +661,7 @@ final class Core {
 			if ( !is_resource($res) ) {
 				continue;
 			}
-			
+
 			$success = $callback($res, $res_path) ?? true;
 			
 			fclose($res);
@@ -734,7 +753,7 @@ final class Core {
 					try {
 						($pr[1])($res);
 					} catch (Exception $e) {
-						self::print_error_page(500, $e->getMessage());
+						self::print_exception_page($e);
 					}
 
 				} else {

@@ -6,6 +6,7 @@ use \Exception;
 use SFW\Route\Middleware\AnonymousMiddleware;
 use SFW\Route\Middleware\Shared\FilterIdSharedMiddleware;
 use SFW\Route\Route;
+use \BadMethodCallException;
 
 /**
  *
@@ -46,7 +47,7 @@ final class Prototype {
 
     /**
      * Start the prototype if needed, starting add several routes, pages and middleware to ensure prototype connection.
-     * @throws Exception If the core app is not ready.
+     * @throws BadMethodCallException If the core app is not ready.
      */
 	public static function start() : bool {
 		
@@ -57,7 +58,7 @@ final class Prototype {
 		}
 		
 		if ( self::is_started() ) {
-			throw new Exception("Prototype manager already started !");
+			throw new BadMethodCallException("Prototype manager already started !");
 		}
 		
 		self::$session = new Session();
@@ -80,10 +81,10 @@ final class Prototype {
 	}
 	
 	/**
-	 * @throws Exception If the prototype manager was not started.
+	 * @throws BadMethodCallException If the prototype manager was not started.
 	 */
 	public static function check_started() {
-		if ( !self::is_started() ) throw new Exception("Prototype is not started.");
+		if ( !self::is_started() ) throw new BadMethodCallException("Prototype is not started.");
 	}
 
 	public static function get_check_logged_middleware(): FilterIdSharedMiddleware {
@@ -94,7 +95,7 @@ final class Prototype {
      * @param string $user User name.
      * @param string $password Raw password.
      * @return bool Check if user and password are correct.
-     * @throws Exception If the prototype engine is not started.
+     * @throws BadMethodCallException If the prototype engine is not started.
      */
 	public static function try_log( string $user, string $password ) : bool {
 		
@@ -114,7 +115,7 @@ final class Prototype {
 	/**
 	 * Set logged user.
 	 * @param string $user The user name.
-     * @throws Exception If the prototype engine is not started.
+     * @throws BadMethodCallException If the prototype engine is not started.
 	 */
 	private static function set_logged_user( string $user ) {
 		
@@ -126,7 +127,7 @@ final class Prototype {
 	
 	/**
 	 * @return string|null Current logged user name, or null if not logged.
-     * @throws Exception If the prototype engine is not started.
+     * @throws BadMethodCallException If the prototype engine is not started.
 	 */
 	private static function logged_user() : ?string {
 		
@@ -140,12 +141,10 @@ final class Prototype {
 	public static function action_check_logged(Route $route, array &$args, callable $next) {
 		
         if (self::is_started()) {
-            try {
-                if (self::logged_user() === null) {
-                    Core::print_page("prototype");
-                    return;
-                }
-            } catch (Exception $ignored) {}
+            if (self::logged_user() === null) {
+                Core::print_page("prototype");
+                return;
+            }
         }
 
         ($next)();
