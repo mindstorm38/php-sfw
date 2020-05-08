@@ -2,9 +2,12 @@
 
 use SFW\Core;
 use SFW\Lang;
+use SFW\Page;
 use SFW\Sessionner;
 
-$page->{"big_header"} = true;
+/** @var Page $page */
+
+$page["big_header"] = true;
 
 ?>
 
@@ -16,7 +19,7 @@ $page->{"big_header"} = true;
 	<head>
 	
 		<meta charset="utf8" />
-		<title><?= $page->title ?> - PHP-SFW</title>
+		<title><?= $page["title"] ?> - PHP-SFW</title>
 		<link rel="stylesheet" href="/static/styles/sfw-main.less.css" />
 		<script type="text/javascript" src="/static/libraries/jshutils-1.0.2.js"></script>
 		<script type="text/javascript">
@@ -28,7 +31,7 @@ $page->{"big_header"} = true;
 		
 	</head>
 
-	<body class="<?= $page->big_header ? "big-header" : "" ?>">
+	<body class="<?= $page["big_header"] ? "big-header" : "" ?>">
 		
 		<div class="php-sfw-title">PHP-SFW</div>
 		<div class="php-sfw-description">A Simple PHP Framework</div>

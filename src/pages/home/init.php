@@ -1,7 +1,10 @@
 <?php
 
 use SFW\Lang;
+use SFW\Page;
 
-$page->title = Lang::get("home");
+/** @var Page $page */
+
+$page["title"] = Lang::get("home");
 
 ?>

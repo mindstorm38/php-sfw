@@ -592,7 +592,7 @@ final class Core {
 			return false;
 
 		$page = Core::load_page($raw_id);
-		$page->{"vars"} = $vars;
+		$page["vars"] = $vars;
 
 		CacheUtils::send_no_store();
 		

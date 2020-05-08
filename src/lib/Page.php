@@ -2,7 +2,9 @@
 
 namespace SFW;
 
-final class Page {
+use \ArrayAccess;
+
+final class Page implements ArrayAccess {
     
     public $raw;
     public $identifier;
@@ -11,14 +13,14 @@ final class Page {
     public $template_identifier;
     public $template_directory;
     
-    public $title;
+    public $data = [];
     
     public function __construct($raw, $identifier) {
         
         $this->raw = $raw;
         $this->identifier = $identifier;
         
-        $this->title = $identifier;
+        $this["title"] = $identifier;
         
     }
     
@@ -34,7 +36,22 @@ final class Page {
         if ( !$this->has_template() ) return null;
         return Utils::path_join( $this->template_directory, $part_id . ".php" );
     }
-    
+
+	public function offsetExists($offset) {
+    	return isset($this->data[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return $this->data[$offset];
+	}
+
+	public function offsetSet($offset, $value) {
+		$this->data[$offset] = $value;
+	}
+
+	public function offsetUnset($offset) {
+    	unset($this->data[$offset]);
+	}
 }
 
 ?>
