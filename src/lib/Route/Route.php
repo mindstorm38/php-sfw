@@ -7,6 +7,7 @@ use SFW\QueryManager;
 use \ArgumentCountError;
 use SFW\Route\Middleware\Middleware;
 use SFW\Util\OrderedTable;
+use SFW\Util\OrderedWrapped;
 
 abstract class Route {
 	
@@ -42,10 +43,10 @@ abstract class Route {
 		
 	}
 	
-	public abstract function routable(string $method, string $path, string $bpath) : ?array;
+	public abstract function routable(string $method, string $path, string $bpath): ?array;
 
-	public function add_middleware(string $id, Middleware $mw) {
-	    $this->middlewares->add($id, $mw);
+	public function add_middleware(string $id, int $order, Middleware $mw) {
+	    $this->middlewares->add($id, new OrderedWrapped($order, $mw));
     }
 
     public function rem_middleware(string $id) : bool {
@@ -69,7 +70,7 @@ abstract class Route {
 
 	    for ($i = ($count - 1); $i >= 0; --$i) {
 
-	        $mw = $mws[$i];
+	        $mw = $mws[$i]->get_wrapped();
 
             $next = function() use ($mw, $self, &$vars, $next) {
                 $mw->run($self, $vars, $next);

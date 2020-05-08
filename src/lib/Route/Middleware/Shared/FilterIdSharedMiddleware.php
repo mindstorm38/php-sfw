@@ -10,8 +10,8 @@ class FilterIdSharedMiddleware extends SharedMiddleware {
     private $inclusive = false;
     private $ids = [];
 
-    public function __construct(Middleware $middleware, string $identifier, bool $inclusive = false) {
-        parent::__construct($middleware, $identifier);
+    public function __construct(Middleware $middleware, string $identifier, int $order, bool $inclusive = false) {
+        parent::__construct($middleware, $identifier, $order);
         $this->inclusive = $inclusive;
     }
 

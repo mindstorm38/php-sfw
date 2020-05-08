@@ -15,6 +15,7 @@ use \BadMethodCallException;
 use SFW\Route\WrappedRoute;
 use SFW\Util\CacheUtils;
 use SFW\Util\OrderedTable;
+use SFW\Util\OrderedWrapped;
 
 /**
  *
@@ -387,7 +388,7 @@ final class Core {
      */
 	public static function add_route(string $id, int $order, Route $route, ?callable $action = null) {
 
-		self::get_routes()->add($id, new WrappedRoute($id, $order, $route));
+		self::get_routes()->add($id, new OrderedWrapped($order, $route));
 
 		if ($action !== null) {
 			$route->set_action($action);
@@ -417,11 +418,11 @@ final class Core {
 
 		self::$shared_middlewares[$shared_mw->get_identifier()] = $shared_mw;
 
-		self::get_routes()->each(function($route_id, $wrapped_route) use ($shared_mw) {
-			if ($shared_mw->can_add_to($route_id, $wrapped_route->get_route())) {
-				$shared_mw->add_to($wrapped_route->get_route());
+		foreach (self::get_routes()->get_keyed_table() as $route_id => $wrapped_route) {
+			if ($shared_mw->can_add_to($route_id, $wrapped_route->get_wrapped())) {
+				$shared_mw->add_to($wrapped_route->get_wrapped());
 			}
-		});
+		}
 
 	}
 
@@ -433,9 +434,9 @@ final class Core {
 	        return false;
         }
 
-	    self::get_routes()->each(function($route_id, $wrapped_route) use ($shared_mw) {
-            $wrapped_route->get_route()->rem_middleware($shared_mw->get_identifier());
-        });
+	    foreach (self::get_routes()->get_keyed_table() as $wrapped_route) {
+		    $wrapped_route->get_wrapped()->rem_middleware($shared_mw->get_identifier());
+	    }
 
 	    return true;
 
@@ -452,18 +453,16 @@ final class Core {
 		$bpath = Utils::beautify_url_path($path);
 
 		foreach (self::get_routes()->get_sorted_list() as $wrapped_route) {
-            $route = $wrapped_route->get_route();
+            $route = $wrapped_route->get_wrapped();
             if (($vars = $route->routable($method, $path, $bpath)) !== null) {
 
-                $next = $route->build_middleware_chain($vars);
-                ($next)();
-
-                return $wrapped_route->get_identifier();
+                ($route->build_middleware_chain($vars))();
+                return true;
 
             }
         }
 
-		return null;
+		return false;
 		
 	}
 	
@@ -477,7 +476,7 @@ final class Core {
 		
 		try {
 			
-			if ( self::try_route( $_SERVER['REQUEST_METHOD'], Utils::get_request_path_relative() ) === null ) {
+			if (!self::try_route($_SERVER['REQUEST_METHOD'], Utils::get_request_path_relative())) {
 				self::print_error_page(404, "No fallback route");
 			}
 			

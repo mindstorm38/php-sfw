@@ -63,6 +63,10 @@ class OrderedTable {
         }
     }
 
+	public function get_keyed_table(): array {
+		return $this->keyed;
+	}
+
     public function get_sorted_list(): array {
         return $this->list;
     }

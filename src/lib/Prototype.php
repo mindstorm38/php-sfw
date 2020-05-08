@@ -63,13 +63,11 @@ final class Prototype {
 		self::$session = new Session();
 		self::$session["user"] = null;
 
-		self::$check_logged_middleware = new FilterIdSharedMiddleware(new AnonymousMiddleware(0, [__CLASS__, "action_check_logged"]), self::CHECK_LOGGED_MIDDLEWARE);
+		self::$check_logged_middleware = new FilterIdSharedMiddleware(new AnonymousMiddleware([__CLASS__, "action_check_logged"]), self::CHECK_LOGGED_MIDDLEWARE, 0);
 		self::$check_logged_middleware->add_route_id(Core::DEFAULT_STATIC_ROUTE);
         self::$check_logged_middleware->add_route_id(Core::DEFAULT_QUERY_ROUTE);
 
 		Sessionner::set_session( self::SESSION_ID, self::$session );
-
-		// Core::add_route( new LastRouteFilterRoute( null, "prototype-logged-filter", self::EXCEPT_ROUTES ), [__CLASS__, "controller_check_logged"] );
 
         // Force start sessions if not already set
         Core::set_start_session(true);

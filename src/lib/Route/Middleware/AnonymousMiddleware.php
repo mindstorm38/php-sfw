@@ -9,8 +9,7 @@ class AnonymousMiddleware extends Middleware {
 
     private $callback;
 
-    public function __construct(int $order, callable $callback) {
-        parent::__construct($order);
+    public function __construct(callable $callback) {
         $this->callback = $callback;
     }
 
