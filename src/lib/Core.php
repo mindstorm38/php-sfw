@@ -83,19 +83,19 @@ final class Core {
      * @param bool $die_if_manual The application is detecting if it was started manually,
      *                            in this case this method returns before initializing web-side behaviours.
      *                            But if this parameter is <b>true</b>, this method call <b>die()</b> instead of returns.
-     * @throws Exception
+     * @throws BadMethodCallException If the application is already started, or PHP version checks fails.
      */
 	public static function start_application(string $app_name, string $app_base_dir, bool $die_if_manual = true) {
 		
 		if ( self::$app_name !== null ) {
-			throw new Exception("Application already started.");
+			throw new BadMethodCallException("Application already started.");
 		}
 		
 		// Check versions
 		if ( version_compare( self::$minimum_php_version, Core::MINIMUM_PHP_VERSION, "lt" ) ) {
-			throw new Exception( "Invalid minimum php version (set using 'set_minimum_php_version' method), PHP " . Core::MINIMUM_PHP_VERSION . "+ required by PHP-SFW. Given version : " . self::$minimum_php_version );
+			throw new BadMethodCallException( "Invalid minimum php version (set using 'set_minimum_php_version' method), PHP " . Core::MINIMUM_PHP_VERSION . "+ required by PHP-SFW. Given version : " . self::$minimum_php_version );
 		} else if ( version_compare( PHP_VERSION, self::$minimum_php_version, "lt" ) ) {
-			throw new Exception( "PHP {" . self::$minimum_php_version . "}+ required. Currently installed version is : " . phpversion() );
+			throw new BadMethodCallException( "PHP {" . self::$minimum_php_version . "}+ required. Currently installed version is : " . phpversion() );
 		}
 		
 		// App name and directories
@@ -531,7 +531,7 @@ final class Core {
 	 * Get last modification of the page directory (identifier is not checked, you can ask for any page identifier).
 	 * @param string $id Page identifier.
 	 * @return number|bool Last modification time in UNIX timestamp format, or FALSE if invalid path.
-	 * @throws Exception If the app is not ready.
+	 * @throws BadMethodCallException If the app is not ready.
 	 */
 	public static function get_page_last_mod( string $id ) {
 		return filemtime( self::get_app_path( self::$pages_dir, $id ) );
@@ -680,6 +680,7 @@ final class Core {
 	 * @param string $extension The extension.
 	 * @param null|callable $path_modifier The <code><b>path_modifier( $path ) : string</b></code> returning the new path to be used to open the resource. Null to don't change the path.
 	 * @param callable $res_printer The <code><b>callback( $res )</b></code> printing the transformed content of the resource.
+	 * @throws BadMethodCallException If both $path_modifier and $res_printer are null.
 	 */
 	public static function add_res_ext_processor( string $extension, ?callable $path_modifier, ?callable $res_printer ) : void {
 		
